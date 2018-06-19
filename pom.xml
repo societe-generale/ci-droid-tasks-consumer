@@ -93,17 +93,7 @@
     <dependencyManagement>
         <dependencies>
 
-            <dependency>
-                <groupId>com.societegenerale.ci-droid</groupId>
-                <artifactId>internal-api</artifactId>
-                <version>${ci-droid-api.version}</version>
-            </dependency>
 
-            <dependency>
-                <groupId>com.societegenerale.ci-droid</groupId>
-                <artifactId>extensions</artifactId>
-                <version>${ci-droid-extensions.version}</version>
-            </dependency>
 
 
             <dependency>

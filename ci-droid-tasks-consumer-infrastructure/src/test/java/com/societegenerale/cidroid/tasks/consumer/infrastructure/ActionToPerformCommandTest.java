@@ -1,7 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.extensions.gitHubInteractions.PullRequestGitHubInteraction;
+import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 

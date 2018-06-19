@@ -1,9 +1,10 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
 import com.oneeyedmen.fakir.Faker;
-import com.societegenerale.cidroid.tasks.consumer.extensions.ResourceToUpdate;
-import com.societegenerale.cidroid.tasks.consumer.extensions.gitHubInteractions.DirectPushGitHubInteraction;
-import com.societegenerale.cidroid.tasks.consumer.extensions.gitHubInteractions.PullRequestGitHubInteraction;
+
+import com.societegenerale.cidroid.api.ResourceToUpdate;
+import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
+import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;

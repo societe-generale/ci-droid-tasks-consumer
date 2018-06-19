@@ -1,8 +1,8 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import com.societegenerale.cidroid.tasks.consumer.extensions.IssueProvidingContentException;
-import com.societegenerale.cidroid.tasks.consumer.extensions.ResourceToUpdate;
-import com.societegenerale.cidroid.tasks.consumer.extensions.actionToReplicate.ActionToReplicate;
+import com.societegenerale.cidroid.api.IssueProvidingContentException;
+import com.societegenerale.cidroid.api.ResourceToUpdate;
+import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import lombok.Setter;
 
 import java.util.Map;

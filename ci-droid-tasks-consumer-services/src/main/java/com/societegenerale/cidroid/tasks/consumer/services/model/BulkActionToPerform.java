@@ -1,8 +1,8 @@
 package com.societegenerale.cidroid.tasks.consumer.services.model;
 
-import com.societegenerale.cidroid.tasks.consumer.extensions.ResourceToUpdate;
-import com.societegenerale.cidroid.tasks.consumer.extensions.actionToReplicate.ActionToReplicate;
-import com.societegenerale.cidroid.tasks.consumer.extensions.gitHubInteractions.AbstractGitHubInteraction;
+import com.societegenerale.cidroid.api.ResourceToUpdate;
+import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
+import com.societegenerale.cidroid.api.gitHubInteractions.AbstractGitHubInteraction;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;

@@ -1,7 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
-import com.societegenerale.cidroid.tasks.consumer.extensions.ResourceToUpdate;
-import com.societegenerale.cidroid.tasks.consumer.extensions.gitHubInteractions.AbstractGitHubInteraction;
+import com.societegenerale.cidroid.api.ResourceToUpdate;
+import com.societegenerale.cidroid.api.gitHubInteractions.AbstractGitHubInteraction;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;

@@ -1,8 +1,8 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import com.societegenerale.cidroid.tasks.consumer.extensions.ResourceToUpdate;
-import com.societegenerale.cidroid.tasks.consumer.extensions.gitHubInteractions.DirectPushGitHubInteraction;
-import com.societegenerale.cidroid.tasks.consumer.extensions.gitHubInteractions.PullRequestGitHubInteraction;
+import com.societegenerale.cidroid.api.ResourceToUpdate;
+import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
+import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;

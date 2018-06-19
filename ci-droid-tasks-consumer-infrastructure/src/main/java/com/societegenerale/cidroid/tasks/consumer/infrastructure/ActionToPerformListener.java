@@ -1,6 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
-import com.societegenerale.cidroid.tasks.consumer.extensions.actionToReplicate.ActionToReplicate;
+import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import lombok.extern.slf4j.Slf4j;

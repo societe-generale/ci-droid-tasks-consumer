@@ -1,9 +1,10 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.extensions.actionToReplicate.ActionToReplicate;
-import com.societegenerale.cidroid.tasks.consumer.extensions.actionToReplicate.OverwriteStaticFileAction;
-import com.societegenerale.cidroid.tasks.consumer.extensions.gitHubInteractions.DirectPushGitHubInteraction;
+
+import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
+import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.OverwriteStaticFileAction;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import org.apache.commons.io.IOUtils;

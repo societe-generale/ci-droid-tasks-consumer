@@ -1,9 +1,9 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
-import com.societegenerale.cidroid.tasks.consumer.extensions.actionToReplicate.ActionToReplicate;
-import com.societegenerale.cidroid.tasks.consumer.extensions.actionToReplicate.OverwriteStaticFileAction;
-import com.societegenerale.cidroid.tasks.consumer.extensions.actionToReplicate.ReplaceMavenProfileAction;
-import com.societegenerale.cidroid.tasks.consumer.extensions.actionToReplicate.SimpleReplaceAction;
+import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
+import com.societegenerale.cidroid.extensions.actionToReplicate.OverwriteStaticFileAction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.ReplaceMavenProfileAction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAction;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.GithubEventListener;
