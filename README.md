@@ -1,2 +1,3 @@
-# ci-droid-tasks-consumer
-CI-droid consumer, receiving tasks to perform
+# CI-Droid tasks-consumer
+
+CI-droid tasks consumer will execute the boring tasks on behalf of the dev teams.
