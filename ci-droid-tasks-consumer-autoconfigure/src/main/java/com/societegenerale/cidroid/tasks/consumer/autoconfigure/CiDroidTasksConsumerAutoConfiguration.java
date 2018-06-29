@@ -1,9 +1,11 @@
-package com.societegenerale.cidroid.tasks.consumer.bootstrap;
+package com.societegenerale.cidroid.tasks.consumer.autoconfigure;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.GitRebaser;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.GitWrapper;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.IncomingGitHubEvent;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.RestTemplateResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidBehavior;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.GitHubPullRequestCommentNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.HttpNotifier;
@@ -12,12 +14,24 @@ import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.mail.MailSender;
 
 import java.util.List;
 
-public class ActionHandlersAutoConfig {
+@Configuration
+@EnableBinding(IncomingGitHubEvent.class)
+@Import({InfraConfig.class})
+public class CiDroidTasksConsumerAutoConfiguration {
+
+    @Bean
+    public CiDroidBehavior ciDroidBehavior(){
+        return new CiDroidBehavior();
+    }
+
 
     @Bean
     @ConditionalOnProperty(value = "ciDroidBehavior.notifyOwnerForNonMergeablePr.enabled", havingValue = "true")

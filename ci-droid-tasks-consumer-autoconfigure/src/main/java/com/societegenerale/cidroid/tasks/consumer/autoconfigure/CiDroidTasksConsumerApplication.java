@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.bootstrap;
+package com.societegenerale.cidroid.tasks.consumer.autoconfigure;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.IncomingGitHubEvent;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidBehavior;
@@ -12,9 +12,7 @@ import org.springframework.context.annotation.Import;
 
 
 @SpringBootApplication
-@ComponentScan(basePackageClasses = CiDroidBehavior.class)
-@Import({InfraConfig.class, ActionHandlersAutoConfig.class})
-@EnableBinding(IncomingGitHubEvent.class)
+@Import({CiDroidTasksConsumerAutoConfiguration.class})
 @EnableAutoConfiguration
 @SuppressWarnings("squid:S1118") //can't add a private constructor, otherwise app won't start
 public class CiDroidTasksConsumerApplication {
