@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
-        <artifactId>ci-droid-tasks-consumer</artifactId>
+        <artifactId>ci-droid-tasks-consumer-parent</artifactId>
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 

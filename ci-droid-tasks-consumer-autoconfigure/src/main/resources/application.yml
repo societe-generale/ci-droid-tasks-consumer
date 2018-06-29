@@ -7,7 +7,6 @@ info:
 
 spring:
   application.name: ci-droid-tasks-consumer
-  main.banner-mode: LOG
  # used in case of email notifications are enabled
   mail:
     protocol: smtp

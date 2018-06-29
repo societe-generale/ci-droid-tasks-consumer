@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
-    <artifactId>ci-droid-tasks-consumer</artifactId>
+    <artifactId>ci-droid-tasks-consumer-parent</artifactId>
     <name>ci-droid-tasks-consumer Service</name>
 
     <version>1.0.1-SNAPSHOT</version>
@@ -104,7 +104,8 @@
     <modules>
         <module>ci-droid-tasks-consumer-services</module>
         <module>ci-droid-tasks-consumer-infrastructure</module>
-        <module>ci-droid-tasks-consumer-bootstrap</module>
+        <module>ci-droid-tasks-consumer-autoconfigure</module>
+        <module>ci-droid-tasks-consumer-starter</module>
     </modules>
 
     <dependencyManagement>
