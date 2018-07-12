@@ -29,11 +29,6 @@ public class TestActionToPerform implements ActionToReplicate {
     }
 
     @Override
-    public String getType() {
-        return "testAction";
-    }
-
-    @Override
     public void init(Map<String, String> updateActionInfos) {
         //do nothing
     }

@@ -3,7 +3,7 @@
   "gitPassword": "somePassword",
   "email": "someEmail@someDomain.com",
   "updateAction": {
-    "@type": "overWriteStaticContentAction",
+    "@class": "com.societegenerale.cidroid.extensions.actionToReplicate.OverwriteStaticFileAction",
     "staticContent": "some new content"
   },
   "gitHubInteractionType": {

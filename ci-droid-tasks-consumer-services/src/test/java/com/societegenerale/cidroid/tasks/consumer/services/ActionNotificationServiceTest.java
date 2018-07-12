@@ -101,7 +101,7 @@ public class ActionNotificationServiceTest {
         actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
 
         String expectedSubject =
-                "[KO] Action '" + testActionToPerform.getType() + "' for someFile.txt on repoFullName on branch master";
+                "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
 
         verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
 
@@ -121,7 +121,7 @@ public class ActionNotificationServiceTest {
         actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
 
         String expectedSubject =
-                "[KO] Action '" + testActionToPerform.getType() + "' for someFile.txt on repoFullName on branch master";
+                "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
 
         verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
 
@@ -143,7 +143,7 @@ public class ActionNotificationServiceTest {
         actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
 
         String expectedSubject =
-                "[KO] Action '" + testActionToPerform.getType() + "' for someFile.txt on repoFullName on branch master";
+                "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
 
         verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
 
@@ -162,7 +162,7 @@ public class ActionNotificationServiceTest {
         actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
 
         String expectedSubject =
-                "[KO] Action '" + testActionToPerform.getType() + "' for someFile.txt on repoFullName on branch master";
+                "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
 
         verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
 
@@ -185,7 +185,7 @@ public class ActionNotificationServiceTest {
     private void assertNotificationContent(String startsWith, String content) {
 
         String expectedSubject =
-                "[OK] Action '" + testActionToPerform.getType() + "' for someFile.txt on repoFullName on branch master";
+                "[OK] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
 
         verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
 

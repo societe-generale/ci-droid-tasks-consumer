@@ -39,7 +39,7 @@ public class BulkActionToPerform {
     private ActionToReplicate actionToReplicate;
 
     public String getActionType() {
-        return actionToReplicate.getType();
+        return actionToReplicate.getClass().getName();
     }
 
 }

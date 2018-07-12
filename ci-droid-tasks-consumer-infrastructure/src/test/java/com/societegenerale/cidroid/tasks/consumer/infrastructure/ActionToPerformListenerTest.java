@@ -1,7 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.OverwriteStaticFileAction;
@@ -16,7 +15,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
 
 public class ActionToPerformListenerTest {
@@ -42,11 +40,10 @@ public class ActionToPerformListenerTest {
                         "UTF-8");
         incomingCommand = new ObjectMapper().readValue(incomingCommandAsString, ActionToPerformCommand.class);
 
-        when(mockSomeOtherAction.getType()).thenReturn("someOtherActionType");
     }
 
     @Test
-    public void shouldMapCorrectlyIncomingCommand() throws IOException, DuplicatedRegisteredTypeException {
+    public void shouldMapCorrectlyIncomingCommand() {
         //postConstruct
         actionToPerformListener.registerActionsToReplicate();
 
@@ -67,22 +64,9 @@ public class ActionToPerformListenerTest {
         assertThat(actualBulkActionToPerform.getGitHubInteraction()).isInstanceOf(DirectPushGitHubInteraction.class);
     }
 
-    @Test
-    public void registrationShouldFailAtStartupIf2ActionsHaveSameType() {
-
-        //same type as the other action
-        when(mockSomeOtherAction.getType()).thenReturn("overWriteStaticContentAction");
-
-        assertThatExceptionOfType(DuplicatedRegisteredTypeException.class).isThrownBy(() -> {
-            actionToPerformListener.registerActionsToReplicate();
-        })
-                .withMessage("More than 1 action registered for type(s) : overWriteStaticContentAction")
-                .withNoCause();
-
-    }
 
     @Test
-    public void shouldFailSilentlyIfNoMatchingTypeRegistered() throws DuplicatedRegisteredTypeException {
+    public void shouldFailSilentlyIfNoMatchingTypeRegistered() {
 
         //only one action registered, not matching the one
         actionToPerformListener = new ActionToPerformListener(mockActionToPerformService, Arrays.asList(mockSomeOtherAction));

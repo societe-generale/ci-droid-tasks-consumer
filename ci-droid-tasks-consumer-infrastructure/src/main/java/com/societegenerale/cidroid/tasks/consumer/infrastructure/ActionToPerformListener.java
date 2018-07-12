@@ -4,6 +4,7 @@ import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cloud.stream.annotation.StreamListener;
 
 import javax.annotation.PostConstruct;
@@ -28,20 +29,11 @@ public class ActionToPerformListener {
     }
 
     @PostConstruct
-    protected void registerActionsToReplicate() throws DuplicatedRegisteredTypeException {
+    protected void registerActionsToReplicate(){
 
-        Map<String, Long> countByType = actionsToReplicate.stream()
-                .collect(Collectors.groupingBy(ActionToReplicate::getType, Collectors.counting()));
+        //since we use class name as key, it's necessarily unique -> there can't be duplicates
 
-        List<Map.Entry<String, Long>> actionTypeDeclaredMoreThanOnce = countByType.entrySet().stream().filter(e -> e.getValue() > 1)
-                .collect(Collectors.toList());
-
-        if (!actionTypeDeclaredMoreThanOnce.isEmpty()) {
-            throw new DuplicatedRegisteredTypeException("More than 1 action registered for type(s) : " +
-                    actionTypeDeclaredMoreThanOnce.stream().map(e -> e.getKey()).collect(joining(",")));
-        }
-
-        registeredActionsToReplicate = actionsToReplicate.stream().collect(Collectors.toMap(ActionToReplicate::getType, ActionToReplicate::getClass));
+        registeredActionsToReplicate = actionsToReplicate.stream().collect(Collectors.toMap(action -> action.getClass().getName(), ActionToReplicate::getClass));
 
     }
 
@@ -55,13 +47,13 @@ public class ActionToPerformListener {
 
             Map<String, String> updateActionInfos = (Map) actionToPerformCommand.getUpdateAction();
 
-            String actionToReplicateType = updateActionInfos.get("@type").trim();
+            String actionToReplicateClass = updateActionInfos.get("@class").trim();
 
-            Class<? extends ActionToReplicate> actionToReplicateToInstantiate = registeredActionsToReplicate.get(actionToReplicateType);
+            Class<? extends ActionToReplicate> actionToReplicateToInstantiate = findActualActionToPerform(actionToReplicateClass);
 
             if (actionToReplicateToInstantiate == null) {
                 throw new UnknownActionTypeException(
-                        "unknown action type " + actionToReplicateType + ": please check it has been registered correctly");
+                        "unknown action type " + actionToReplicateClass + ": please check it has been registered correctly");
             }
 
             ActionToReplicate actionToReplicate = actionToReplicateToInstantiate.newInstance();
@@ -84,6 +76,20 @@ public class ActionToPerformListener {
         } catch (Exception e) {
             log.warn("some unexpected error happened", e);
         }
+
+    }
+
+    private Class<? extends ActionToReplicate> findActualActionToPerform(String actionToReplicateClass) {
+
+        for( String registeredAction : registeredActionsToReplicate.keySet()){
+
+            if(StringUtils.containsIgnoreCase(actionToReplicateClass,registeredAction)){
+                return registeredActionsToReplicate.get(registeredAction);
+            }
+
+        }
+
+        return null;
 
     }
 
