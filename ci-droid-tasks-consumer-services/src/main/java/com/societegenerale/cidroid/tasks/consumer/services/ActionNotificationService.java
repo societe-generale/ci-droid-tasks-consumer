@@ -28,7 +28,14 @@ public class ActionNotificationService {
         String notificationSubject = "Action '" + action.getActionType() + "' for " + resourceToUpdate.getFilePathOnRepo() + " on " +
                 repoFullName + " on branch " + resourceToUpdate.getBranchName();
 
-        if (action.getGitHubInteraction() instanceof DirectPushGitHubInteraction) {
+        if(updatedResource.getUpdateStatus()==UPDATE_KO_AUTHENTICATION_ISSUE){
+            notifier.notify(user,
+                    "[KO] " + notificationSubject,
+                    "Content hasn't been modified on repository, as we haven't been able to commit content due to an authorization issue. please double check the credentials you provided");
+        }
+
+        //TODO refactor, as code in manageDirectPush and managePullRequest is very similar
+        else if (action.getGitHubInteraction() instanceof DirectPushGitHubInteraction) {
 
             manageDirectPush(updatedResource, user, notificationSubject);
 
