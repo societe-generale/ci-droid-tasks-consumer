@@ -6,6 +6,7 @@ import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +82,7 @@ public class ActionToPerformServiceTest {
 
 
     @Before
-    public void setup() {
+    public void setup() throws GitHubAuthorizationException {
 
         testActionToPerform.setContentToProvide(MODIFIED_CONTENT);
         testActionToPerform.setContinueIfResourceDoesntExist(true);
@@ -125,7 +126,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontPushWhenContentIsNotModifiedByAction_andActionIs_DIRECT_PUSH() {
+    public void dontPushWhenContentIsNotModifiedByAction_andActionIs_DIRECT_PUSH() throws GitHubAuthorizationException {
 
         String contentThatWillNotBeModified = "some content that will not change";
         testActionToPerform.setContentToProvide(contentThatWillNotBeModified);
@@ -154,7 +155,8 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontPushWhenContentIsNotModifiedByAction_andActionIs_PULL_REQUEST() throws BranchAlreadyExistsException {
+    public void dontPushWhenContentIsNotModifiedByAction_andActionIs_PULL_REQUEST()
+            throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         String contentThatWillNotBeModified = "some content that will not change";
 
@@ -248,7 +250,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_DIRECT_PUSH() {
+    public void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_DIRECT_PUSH() throws GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -268,7 +270,8 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_PULL_REQUEST() throws BranchAlreadyExistsException {
+    public void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_PULL_REQUEST()
+            throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
         testActionToPerform.setContinueIfResourceDoesntExist(false);
@@ -335,6 +338,26 @@ public class ActionToPerformServiceTest {
 
     }
 
+    @Test
+    public void notifyProperlyWhenIncorrectCredentials() throws GitHubAuthorizationException {
+
+        when(mockRemoteGitHub.updateContent(eq(REPO_FULL_NAME), anyString(), any(DirectCommit.class), anyString(), anyString()))
+                .thenThrow(new GitHubAuthorizationException("invalid credentials"));
+
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
+
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", "master")).thenReturn(fakeResourceContentBeforeUpdate);
+
+        actionToPerformService.perform(bulkActionToPerform);
+
+
+        verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
+                eq(resourceToUpdate),
+                updatedResourceCaptor.capture());
+
+        assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_AUTHENTICATION_ISSUE);
+    }
+
     private BulkActionToPerform doApullRequestAction() throws BranchAlreadyExistsException {
 
         mockPullRequestSpecificBehavior();
@@ -353,11 +376,17 @@ public class ActionToPerformServiceTest {
     }
 
     private void assertContentHasBeenUpdatedOnBranch(String branchName) {
-        verify(mockRemoteGitHub, times(1)).updateContent(eq(REPO_FULL_NAME),
-                eq("someFile.txt"),
-                directCommitCaptor.capture(),
-                eq(SOME_USER_NAME),
-                eq(SOME_PASSWORD));
+
+        try {
+            verify(mockRemoteGitHub, times(1)).updateContent(eq(REPO_FULL_NAME),
+                    eq("someFile.txt"),
+                    directCommitCaptor.capture(),
+                    eq(SOME_USER_NAME),
+                    eq(SOME_PASSWORD));
+
+        } catch (GitHubAuthorizationException e) {
+            throw new RuntimeException(e);
+        }
 
         DirectCommit actualCommit = directCommitCaptor.getValue();
 
@@ -377,5 +406,5 @@ public class ActionToPerformServiceTest {
         when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_USER_NAME, SOME_PASSWORD))
                 .thenReturn(fakeBranchCreatedReference);
     }
-    //TODO test when invalid credentials..
+
 }

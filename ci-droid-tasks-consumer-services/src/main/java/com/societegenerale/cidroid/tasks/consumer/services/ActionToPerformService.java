@@ -6,11 +6,10 @@ import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import lombok.extern.slf4j.Slf4j;
-
-
 
 @Slf4j
 public class ActionToPerformService {
@@ -63,7 +62,7 @@ public class ActionToPerformService {
 
             if (branchToUseForPr == null) {
                 //TODO test this scenario
-                updatedResource = UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_BRANCH_CREATION_ISSUE, null);
+                updatedResource = UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_BRANCH_CREATION_ISSUE);
 
             } else {
                 updatedResource = updateRemoteResource(repoFullName, resourceToUpdate, action, branchNameForPR);
@@ -116,7 +115,7 @@ public class ActionToPerformService {
                 log.info("{} NOT updated on repo {}, on branch {}, as it doesnt exist", resourceToUpdate.getFilePathOnRepo(),
                         repoFullName, onBranch);
 
-                return UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_FILE_DOESNT_EXIST, null);
+                return UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_FILE_DOESNT_EXIST);
 
             }
         } catch (IssueProvidingContentException e) {
@@ -133,11 +132,18 @@ public class ActionToPerformService {
                     .notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_FILE_CONTENT_IS_SAME, existingResourceContent.getHtmlLink());
         }
 
-        UpdatedResource updatedResource = commitResource(action, newContent, resourceToUpdate, existingResourceContent, onBranch);
+        try {
+            UpdatedResource updatedResource = commitResource(action, newContent, resourceToUpdate, existingResourceContent, onBranch);
 
-        logWhatHasBeenDone(repoFullName, resourceToUpdate, onBranch, existingResourceContent, decodedOriginalContent, updatedResource);
+            logWhatHasBeenDone(repoFullName, resourceToUpdate, onBranch, existingResourceContent, decodedOriginalContent, updatedResource);
 
-        return updatedResource;
+            return updatedResource;
+        }
+        catch(GitHubAuthorizationException e){
+            return UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_AUTHENTICATION_ISSUE);
+        }
+
+
     }
 
     private boolean existingResourceExists(ResourceContent existingResourceContent) {
@@ -158,7 +164,7 @@ public class ActionToPerformService {
     }
 
     private UpdatedResource commitResource(BulkActionToPerform action, String newContent, ResourceToUpdate resourceToUpdate,
-            ResourceContent existingResourceContent, String onBranch) {
+            ResourceContent existingResourceContent, String onBranch) throws GitHubAuthorizationException {
 
         DirectCommit directCommit = new DirectCommit();
 
@@ -180,7 +186,6 @@ public class ActionToPerformService {
 
         return updatedResource;
     }
-
 
     private boolean resourceWasNotExisting(String decodedOriginalContent) {
 

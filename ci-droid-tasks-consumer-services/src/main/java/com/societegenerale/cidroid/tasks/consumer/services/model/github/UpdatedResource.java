@@ -20,6 +20,7 @@ public class UpdatedResource {
     private Commit commit;
 
     @JsonIgnore
+    @Builder.Default
     private UpdateStatus updateStatus = UPDATE_KO_NO_REASON;
 
     public static UpdatedResource notUpdatedResource(UpdateStatus updateStatus, String htmlUrl) {
@@ -33,6 +34,11 @@ public class UpdatedResource {
                 .build();
 
         return notUpdatedResource;
+    }
+
+    public static UpdatedResource notUpdatedResource(UpdateStatus updateStatus) {
+
+        return notUpdatedResource(updateStatus,null);
     }
 
     public boolean hasBeenUpdated() {
@@ -63,7 +69,8 @@ public class UpdatedResource {
         UPDATE_KO_FILE_CONTENT_IS_SAME(false),
         UPDATE_KO_BRANCH_CREATION_ISSUE(false),
         UPDATE_KO_CANT_PROVIDE_CONTENT_ISSUE(false),
-        UPDATE_KO_NO_REASON(false);
+        UPDATE_KO_NO_REASON(false),
+        UPDATE_KO_AUTHENTICATION_ISSUE(false);
 
         private final boolean hasBeenUpdated;
 
