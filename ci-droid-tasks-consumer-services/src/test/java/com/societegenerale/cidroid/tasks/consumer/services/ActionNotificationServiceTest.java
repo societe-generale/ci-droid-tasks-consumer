@@ -174,6 +174,33 @@ public class ActionNotificationServiceTest {
 
     }
 
+    @Test
+    public void sendKOnotification_whenAuthenticationIssue() {
+
+        String expectedSubject = "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
+
+        String expectedContent =
+                "Content hasn't been modified on repository, as we haven't been able to commit content due to an authorization issue. please double check the credentials you provided";
+
+        //for direct push
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
+        updatedResource.setUpdateStatus(UPDATE_KO_AUTHENTICATION_ISSUE);
+
+        actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
+
+        //for pull request
+        reset(mockNotifier);
+        bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction()).build();
+        updatedResource.setUpdateStatus(UPDATE_KO_AUTHENTICATION_ISSUE);
+
+        actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
+
+        verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
+        assertThat(notificationContentCaptor.getValue())
+                .isEqualTo(expectedContent);
+
+    }
+
     private void assertNotificationWhenDirectPush() {
         assertNotificationContent("CI-droid has updated the resource on your behalf", "Link to the version we committed : http://");
     }

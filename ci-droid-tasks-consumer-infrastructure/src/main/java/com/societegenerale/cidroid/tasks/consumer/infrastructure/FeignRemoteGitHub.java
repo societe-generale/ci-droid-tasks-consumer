@@ -3,6 +3,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GlobalProperties;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import feign.*;
 import feign.auth.BasicAuthRequestInterceptor;
@@ -84,7 +85,8 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             @PathVariable("path") String path, @RequestParam("branch") String branch);
 
     @Override
-    default UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String gitLogin, String gitPassword) {
+    default UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String gitLogin, String gitPassword) throws
+            GitHubAuthorizationException {
 
         ContentClient contentClient = Feign.builder()
                 .logger(new Slf4jLogger(ContentClient.class))
@@ -183,6 +185,10 @@ class BranchCreationErrorDecoder implements ErrorDecoder {
 
         if (response.status() == 422) {
             return new BranchAlreadyExistsException("Branch seems to already exist : " + response.reason());
+        }
+
+        if (response.status() == 401) {
+            return new GitHubAuthorizationException("Issue with credentials provided : " + response.reason());
         }
 
         return errorStatus(methodKey, response);

@@ -1,6 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 
 import java.util.List;
@@ -23,7 +24,8 @@ public interface RemoteGitHub {
 
     ResourceContent fetchContent(String repoFullName, String path, String branch);
 
-    UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String gitLogin, String gitPassword);
+    UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String gitLogin, String gitPassword) throws
+            GitHubAuthorizationException;
 
     PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr);
 
