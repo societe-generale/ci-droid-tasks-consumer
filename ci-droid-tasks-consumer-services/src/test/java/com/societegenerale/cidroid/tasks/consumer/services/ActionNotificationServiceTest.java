@@ -175,7 +175,7 @@ public class ActionNotificationServiceTest {
     }
 
     @Test
-    public void when_authenticationIssue() {
+    public void sendKOnotification_whenAuthenticationIssue() {
 
         String expectedSubject = "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
 
