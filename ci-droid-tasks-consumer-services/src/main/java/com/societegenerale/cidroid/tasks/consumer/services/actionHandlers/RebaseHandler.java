@@ -30,8 +30,11 @@ public class RebaseHandler implements PushEventOnDefaultBranchHandler {
     public void handle(GitHubEvent event,List<PullRequest> pullRequests) {
 
         Map<PullRequest, List<GitCommit>> rebasedCommits = pullRequests.stream()
-                //rebase only the mergeable PRs
+                // rebase only the mergeable PRs
                 .filter(pr -> pr.getMergeable())
+                // we probably don't have the rights to push anything on the forked repo to rebase the PR,
+                // so not even trying to rebase if PR originates from a forked repo
+                .filter(pr -> keepPullRequestOnlyIfNotMadeFromFork(pr))
                 .map(mergeablePr -> rebaser.rebase(mergeablePr))
                 .collect(toMap(pair -> pair.getKey(), pair -> pair.getValue()));
 
@@ -59,6 +62,18 @@ public class RebaseHandler implements PushEventOnDefaultBranchHandler {
 
                 gitHub.addCommentDescribingRebase(pr.getRepo().getFullName(), pr.getNumber(), new Comment(comment));
             }
+        }
+
+    }
+
+    private boolean keepPullRequestOnlyIfNotMadeFromFork(PullRequest pr) {
+
+        if(pr.isMadeFromForkedRepo()){
+            log.info("PR {} on repo {} is made from a forked repo - not trying to rebase it",pr.getNumber(),pr.getRepo().getName());
+            return false;
+        }
+        else{
+            return true;
         }
 
     }

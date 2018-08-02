@@ -84,7 +84,8 @@ public class RebaseHandlerTest {
     @Test
     public void shouldNotRebaseWhenPRisMadeFromFork(){
 
-        singlePr.getRepo().setFork(true);
+        singlePr.setMergeable(true);
+        singlePr.setMadeFromForkedRepo(true);
 
         rebaseHandler.handle(pushEvent,Arrays.asList(singlePr));
 
