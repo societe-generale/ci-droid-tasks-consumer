@@ -40,8 +40,8 @@ public class ActionToPerformServiceTest {
     private String branchNameToCreateForPR = "myPrBranch";
 
     private RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
-    private ActionNotificationService mockActionNotificationService = mock(ActionNotificationService.class);
 
+    private ActionNotificationService mockActionNotificationService = mock(ActionNotificationService.class);
 
     ResourceContent fakeResourceContentBeforeUpdate = new Faker<ResourceContent>() {
         String htmlLink = "http://github.com/someRepo/linkToTheResource";
@@ -68,6 +68,7 @@ public class ActionToPerformServiceTest {
     private ArgumentCaptor<UpdatedResource> updatedResourceCaptor = ArgumentCaptor.forClass(UpdatedResource.class);
 
     private ArgumentCaptor<DirectCommit> directCommitCaptor = ArgumentCaptor.forClass(DirectCommit.class);
+
     private ArgumentCaptor<PullRequestToCreate> newPrCaptor = ArgumentCaptor.forClass(PullRequestToCreate.class);
 
     private ActionToPerformService actionToPerformService = new ActionToPerformService(mockRemoteGitHub, mockActionNotificationService);
@@ -79,7 +80,6 @@ public class ActionToPerformServiceTest {
     private UpdatedResource updatedResource;
 
     private BulkActionToPerform.BulkActionToPerformBuilder bulkActionToPerformBuilder;
-
 
     @Before
     public void setup() throws GitHubAuthorizationException {
@@ -105,10 +105,8 @@ public class ActionToPerformServiceTest {
                 .thenReturn(updatedResource); // lenient mocking - we're asserting in verify.
     }
 
-
-
     @Test
-    public void performActionOfType_DIRECT_PUSH() {
+    public void performActionOfType_DIRECT_PUSH() throws GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -151,7 +149,6 @@ public class ActionToPerformServiceTest {
 
         assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_FILE_CONTENT_IS_SAME);
 
-
     }
 
     @Test
@@ -185,9 +182,8 @@ public class ActionToPerformServiceTest {
 
     }
 
-
     @Test
-    public void performActionOfType_PULL_REQUEST() throws BranchAlreadyExistsException {
+    public void performActionOfType_PULL_REQUEST() throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -212,7 +208,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void continueIfResourceDoesntExist_whenActionPermitsIt() {
+    public void continueIfResourceDoesntExist_whenActionPermitsIt() throws GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -232,7 +228,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void continueIfExistingResourceisNull_whenActionPermitsIt() {
+    public void continueIfExistingResourceisNull_whenActionPermitsIt() throws GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -310,7 +306,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void reuseBranchIfAlreadyExistWhenDoing_PULL_REQUEST() throws BranchAlreadyExistsException {
+    public void reuseBranchIfAlreadyExistWhenDoing_PULL_REQUEST() throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -350,7 +346,6 @@ public class ActionToPerformServiceTest {
 
         actionToPerformService.perform(bulkActionToPerform);
 
-
         verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
                 eq(resourceToUpdate),
                 updatedResourceCaptor.capture());
@@ -375,18 +370,13 @@ public class ActionToPerformServiceTest {
         assertThat(actualPrToCreate.getBody()).endsWith(expectedCommitMessage);
     }
 
-    private void assertContentHasBeenUpdatedOnBranch(String branchName) {
+    private void assertContentHasBeenUpdatedOnBranch(String branchName) throws GitHubAuthorizationException {
 
-        try {
-            verify(mockRemoteGitHub, times(1)).updateContent(eq(REPO_FULL_NAME),
-                    eq("someFile.txt"),
-                    directCommitCaptor.capture(),
-                    eq(SOME_USER_NAME),
-                    eq(SOME_PASSWORD));
-
-        } catch (GitHubAuthorizationException e) {
-            throw new RuntimeException(e);
-        }
+        verify(mockRemoteGitHub, times(1)).updateContent(eq(REPO_FULL_NAME),
+                eq("someFile.txt"),
+                directCommitCaptor.capture(),
+                eq(SOME_USER_NAME),
+                eq(SOME_PASSWORD));
 
         DirectCommit actualCommit = directCommitCaptor.getValue();
 
