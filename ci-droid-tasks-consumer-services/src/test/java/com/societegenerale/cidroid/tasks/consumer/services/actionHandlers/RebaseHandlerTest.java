@@ -82,6 +82,17 @@ public class RebaseHandlerTest {
     }
 
     @Test
+    public void shouldNotRebaseWhenPRisMadeFromFork(){
+
+        singlePr.getRepo().setFork(true);
+
+        rebaseHandler.handle(pushEvent,Arrays.asList(singlePr));
+
+        verify(mockRebaser,never()).rebase(singlePr);
+
+    }
+
+    @Test
     public void shouldPostGitHubWarningCommentWhenProblemWhileRebasing(){
 
         singlePr.setMergeable(true);

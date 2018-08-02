@@ -50,6 +50,10 @@ public class PullRequest {
 
     }
 
+    public boolean isMadeFromForkedRepo(){
+        return repo.isFork();
+    }
+
     @JsonProperty("base")
     private void unpackNestedBaseProperty(Map<String,Object> base) {
         this.branchStartedFromCommit=(String)base.get("sha");

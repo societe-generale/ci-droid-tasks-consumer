@@ -18,6 +18,8 @@ public class Repository {
 
     private String name;
 
+    private boolean fork;
+
     @JsonProperty("clone_url")
     private String cloneUrl;
 }
