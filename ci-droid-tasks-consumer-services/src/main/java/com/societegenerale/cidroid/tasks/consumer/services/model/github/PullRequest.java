@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.beans.ConstructorProperties;
@@ -33,7 +35,15 @@ public class PullRequest {
     private String branchStartedFromCommit;
 
     @JsonIgnore
+    private boolean isMadeFromForkedRepo;
+
+    @JsonIgnore
     private String warningMessageDuringRebasing;
+
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private ObjectMapper objectMapper=new ObjectMapper();
 
     @JsonProperty("html_url")
     private String htmlUrl;
@@ -56,14 +66,15 @@ public class PullRequest {
 
         this.baseBranchName=(String)base.get("ref");
 
-        ObjectMapper objectMapper=new ObjectMapper();
-
         this.repo=objectMapper.convertValue(base.get("repo"), Repository.class);
     }
 
     @JsonProperty("head")
     private void unpackNestedHeadProperty(Map<String,Object> base) {
         this.branchName=(String)base.get("ref");
+
+       Repository repoFromWhichPrOriginates=objectMapper.convertValue(base.get("repo"), Repository.class);
+       isMadeFromForkedRepo=repoFromWhichPrOriginates.isFork();
     }
 
 }
