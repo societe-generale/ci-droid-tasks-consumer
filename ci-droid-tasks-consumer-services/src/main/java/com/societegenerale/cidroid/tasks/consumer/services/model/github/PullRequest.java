@@ -9,9 +9,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.builder.EqualsExclude;
-import org.apache.commons.lang3.builder.HashCodeExclude;
-import org.apache.commons.lang3.builder.ToStringExclude;
 
 import java.beans.ConstructorProperties;
 import java.util.Map;
@@ -38,6 +35,9 @@ public class PullRequest {
     private String branchStartedFromCommit;
 
     @JsonIgnore
+    private boolean isMadeFromForkedRepo;
+
+    @JsonIgnore
     private String warningMessageDuringRebasing;
 
     @JsonIgnore
@@ -59,8 +59,6 @@ public class PullRequest {
        return PRmergeableStatus.mapping.get(mergeable);
 
     }
-
-    private boolean isMadeFromForkedRepo;
 
     @JsonProperty("base")
     private void unpackNestedBaseProperty(Map<String,Object> base) {
