@@ -5,7 +5,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequ
 
 import java.util.List;
 
-public class DummyActionHandler implements PushEventOnDefaultBranchHandler {
+public class DummyPushEventOnDefaultBranchHandler implements PushEventOnDefaultBranchHandler {
     @Override
     public void handle(GitHubEvent event, List<PullRequest> pullRequests) {
         //do nothing
