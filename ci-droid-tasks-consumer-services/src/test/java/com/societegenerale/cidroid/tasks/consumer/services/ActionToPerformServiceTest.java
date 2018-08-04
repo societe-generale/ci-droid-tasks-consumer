@@ -335,7 +335,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void notifyProperlyWhenIncorrectCredentials() throws GitHubAuthorizationException {
+    public void notifyProperlyWhenIncorrectCredentials_whenCommitting() throws GitHubAuthorizationException {
 
         when(mockRemoteGitHub.updateContent(eq(REPO_FULL_NAME), anyString(), any(DirectCommit.class), anyString(), anyString()))
                 .thenThrow(new GitHubAuthorizationException("invalid credentials"));
@@ -353,7 +353,25 @@ public class ActionToPerformServiceTest {
         assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_AUTHENTICATION_ISSUE);
     }
 
-    private BulkActionToPerform doApullRequestAction() throws BranchAlreadyExistsException {
+
+    @Test
+    public void notifyProperlyWhenIncorrectCredentials_whenCreatingBranch() throws GitHubAuthorizationException, BranchAlreadyExistsException {
+
+        BulkActionToPerform bulkActionToPerform = doApullRequestAction();
+
+        when(mockRemoteGitHub.createBranch(eq(REPO_FULL_NAME), anyString(), anyString(), anyString(), anyString()))
+                .thenThrow(new GitHubAuthorizationException("invalid credentials"));
+
+        actionToPerformService.perform(bulkActionToPerform);
+
+        verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
+                eq(resourceToUpdate),
+                updatedResourceCaptor.capture());
+
+        assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_AUTHENTICATION_ISSUE);
+    }
+
+    private BulkActionToPerform doApullRequestAction() throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         mockPullRequestSpecificBehavior();
 
@@ -390,7 +408,7 @@ public class ActionToPerformServiceTest {
 
     }
 
-    private void mockPullRequestSpecificBehavior() throws BranchAlreadyExistsException {
+    private void mockPullRequestSpecificBehavior() throws BranchAlreadyExistsException, GitHubAuthorizationException {
         when(mockRemoteGitHub.fetchRepository(REPO_FULL_NAME)).thenReturn(fakeRepository);
         when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, "masterBranch")).thenReturn(fakeHeadOnMasterReference);
         when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_USER_NAME, SOME_PASSWORD))

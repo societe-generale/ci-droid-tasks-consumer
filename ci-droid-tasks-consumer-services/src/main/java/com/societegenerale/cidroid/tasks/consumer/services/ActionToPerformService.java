@@ -30,52 +30,58 @@ public class ActionToPerformService {
 
         String repoFullName = resourceToUpdate.getRepoFullName();
 
-        if (action.getGitHubInteraction() instanceof DirectPushGitHubInteraction) {
+        try {
 
-            UpdatedResource updatedResource = updateRemoteResource(repoFullName, resourceToUpdate, action, resourceToUpdate.getBranchName());
+            if (action.getGitHubInteraction() instanceof DirectPushGitHubInteraction) {
 
-            actionNotificationService.handleNotificationsFor(action, resourceToUpdate, updatedResource);
+                UpdatedResource updatedResource = updateRemoteResource(repoFullName, resourceToUpdate, action, resourceToUpdate.getBranchName());
 
-        } else if (action.getGitHubInteraction() instanceof PullRequestGitHubInteraction) {
+                actionNotificationService.handleNotificationsFor(action, resourceToUpdate, updatedResource);
 
-            PullRequestGitHubInteraction pullRequestAction = (PullRequestGitHubInteraction) action.getGitHubInteraction();
+            } else if (action.getGitHubInteraction() instanceof PullRequestGitHubInteraction) {
 
-            Repository impactedRepo = remoteGitHub.fetchRepository(repoFullName);
-            String branchNameForPR = pullRequestAction.getBranchNameToCreate();
+                PullRequestGitHubInteraction pullRequestAction = (PullRequestGitHubInteraction) action.getGitHubInteraction();
 
-            Reference masterCommitReference = remoteGitHub.fetchHeadReferenceFrom(repoFullName, impactedRepo.getDefaultBranch());
+                Repository impactedRepo = remoteGitHub.fetchRepository(repoFullName);
+                String branchNameForPR = pullRequestAction.getBranchNameToCreate();
 
-            Reference branchToUseForPr = null;
+                Reference masterCommitReference = remoteGitHub.fetchHeadReferenceFrom(repoFullName, impactedRepo.getDefaultBranch());
 
-            try {
-                branchToUseForPr = remoteGitHub.createBranch(repoFullName, branchNameForPR, masterCommitReference.getObject().getSha(),
-                        action.getGitLogin(), action.getGitPassword());
-            } catch (BranchAlreadyExistsException e) {
+                Reference branchToUseForPr = null;
 
-                log.info("branch " + branchNameForPR + " already exists", e);
+                try {
+                    branchToUseForPr = remoteGitHub.createBranch(repoFullName, branchNameForPR, masterCommitReference.getObject().getSha(),
+                            action.getGitLogin(), action.getGitPassword());
+                } catch (BranchAlreadyExistsException e) {
 
-                //TODO maybe we should add field in Reference to identify when it hasn't been created as expected
-                branchToUseForPr = remoteGitHub.fetchHeadReferenceFrom(repoFullName, branchNameForPR);
-            }
+                    log.info("branch " + branchNameForPR + " already exists", e);
 
-            UpdatedResource updatedResource;
-
-            if (branchToUseForPr == null) {
-                //TODO test this scenario
-                updatedResource = UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_BRANCH_CREATION_ISSUE);
-
-            } else {
-                updatedResource = updateRemoteResource(repoFullName, resourceToUpdate, action, branchNameForPR);
-
-                if (updatedResource.hasBeenUpdated()) {
-
-                    createPullRequest(action, impactedRepo, branchNameForPR, updatedResource);
+                    //TODO maybe we should add field in Reference to identify when it hasn't been created as expected
+                    branchToUseForPr = remoteGitHub.fetchHeadReferenceFrom(repoFullName, branchNameForPR);
                 }
+
+                UpdatedResource updatedResource;
+
+                if (branchToUseForPr == null) {
+                    //TODO test this scenario
+                    updatedResource = UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_BRANCH_CREATION_ISSUE);
+
+                } else {
+                    updatedResource = updateRemoteResource(repoFullName, resourceToUpdate, action, branchNameForPR);
+
+                    if (updatedResource.hasBeenUpdated()) {
+
+                        createPullRequest(action, impactedRepo, branchNameForPR, updatedResource);
+                    }
+                }
+
+                actionNotificationService.handleNotificationsFor(action, resourceToUpdate, updatedResource);
+            } else {
+                log.warn("unknown gitHub interaction type : {}", action.getGitHubInteraction());
             }
 
-            actionNotificationService.handleNotificationsFor(action, resourceToUpdate, updatedResource);
-        } else {
-            log.warn("unknown gitHub interaction type : {}", action.getGitHubInteraction());
+        } catch (GitHubAuthorizationException e) {
+            actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_AUTHENTICATION_ISSUE));
         }
 
     }
@@ -93,7 +99,7 @@ public class ActionToPerformService {
     }
 
     private UpdatedResource updateRemoteResource(String repoFullName, ResourceToUpdate resourceToUpdate, BulkActionToPerform action,
-            String onBranch) {
+            String onBranch) throws GitHubAuthorizationException {
 
         ResourceContent existingResourceContent = remoteGitHub
                 .fetchContent(repoFullName, resourceToUpdate.getFilePathOnRepo(), onBranch);
@@ -132,17 +138,11 @@ public class ActionToPerformService {
                     .notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_FILE_CONTENT_IS_SAME, existingResourceContent.getHtmlLink());
         }
 
-        try {
-            UpdatedResource updatedResource = commitResource(action, newContent, resourceToUpdate, existingResourceContent, onBranch);
+        UpdatedResource updatedResource = commitResource(action, newContent, resourceToUpdate, existingResourceContent, onBranch);
 
-            logWhatHasBeenDone(repoFullName, resourceToUpdate, onBranch, existingResourceContent, decodedOriginalContent, updatedResource);
+        logWhatHasBeenDone(repoFullName, resourceToUpdate, onBranch, existingResourceContent, decodedOriginalContent, updatedResource);
 
-            return updatedResource;
-        }
-        catch(GitHubAuthorizationException e){
-            return UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_AUTHENTICATION_ISSUE);
-        }
-
+        return updatedResource;
 
     }
 

@@ -34,7 +34,7 @@ public interface RemoteGitHub {
     Reference fetchHeadReferenceFrom(String repoFullName, String branchName);
 
     Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String gitLogin, String gitPassword)
-            throws BranchAlreadyExistsException;
+            throws BranchAlreadyExistsException, GitHubAuthorizationException;
 
 }
 
