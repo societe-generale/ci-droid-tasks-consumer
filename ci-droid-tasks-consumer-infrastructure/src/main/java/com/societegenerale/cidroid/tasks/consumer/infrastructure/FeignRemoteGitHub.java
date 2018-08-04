@@ -92,6 +92,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
                 .logger(new Slf4jLogger(ContentClient.class))
                 .encoder(new JacksonEncoder())
                 .decoder(new JacksonDecoder())
+                .errorDecoder(new UpdateContentErrorDecoder ())
                 .requestInterceptor(new BasicAuthRequestInterceptor(gitLogin, gitPassword))
                 .logLevel(Logger.Level.FULL)
                 .target(ContentClient.class, GlobalProperties.getGitHubUrl() + "/api/v3/repos/" + repoFullName + "/contents/" + path);
@@ -123,7 +124,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
 
     @Override
     default Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String gitLogin, String gitPassword)
-            throws BranchAlreadyExistsException {
+            throws BranchAlreadyExistsException,GitHubAuthorizationException {
 
         GitReferenceClient gitReferenceClient = Feign.builder()
                 .logger(new Slf4jLogger(GitReferenceClient.class))
@@ -167,14 +168,14 @@ interface ContentClient {
 
     @RequestLine("PUT")
     @Headers("Content-Type: application/json")
-    UpdatedResource updateContent(DirectCommit directCommit);
+    UpdatedResource updateContent(DirectCommit directCommit) throws GitHubAuthorizationException;
 }
 
 interface GitReferenceClient {
 
     @RequestLine("POST")
     @Headers("Content-Type: application/json")
-    Reference createBranch(FeignRemoteGitHub.InputRef inputRef) throws BranchAlreadyExistsException;
+    Reference createBranch(FeignRemoteGitHub.InputRef inputRef) throws BranchAlreadyExistsException,GitHubAuthorizationException;
 }
 
 @Slf4j
@@ -186,6 +187,20 @@ class BranchCreationErrorDecoder implements ErrorDecoder {
         if (response.status() == 422) {
             return new BranchAlreadyExistsException("Branch seems to already exist : " + response.reason());
         }
+
+        if (response.status() == 401) {
+            return new GitHubAuthorizationException("Issue with credentials provided : " + response.reason());
+        }
+
+        return errorStatus(methodKey, response);
+    }
+}
+
+@Slf4j
+class UpdateContentErrorDecoder implements ErrorDecoder {
+
+    @Override
+    public Exception decode(String methodKey, Response response) {
 
         if (response.status() == 401) {
             return new GitHubAuthorizationException("Issue with credentials provided : " + response.reason());
