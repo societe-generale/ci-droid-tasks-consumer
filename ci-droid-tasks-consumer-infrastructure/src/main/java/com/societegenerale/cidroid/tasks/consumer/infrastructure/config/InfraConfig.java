@@ -9,7 +9,8 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.FeignRemoteGitH
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.GithubEventListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.*;
-import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.DummyActionHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.DummyPullRequestEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.DummyPushEventOnDefaultBranchHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PushEventOnDefaultBranchHandler;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,9 +80,16 @@ public class InfraConfig {
 
     @Bean
     @ConditionalOnMissingBean(PushEventOnDefaultBranchHandler.class)
-    public PushEventOnDefaultBranchHandler dummyActionHandler(){
+    public PushEventOnDefaultBranchHandler dummyPushEventOnDefaultBranchHandler(){
 
-        return new DummyActionHandler();
+        return new DummyPushEventOnDefaultBranchHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PullRequestEventHandler.class)
+    public PullRequestEventHandler dummyPullRequestEventHandler(){
+
+        return new DummyPullRequestEventHandler();
     }
 
     @Bean
