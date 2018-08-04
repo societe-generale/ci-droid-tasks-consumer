@@ -13,6 +13,7 @@
 ### Removed
 
 ### Fixed
+- issue #2 - providing a PullRequestEventHandler shouldn't be mandatory
 - issue #5 - when credentials are incorrect, send a KO email
 
 
