@@ -5,17 +5,22 @@
 ### Added
 
 ### Changed
-- issue #4 - if PR is made from a fork don't try to rebase
-- upgraded to internal-api and extensions 1.0.2 
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+## [1.0.3] - 2018-08-03
+
+### Changed
+- issue #4 - if PR is made from a fork don't try to rebase
+- upgraded to internal-api and extensions 1.0.2 
+
+### Fixed
 - issue #2 - providing a PullRequestEventHandler shouldn't be mandatory
 - issue #5 - when credentials are incorrect, send a KO email
-
 
 ## [1.0.2] - 2018-07-12
 
