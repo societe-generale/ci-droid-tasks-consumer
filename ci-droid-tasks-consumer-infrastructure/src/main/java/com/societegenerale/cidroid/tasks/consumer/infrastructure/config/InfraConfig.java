@@ -1,9 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
-import com.societegenerale.cidroid.extensions.actionToReplicate.OverwriteStaticFileAction;
-import com.societegenerale.cidroid.extensions.actionToReplicate.ReplaceMavenProfileAction;
-import com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.*;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.GithubEventListener;
@@ -50,6 +48,33 @@ public class InfraConfig {
 
         return new SimpleReplaceAction();
     }
+
+    @Bean
+    public ActionToReplicate addXmlElementAction() {
+
+        return new AddXmlElementAction();
+    }
+
+    @Bean
+    public ActionToReplicate removeXmlElementAction() {
+
+        return new RemoveXmlElementAction();
+    }
+
+    @Bean
+    public ActionToReplicate templateBasedContentAction() {
+
+        return new TemplateBasedContentAction();
+    }
+
+    @Bean
+    public ActionToReplicate removeMavenDependencyOrPluginAction() {
+
+        return new RemoveMavenDependencyOrPluginAction();
+    }
+
+
+
 
     @Bean
     public ActionToPerformListener actionToPerformListener(ActionToPerformService actionToPerformService,
