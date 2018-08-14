@@ -54,7 +54,7 @@ public class ActionToPerformService {
                             action.getGitLogin(), action.getGitPassword());
                 } catch (BranchAlreadyExistsException e) {
 
-                    log.info("branch " + branchNameForPR + " already exists", e);
+                    log.warn("branch " + branchNameForPR + " already exists");
 
                     //TODO maybe we should add field in Reference to identify when it hasn't been created as expected
                     branchToUseForPr = remoteGitHub.fetchHeadReferenceFrom(repoFullName, branchNameForPR);
