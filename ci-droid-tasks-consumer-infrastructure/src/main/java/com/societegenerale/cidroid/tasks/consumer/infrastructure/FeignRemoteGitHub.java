@@ -95,7 +95,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
                 .errorDecoder(new UpdateContentErrorDecoder ())
                 .requestInterceptor(new BasicAuthRequestInterceptor(gitLogin, gitPassword))
                 .logLevel(Logger.Level.FULL)
-                .target(ContentClient.class, GlobalProperties.getGitHubUrl() + "/api/v3/repos/" + repoFullName + "/contents/" + path);
+                .target(ContentClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/contents/" + path);
 
         return contentClient.updateContent(directCommit);
 
@@ -133,7 +133,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
                 .errorDecoder(new BranchCreationErrorDecoder())
                 .requestInterceptor(new BasicAuthRequestInterceptor(gitLogin, gitPassword))
                 .logLevel(Logger.Level.FULL)
-                .target(GitReferenceClient.class, GlobalProperties.getGitHubUrl() + "/api/v3/repos/" + repoFullName + "/git/refs");
+                .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/git/refs");
 
         return gitReferenceClient.createBranch(new InputRef("refs/heads/" + branchName, fromReferenceSha1));
     }
