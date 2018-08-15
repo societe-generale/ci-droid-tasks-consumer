@@ -14,7 +14,7 @@ public class GlobalProperties {
         return gitHubUrl;
     }
 
-    @Value("${gitHub.url}")
+    @Value("${gitHub.api.url}")
     public void setGithubInstanceUrl(String gitHubUrlFromProperties) {
 
         gitHubUrl = gitHubUrlFromProperties;

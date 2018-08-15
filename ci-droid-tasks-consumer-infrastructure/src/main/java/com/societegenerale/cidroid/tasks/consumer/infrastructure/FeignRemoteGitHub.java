@@ -25,7 +25,7 @@ import java.util.List;
 
 import static feign.FeignException.errorStatus;
 
-@FeignClient(name = "github", url = "${gitHub.url}/api/v3/", decode404 = true, configuration = RemoteGitHubConfig.class)
+@FeignClient(name = "github", url = "${gitHub.api.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
 public interface FeignRemoteGitHub extends RemoteGitHub {
 
 
