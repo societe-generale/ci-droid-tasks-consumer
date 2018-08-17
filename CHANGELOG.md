@@ -12,6 +12,17 @@
 
 ### Fixed
 
+## [1.0.4] - 2018-08-17
+
+### Added
+- upgraded to ci-droid-extensions 1.0.4 : new actions available
+
+### Changed
+- **BREAKING CHANGE IN CONFIG** : renamed property key from gitHub.url to gitHub.api.url 
+- issue #8 - now also working with github.com - need to receive an OAuth token instead of password
+- not logging full stacktrace anymore when branch already exists
+
+
 ## [1.0.3] - 2018-08-03
 
 ### Changed
