@@ -8,18 +8,18 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class GlobalProperties {
 
-    private static String gitHubUrl = null;
+    private static String gitHubApiUrl = null;
 
-    public static String getGitHubUrl() {
-        return gitHubUrl;
+    public static String getGitHubApiUrl() {
+        return gitHubApiUrl;
     }
 
-    @Value("${gitHub.url}")
-    public void setGithubInstanceUrl(String gitHubUrlFromProperties) {
+    @Value("${gitHub.api.url}")
+    public void setGithubInstanceUrl(String gitHubApiUrlFromProperties) {
 
-        gitHubUrl = gitHubUrlFromProperties;
+        gitHubApiUrl = gitHubApiUrlFromProperties;
 
-        log.info("Initiating GitHub instance URL : {}", gitHubUrl);
+        log.info("Initiating GitHub API URL : {}", gitHubApiUrl);
     }
 
 }

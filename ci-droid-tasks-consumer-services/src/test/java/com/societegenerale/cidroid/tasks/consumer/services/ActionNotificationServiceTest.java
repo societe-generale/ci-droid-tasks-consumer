@@ -27,7 +27,7 @@ public class ActionNotificationServiceTest {
 
     private final String SOME_USER_NAME = "someUserName";
 
-    private final String SOME_PASSWORD = "somePassword";
+    private final String SOME_OAUTH_TOKEN = "123456789abcdef";
 
     private final String SOME_EMAIL = "someEmail@someDomain.com";
 
@@ -56,7 +56,7 @@ public class ActionNotificationServiceTest {
         testActionToPerform.setContinueIfResourceDoesntExist(true);
 
         bulkActionToPerformBuilder = BulkActionToPerform.builder().gitLogin(SOME_USER_NAME)
-                .gitPassword(SOME_PASSWORD)
+                .gitHubOauthToken(SOME_OAUTH_TOKEN)
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)
                 .resourcesToUpdate(Arrays.asList(resourceToUpdate))

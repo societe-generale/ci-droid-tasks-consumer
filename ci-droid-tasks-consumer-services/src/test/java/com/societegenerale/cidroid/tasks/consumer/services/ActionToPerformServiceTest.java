@@ -1,7 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
 import com.oneeyedmen.fakir.Faker;
-
 import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
@@ -29,7 +28,7 @@ public class ActionToPerformServiceTest {
 
     private final String SOME_USER_NAME = "someUserName";
 
-    private final String SOME_PASSWORD = "somePassword";
+    private final String SOME_OAUTH_TOKEN = "abcdefghij12345";
 
     private final String SOME_EMAIL = "someEmail@someDomain.com";
 
@@ -88,7 +87,7 @@ public class ActionToPerformServiceTest {
         testActionToPerform.setContinueIfResourceDoesntExist(true);
 
         bulkActionToPerformBuilder = BulkActionToPerform.builder().gitLogin(SOME_USER_NAME)
-                .gitPassword(SOME_PASSWORD)
+                .gitHubOauthToken(SOME_OAUTH_TOKEN)
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)
                 .resourcesToUpdate(Arrays.asList(resourceToUpdate))
@@ -101,7 +100,7 @@ public class ActionToPerformServiceTest {
                 .commit(Faker.fakeA(Commit.class))
                 .build();
 
-        when(mockRemoteGitHub.updateContent(anyString(), anyString(), any(DirectCommit.class), anyString(), anyString()))
+        when(mockRemoteGitHub.updateContent(anyString(), anyString(), any(DirectCommit.class), anyString()))
                 .thenReturn(updatedResource); // lenient mocking - we're asserting in verify.
     }
 
@@ -141,7 +140,7 @@ public class ActionToPerformServiceTest {
 
         actionToPerformService.perform(bulkActionToPerform);
 
-        verify(mockRemoteGitHub, never()).updateContent(anyString(), anyString(), any(DirectCommit.class), anyString(), anyString());
+        verify(mockRemoteGitHub, never()).updateContent(anyString(), anyString(), any(DirectCommit.class), anyString());
 
         verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
                 eq(resourceToUpdate),
@@ -172,7 +171,7 @@ public class ActionToPerformServiceTest {
 
         actionToPerformService.perform(bulkActionToPerform);
 
-        verify(mockRemoteGitHub, never()).updateContent(anyString(), anyString(), any(DirectCommit.class), anyString(), anyString());
+        verify(mockRemoteGitHub, never()).updateContent(anyString(), anyString(), any(DirectCommit.class), anyString());
 
         verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
                 eq(resourceToUpdate),
@@ -256,7 +255,7 @@ public class ActionToPerformServiceTest {
 
         actionToPerformService.perform(bulkActionToPerform);
 
-        verify(mockRemoteGitHub, never()).updateContent(anyString(), anyString(), any(DirectCommit.class), anyString(), anyString());
+        verify(mockRemoteGitHub, never()).updateContent(anyString(), anyString(), any(DirectCommit.class), anyString());
 
         verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
                 eq(resourceToUpdate),
@@ -276,7 +275,7 @@ public class ActionToPerformServiceTest {
 
         actionToPerformService.perform(bulkActionToPerform);
 
-        verify(mockRemoteGitHub, never()).updateContent(anyString(), anyString(), any(DirectCommit.class), anyString(), anyString());
+        verify(mockRemoteGitHub, never()).updateContent(anyString(), anyString(), any(DirectCommit.class), anyString());
 
         verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
                 eq(resourceToUpdate),
@@ -311,7 +310,7 @@ public class ActionToPerformServiceTest {
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
         when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, branchNameToCreateForPR)).thenReturn(fakeBranchCreatedReference);
-        when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_USER_NAME, SOME_PASSWORD))
+        when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_OAUTH_TOKEN))
                 .thenThrow(new BranchAlreadyExistsException("branch already exists"));
 
         when(mockRemoteGitHub.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class))).thenReturn(fakePullRequest);
@@ -337,7 +336,7 @@ public class ActionToPerformServiceTest {
     @Test
     public void notifyProperlyWhenIncorrectCredentials_whenCommitting() throws GitHubAuthorizationException {
 
-        when(mockRemoteGitHub.updateContent(eq(REPO_FULL_NAME), anyString(), any(DirectCommit.class), anyString(), anyString()))
+        when(mockRemoteGitHub.updateContent(eq(REPO_FULL_NAME), anyString(), any(DirectCommit.class), anyString()))
                 .thenThrow(new GitHubAuthorizationException("invalid credentials"));
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
@@ -359,7 +358,7 @@ public class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
-        when(mockRemoteGitHub.createBranch(eq(REPO_FULL_NAME), anyString(), anyString(), anyString(), anyString()))
+        when(mockRemoteGitHub.createBranch(eq(REPO_FULL_NAME), anyString(), anyString(), anyString()))
                 .thenThrow(new GitHubAuthorizationException("invalid credentials"));
 
         actionToPerformService.perform(bulkActionToPerform);
@@ -393,8 +392,7 @@ public class ActionToPerformServiceTest {
         verify(mockRemoteGitHub, times(1)).updateContent(eq(REPO_FULL_NAME),
                 eq("someFile.txt"),
                 directCommitCaptor.capture(),
-                eq(SOME_USER_NAME),
-                eq(SOME_PASSWORD));
+                eq(SOME_OAUTH_TOKEN));
 
         DirectCommit actualCommit = directCommitCaptor.getValue();
 
@@ -411,7 +409,7 @@ public class ActionToPerformServiceTest {
     private void mockPullRequestSpecificBehavior() throws BranchAlreadyExistsException, GitHubAuthorizationException {
         when(mockRemoteGitHub.fetchRepository(REPO_FULL_NAME)).thenReturn(fakeRepository);
         when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, "masterBranch")).thenReturn(fakeHeadOnMasterReference);
-        when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_USER_NAME, SOME_PASSWORD))
+        when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_OAUTH_TOKEN))
                 .thenReturn(fakeBranchCreatedReference);
     }
 

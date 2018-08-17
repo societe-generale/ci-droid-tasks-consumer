@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-@ToString(exclude = "gitPassword")
+@ToString(exclude = "gitHubOauthToken")
 @Builder
 public class BulkActionToPerform {
 
@@ -21,7 +21,7 @@ public class BulkActionToPerform {
     protected String gitLogin;
 
     @NotEmpty
-    private String gitPassword;
+    private String gitHubOauthToken;
 
     @Email
     private String email;

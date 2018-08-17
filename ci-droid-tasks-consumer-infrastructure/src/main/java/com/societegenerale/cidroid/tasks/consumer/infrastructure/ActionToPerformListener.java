@@ -59,7 +59,7 @@ public class ActionToPerformListener {
 
             BulkActionToPerform actionToPerform = BulkActionToPerform.builder()
                     .gitLogin(actionToPerformCommand.getGitLogin())
-                    .gitPassword(actionToPerformCommand.getGitPassword())
+                    .gitHubOauthToken(actionToPerformCommand.getGitHubOauthToken())
                     .email(actionToPerformCommand.getEmail())
                     .commitMessage(actionToPerformCommand.getCommitMessage())
                     .gitHubInteraction(actionToPerformCommand.getGitHubInteractionType())

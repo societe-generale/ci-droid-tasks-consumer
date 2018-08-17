@@ -51,7 +51,7 @@ public class ActionToPerformService {
 
                 try {
                     branchToUseForPr = remoteGitHub.createBranch(repoFullName, branchNameForPR, masterCommitReference.getObject().getSha(),
-                            action.getGitLogin(), action.getGitPassword());
+                            action.getGitHubOauthToken());
                 } catch (BranchAlreadyExistsException e) {
 
                     log.warn("branch " + branchNameForPR + " already exists");
@@ -179,8 +179,8 @@ public class ActionToPerformService {
         directCommit.setBase64EncodedContent(GitHubContentBase64codec.encode(newContent));
 
         UpdatedResource updatedResource = remoteGitHub
-                .updateContent(resourceToUpdate.getRepoFullName(), resourceToUpdate.getFilePathOnRepo(), directCommit, action.getGitLogin(),
-                        action.getGitPassword());
+                .updateContent(resourceToUpdate.getRepoFullName(), resourceToUpdate.getFilePathOnRepo(), directCommit,
+                        action.getGitHubOauthToken());
 
         updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK);
 

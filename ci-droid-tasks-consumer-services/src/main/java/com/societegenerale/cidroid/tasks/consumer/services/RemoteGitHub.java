@@ -24,7 +24,7 @@ public interface RemoteGitHub {
 
     ResourceContent fetchContent(String repoFullName, String path, String branch);
 
-    UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String gitLogin, String gitPassword) throws
+    UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken) throws
             GitHubAuthorizationException;
 
     PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr);
@@ -33,7 +33,7 @@ public interface RemoteGitHub {
 
     Reference fetchHeadReferenceFrom(String repoFullName, String branchName);
 
-    Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String gitLogin, String gitPassword)
+    Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String oauthToken)
             throws BranchAlreadyExistsException, GitHubAuthorizationException;
 
 }

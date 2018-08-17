@@ -1,5 +1,5 @@
 gitHub:
-  url: "http://localhost:9900"
+  api.url: "http://localhost:9900/api/v3"
   login: "someLogin"
   password: "somePassword"
 

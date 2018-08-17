@@ -5,14 +5,14 @@ import com.societegenerale.cidroid.api.gitHubInteractions.AbstractGitHubInteract
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-@ToString(exclude = "gitPassword")
+@ToString(exclude = "gitHubOauthToken")
 @Slf4j
 public class ActionToPerformCommand {
 
@@ -20,7 +20,7 @@ public class ActionToPerformCommand {
     private String gitLogin;
 
     @NotEmpty
-    private String gitPassword;
+    private String gitHubOauthToken;
 
     @Email
     private String email;

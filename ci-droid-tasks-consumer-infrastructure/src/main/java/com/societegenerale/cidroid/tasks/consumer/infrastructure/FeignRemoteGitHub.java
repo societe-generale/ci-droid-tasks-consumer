@@ -6,7 +6,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlre
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import feign.*;
-import feign.auth.BasicAuthRequestInterceptor;
 import feign.codec.ErrorDecoder;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
@@ -14,7 +13,6 @@ import feign.slf4j.Slf4jLogger;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +23,7 @@ import java.util.List;
 
 import static feign.FeignException.errorStatus;
 
-@FeignClient(name = "github", url = "${gitHub.url}/api/v3/", decode404 = true, configuration = RemoteGitHubConfig.class)
+@FeignClient(name = "github", url = "${gitHub.api.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
 public interface FeignRemoteGitHub extends RemoteGitHub {
 
 
@@ -85,7 +83,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             @PathVariable("path") String path, @RequestParam("branch") String branch);
 
     @Override
-    default UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String gitLogin, String gitPassword) throws
+    default UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken) throws
             GitHubAuthorizationException {
 
         ContentClient contentClient = Feign.builder()
@@ -93,9 +91,9 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
                 .encoder(new JacksonEncoder())
                 .decoder(new JacksonDecoder())
                 .errorDecoder(new UpdateContentErrorDecoder ())
-                .requestInterceptor(new BasicAuthRequestInterceptor(gitLogin, gitPassword))
+                .requestInterceptor(new OAuthInterceptor(oauthToken))
                 .logLevel(Logger.Level.FULL)
-                .target(ContentClient.class, GlobalProperties.getGitHubUrl() + "/api/v3/repos/" + repoFullName + "/contents/" + path);
+                .target(ContentClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/contents/" + path);
 
         return contentClient.updateContent(directCommit);
 
@@ -123,7 +121,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
     Reference fetchHeadReferenceFrom(@PathVariable("repoFullName") String repoFullNameString, @PathVariable("branchName") String branchName);
 
     @Override
-    default Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String gitLogin, String gitPassword)
+    default Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String oauthToken)
             throws BranchAlreadyExistsException,GitHubAuthorizationException {
 
         GitReferenceClient gitReferenceClient = Feign.builder()
@@ -131,16 +129,16 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
                 .encoder(new JacksonEncoder())
                 .decoder(new JacksonDecoder())
                 .errorDecoder(new BranchCreationErrorDecoder())
-                .requestInterceptor(new BasicAuthRequestInterceptor(gitLogin, gitPassword))
+                .requestInterceptor(new OAuthInterceptor(oauthToken))
                 .logLevel(Logger.Level.FULL)
-                .target(GitReferenceClient.class, GlobalProperties.getGitHubUrl() + "/api/v3/repos/" + repoFullName + "/git/refs");
+                .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/git/refs");
 
         return gitReferenceClient.createBranch(new InputRef("refs/heads/" + branchName, fromReferenceSha1));
     }
 
     @Data
     @AllArgsConstructor
-    public static class InputRef {
+    class InputRef {
 
         private String ref;
 
@@ -157,11 +155,6 @@ class RemoteGitHubConfig {
         return Logger.Level.FULL;
     }
 
-    @Bean
-    BasicAuthRequestInterceptor basicAuthRequestInterceptor(@Value("${gitHub.login}")String login,@Value("${gitHub.password}")String password){
-        return new BasicAuthRequestInterceptor(login, password);
-    }
-
 }
 
 interface ContentClient {
@@ -176,6 +169,22 @@ interface GitReferenceClient {
     @RequestLine("POST")
     @Headers("Content-Type: application/json")
     Reference createBranch(FeignRemoteGitHub.InputRef inputRef) throws BranchAlreadyExistsException,GitHubAuthorizationException;
+}
+
+class OAuthInterceptor implements RequestInterceptor {
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+
+    private String oauthToken;
+
+    public OAuthInterceptor(String OauthToken) {
+        this.oauthToken =OauthToken;
+    }
+
+    @Override
+    public void apply(RequestTemplate requestTemplate) {
+
+        requestTemplate.header(AUTHORIZATION_HEADER, "token "+ oauthToken);
+    }
 }
 
 @Slf4j
