@@ -11,6 +11,7 @@
 ### Removed
 
 ### Fixed
+- issue #13 - in previous version, we had forgotten to send OAuth token when creating PR
 
 ## [1.0.4] - 2018-08-17
 

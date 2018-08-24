@@ -99,12 +99,6 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
 
     }
 
-    @RequestMapping(method = RequestMethod.POST,
-            value = "/repos/{repoFullName}/pulls",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @Override
-    PullRequest createPullRequest(@PathVariable("repoFullName") String repoFullName, @RequestBody PullRequestToCreate newPr);
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/repos/{repoFullName}",
@@ -124,16 +118,20 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
     default Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String oauthToken)
             throws BranchAlreadyExistsException,GitHubAuthorizationException {
 
-        GitReferenceClient gitReferenceClient = Feign.builder()
-                .logger(new Slf4jLogger(GitReferenceClient.class))
-                .encoder(new JacksonEncoder())
-                .decoder(new JacksonDecoder())
-                .errorDecoder(new BranchCreationErrorDecoder())
-                .requestInterceptor(new OAuthInterceptor(oauthToken))
-                .logLevel(Logger.Level.FULL)
+        GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(oauthToken)
                 .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/git/refs");
 
         return gitReferenceClient.createBranch(new InputRef("refs/heads/" + branchName, fromReferenceSha1));
+    }
+
+    @Override
+    default PullRequest createPullRequest(String repoFullName,PullRequestToCreate newPr, String oauthToken)
+            throws GitHubAuthorizationException {
+
+        GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(oauthToken)
+                .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/pulls");
+
+        return gitReferenceClient.createPullRequest(newPr);
     }
 
     @Data
@@ -169,6 +167,20 @@ interface GitReferenceClient {
     @RequestLine("POST")
     @Headers("Content-Type: application/json")
     Reference createBranch(FeignRemoteGitHub.InputRef inputRef) throws BranchAlreadyExistsException,GitHubAuthorizationException;
+
+    @RequestLine("POST")
+    @Headers("Content-Type: application/json")
+    PullRequest createPullRequest(PullRequestToCreate newPr) throws GitHubAuthorizationException;
+
+    static Feign.Builder buildGitReferenceClient(String oauthToken) {
+        return Feign.builder()
+                .logger(new Slf4jLogger(GitReferenceClient.class))
+                .encoder(new JacksonEncoder())
+                .decoder(new JacksonDecoder())
+                .errorDecoder(new BranchCreationErrorDecoder())
+                .requestInterceptor(new OAuthInterceptor(oauthToken))
+                .logLevel(Logger.Level.FULL);
+    }
 }
 
 class OAuthInterceptor implements RequestInterceptor {

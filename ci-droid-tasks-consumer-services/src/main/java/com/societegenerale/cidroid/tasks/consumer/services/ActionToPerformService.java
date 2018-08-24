@@ -11,6 +11,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPer
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 @Slf4j
 public class ActionToPerformService {
 
@@ -87,10 +89,10 @@ public class ActionToPerformService {
     }
 
     private void createPullRequest(BulkActionToPerform action, Repository impactedRepo, String branchNameForPR, UpdatedResource updatedResource) {
-        PullRequest createdPr = createPrOnBranch(impactedRepo, branchNameForPR, action);
+        Optional<PullRequest> createdPr = createPrOnBranch(impactedRepo, branchNameForPR, action);
 
-        if (createdPr != null) {
-            updatedResource.getContent().setHtmlUrl(createdPr.getHtmlUrl());
+        if (createdPr.isPresent()) {
+            updatedResource.getContent().setHtmlUrl(createdPr.get().getHtmlUrl());
             updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_CREATED);
         } else {
             //TODO test this scenario
@@ -196,7 +198,7 @@ public class ActionToPerformService {
         return newContent != null && newContent.equals(decodedOriginalContent);
     }
 
-    private PullRequest createPrOnBranch(Repository impactedRepo, String branchName, BulkActionToPerform action) {
+    private Optional<PullRequest> createPrOnBranch(Repository impactedRepo, String branchName, BulkActionToPerform action) {
 
         PullRequestToCreate newPr = new PullRequestToCreate();
         newPr.setHead(branchName);
@@ -204,7 +206,13 @@ public class ActionToPerformService {
         newPr.setTitle(action.getCommitMessage());
         newPr.setBody("performed on behalf of " + action.getGitLogin() + " by CI-droid\n\n" + action.getCommitMessage());
 
-        return remoteGitHub.createPullRequest(impactedRepo.getFullName(), newPr);
+        try{
+            return Optional.of(remoteGitHub.createPullRequest(impactedRepo.getFullName(), newPr, action.getGitHubOauthToken()));
+        }
+        catch(GitHubAuthorizationException e){
+            log.warn("issue while creating the PR",e);
+            return Optional.empty();
+        }
     }
 
 }
