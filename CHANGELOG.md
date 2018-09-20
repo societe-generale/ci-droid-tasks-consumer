@@ -5,12 +5,18 @@
 ### Added
 
 ### Changed
-- upgraded to ci-droid-extensions 1.0.5
-- upgraded to ci-droid-internal-api 1.0.4
 
 ### Deprecated
 
 ### Removed
+
+### Fixed
+
+## [1.0.6] - 2018-09-20
+
+### Changed
+- upgraded to ci-droid-extensions 1.0.5
+- upgraded to ci-droid-internal-api 1.0.4
 
 ### Fixed
 - issue #15 - should use provided pullRequestTitle when creating the PR
