@@ -375,17 +375,16 @@ public class ActionToPerformServiceTest {
 
         mockPullRequestSpecificBehavior();
         when(mockRemoteGitHub.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(fakePullRequest);
-        ArgumentCaptor<PullRequestToCreate> pullRequestCaptor=ArgumentCaptor.forClass(PullRequestToCreate.class);
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR,"new feature branch")).build();
 
         actionToPerformService.perform(bulkActionToPerform);
 
         verify(mockRemoteGitHub, times(1)).createPullRequest(eq(REPO_FULL_NAME),
-                pullRequestCaptor.capture(),
+                newPrCaptor.capture(),
                 eq(SOME_OAUTH_TOKEN));
 
-        assertThat(pullRequestCaptor.getValue().getTitle()).isEqualTo("new feature branch");
+        assertThat(newPrCaptor.getValue().getTitle()).isEqualTo("new feature branch");
     }
 
     @Test
@@ -393,17 +392,16 @@ public class ActionToPerformServiceTest {
 
         mockPullRequestSpecificBehavior();
         when(mockRemoteGitHub.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(fakePullRequest);
-        ArgumentCaptor<PullRequestToCreate> pullRequestCaptor=ArgumentCaptor.forClass(PullRequestToCreate.class);
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR,null)).build();
 
         actionToPerformService.perform(bulkActionToPerform);
 
         verify(mockRemoteGitHub, times(1)).createPullRequest(eq(REPO_FULL_NAME),
-                pullRequestCaptor.capture(),
+                newPrCaptor.capture(),
                 eq(SOME_OAUTH_TOKEN));
 
-        assertThat(pullRequestCaptor.getValue().getTitle()).isEqualTo(branchNameToCreateForPR);
+        assertThat(newPrCaptor.getValue().getTitle()).isEqualTo(branchNameToCreateForPR);
 
     }
 
