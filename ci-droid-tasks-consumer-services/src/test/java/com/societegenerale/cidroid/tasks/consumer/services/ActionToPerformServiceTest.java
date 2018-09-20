@@ -227,7 +227,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void continueIfExistingResourceisNull_whenActionPermitsIt() throws GitHubAuthorizationException {
+    public void continueIfExistingResourceIsNull_whenActionPermitsIt() throws GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -374,7 +374,7 @@ public class ActionToPerformServiceTest {
 
         mockPullRequestSpecificBehavior();
 
-        return bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR)).build();
+        return bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR,null)).build();
     }
 
     private void assertPullRequestHasBeenCreated(String expectedCommitMessage) {
