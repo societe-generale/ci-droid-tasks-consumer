@@ -50,9 +50,9 @@ public class InfraConfig {
     }
 
     @Bean
-    public ActionToReplicate addXmlElementAction() {
+    public ActionToReplicate addXmlContentAction() {
 
-        return new AddXmlElementAction();
+        return new AddXmlContentAction();
     }
 
     @Bean
