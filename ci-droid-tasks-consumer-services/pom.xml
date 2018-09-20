@@ -4,11 +4,11 @@
     <parent>
         <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
         <artifactId>ci-droid-tasks-consumer-parent</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.7-SNAPSHOT</version>
     </parent>
 
     <artifactId>ci-droid-tasks-consumer-services</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7-SNAPSHOT</version>
     <description>ci-droid-tasks-consumer services</description>
 
     <dependencies>
