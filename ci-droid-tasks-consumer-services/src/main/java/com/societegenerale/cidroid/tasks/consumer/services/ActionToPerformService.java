@@ -47,7 +47,9 @@ public class ActionToPerformService {
                 Repository impactedRepo = remoteGitHub.fetchRepository(repoFullName);
                 String branchNameForPR = pullRequestAction.getBranchNameToCreate();
 
-                Reference masterCommitReference = remoteGitHub.fetchHeadReferenceFrom(repoFullName, impactedRepo.getDefaultBranch());
+                String branchFromWhichToCreatePrBranch= resourceToUpdate.getBranchName() == null ? impactedRepo.getDefaultBranch() : resourceToUpdate.getBranchName();
+
+                Reference masterCommitReference = remoteGitHub.fetchHeadReferenceFrom(repoFullName,branchFromWhichToCreatePrBranch );
 
                 Reference branchToUseForPr = null;
 
@@ -73,7 +75,8 @@ public class ActionToPerformService {
 
                     if (updatedResource.hasBeenUpdated()) {
 
-                        createPullRequest(action, impactedRepo, branchNameForPR, updatedResource);
+                        //branchFromWhichToCreatePrBranch is also the target for the PR to be merged to
+                        createPullRequest(action, impactedRepo, branchToUseForPr, branchFromWhichToCreatePrBranch, updatedResource);
                     }
                 }
 
@@ -88,8 +91,8 @@ public class ActionToPerformService {
 
     }
 
-    private void createPullRequest(BulkActionToPerform action, Repository impactedRepo, String branchNameForPR, UpdatedResource updatedResource) {
-        Optional<PullRequest> createdPr = createPrOnBranch(impactedRepo, branchNameForPR, action);
+    private void createPullRequest(BulkActionToPerform action, Repository impactedRepo, Reference prBranch, String targetBranchForPR, UpdatedResource updatedResource) {
+        Optional<PullRequest> createdPr = createPrOnBranch(impactedRepo, prBranch, targetBranchForPR, action);
 
         if (createdPr.isPresent()) {
             updatedResource.getContent().setHtmlUrl(createdPr.get().getHtmlUrl());
@@ -200,17 +203,17 @@ public class ActionToPerformService {
         return newContent != null && newContent.equals(decodedOriginalContent);
     }
 
-    private Optional<PullRequest> createPrOnBranch(Repository impactedRepo, String branchName, BulkActionToPerform action) {
+    private Optional<PullRequest> createPrOnBranch(Repository impactedRepo, Reference prBranch,String targetBranchForPr, BulkActionToPerform action) {
 
         PullRequestToCreate newPr = new PullRequestToCreate();
-        newPr.setHead(branchName);
-        newPr.setBase(impactedRepo.getDefaultBranch());
+        newPr.setHead(prBranch.getBranchName());
+        newPr.setBase(targetBranchForPr);
 
         PullRequestGitHubInteraction pullRequestGitHubInteraction=(PullRequestGitHubInteraction)action.getGitHubInteraction();
 
         String providedPrTitle=pullRequestGitHubInteraction.getPullRequestTitle();
 
-        newPr.setTitle(providedPrTitle!=null ? providedPrTitle : branchName);
+        newPr.setTitle(providedPrTitle!=null ? providedPrTitle : prBranch.getBranchName());
         newPr.setBody("performed on behalf of " + action.getGitLogin() + " by CI-droid\n\n" + action.getCommitMessage());
 
         try{
