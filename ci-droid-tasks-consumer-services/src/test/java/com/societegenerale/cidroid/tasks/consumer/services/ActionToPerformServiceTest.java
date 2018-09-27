@@ -26,6 +26,8 @@ public class ActionToPerformServiceTest {
 
     private static final String REPO_FULL_NAME = "repoFullName";
 
+    public static final String REFS_HEADS = "refs/heads/";
+
     private final String SOME_USER_NAME = "someUserName";
 
     private final String SOME_OAUTH_TOKEN = "abcdefghij12345";
@@ -60,12 +62,6 @@ public class ActionToPerformServiceTest {
 
         String fullName = REPO_FULL_NAME;
     }.get();
-
-    Reference fakeHeadOnMasterReference = new Faker<Reference>() {
-        Reference.ObjectReference object = new Reference.ObjectReference("commit", sha1ForHeadOnMaster);
-    }.get();
-
-    private Reference fakeBranchCreatedReference = Faker.fakeA(Reference.class);
 
     private ArgumentCaptor<UpdatedResource> updatedResourceCaptor = ArgumentCaptor.forClass(UpdatedResource.class);
 
@@ -312,7 +308,9 @@ public class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
-        when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, branchNameToCreateForPR)).thenReturn(fakeBranchCreatedReference);
+        when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, branchNameToCreateForPR)).thenReturn(new Reference(
+                REFS_HEADS +branchNameToCreateForPR,Faker.fakeA(Reference.ObjectReference.class)));
+
         when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_OAUTH_TOKEN))
                 .thenThrow(new BranchAlreadyExistsException("branch already exists"));
 
@@ -417,14 +415,15 @@ public class ActionToPerformServiceTest {
 
         String sha1ForHeadOnSomeBranch = "987456poiuytrewq";
 
-        Reference fakeHeadOnSomeBranchReference = new Faker<Reference>() {
-            Reference.ObjectReference object = new Reference.ObjectReference("commit", sha1ForHeadOnSomeBranch);
-        }.get();
+        String sourceBranchForPr="someBranch";
 
-        when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, "someBranch")).thenReturn(fakeHeadOnSomeBranchReference);
+        Reference dummyHeadOnSomeBranchReference=new Reference(
+                REFS_HEADS +sourceBranchForPr,new Reference.ObjectReference("commit", sha1ForHeadOnSomeBranch));
+
+        when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, sourceBranchForPr)).thenReturn(dummyHeadOnSomeBranchReference);
+
         when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnSomeBranch, SOME_OAUTH_TOKEN))
-                .thenReturn(fakeBranchCreatedReference);
-
+                .thenReturn(new Reference(REFS_HEADS +branchNameToCreateForPR,Faker.fakeA(Reference.ObjectReference.class)));
 
         when(mockRemoteGitHub.createPullRequest(eq(REPO_FULL_NAME), newPrCaptor.capture(), anyString())).thenReturn(fakePullRequest);
 
@@ -435,7 +434,7 @@ public class ActionToPerformServiceTest {
 
         PullRequestToCreate pr=newPrCaptor.getValue();
         assertThat(pr.getHead()).isEqualTo(branchNameToCreateForPR);
-        assertThat(pr.getBase()).isEqualTo("someBranch");
+        assertThat(pr.getBase()).isEqualTo(sourceBranchForPr);
 
     }
 
@@ -477,9 +476,12 @@ public class ActionToPerformServiceTest {
 
     private void mockPullRequestSpecificBehavior() throws BranchAlreadyExistsException, GitHubAuthorizationException {
         when(mockRemoteGitHub.fetchRepository(REPO_FULL_NAME)).thenReturn(fakeRepository);
-        when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, MASTER_BRANCH)).thenReturn(fakeHeadOnMasterReference);
+
+        Reference dummyHeadOnMasterReference = new Reference(REFS_HEADS +MASTER_BRANCH,new Reference.ObjectReference("commit", sha1ForHeadOnMaster));
+        when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, MASTER_BRANCH)).thenReturn(dummyHeadOnMasterReference);
+
         when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_OAUTH_TOKEN))
-                .thenReturn(fakeBranchCreatedReference);
+                .thenReturn(new Reference(REFS_HEADS +branchNameToCreateForPR,Faker.fakeA(Reference.ObjectReference.class)));
     }
 
 }
