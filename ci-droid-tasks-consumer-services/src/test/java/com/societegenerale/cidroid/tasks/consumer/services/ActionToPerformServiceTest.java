@@ -34,9 +34,12 @@ public class ActionToPerformServiceTest {
 
     private final String SOME_COMMIT_MESSAGE = "this is the original commit message by the user";
 
+    private final String MASTER_BRANCH="masterBranch";
+
     private String sha1ForHeadOnMaster = "123456abcdef";
 
     private String branchNameToCreateForPR = "myPrBranch";
+
 
     private RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
 
@@ -53,7 +56,7 @@ public class ActionToPerformServiceTest {
     }.get();
 
     Repository fakeRepository = new Faker<Repository>() {
-        String defaultBranch = "masterBranch";
+        String defaultBranch = MASTER_BRANCH;
 
         String fullName = REPO_FULL_NAME;
     }.get();
@@ -74,7 +77,7 @@ public class ActionToPerformServiceTest {
 
     private TestActionToPerform testActionToPerform = new TestActionToPerform();
 
-    private ResourceToUpdate resourceToUpdate = new ResourceToUpdate(REPO_FULL_NAME, "someFile.txt", "master", StringUtils.EMPTY);
+    private ResourceToUpdate resourceToUpdate = new ResourceToUpdate(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH, StringUtils.EMPTY);
 
     private UpdatedResource updatedResource;
 
@@ -109,11 +112,11 @@ public class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
-        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", "master")).thenReturn(fakeResourceContentBeforeUpdate);
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentBeforeUpdate);
 
         actionToPerformService.perform(bulkActionToPerform);
 
-        assertContentHasBeenUpdatedOnBranch("master");
+        assertContentHasBeenUpdatedOnBranch(MASTER_BRANCH);
 
         verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
                 eq(resourceToUpdate),
@@ -136,7 +139,7 @@ public class ActionToPerformServiceTest {
             String base64EncodedContent = GitHubContentBase64codec.encode(contentThatWillNotBeModified);
         }.get();
 
-        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", "master")).thenReturn(fakeResourceContentWithSpecificContentBeforeUpdate);
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentWithSpecificContentBeforeUpdate);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -213,11 +216,11 @@ public class ActionToPerformServiceTest {
 
         ResourceContent nonExistingResourceContent = new ResourceContent();
 
-        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", "master")).thenReturn(nonExistingResourceContent);
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(nonExistingResourceContent);
 
         actionToPerformService.perform(bulkActionToPerform);
 
-        assertContentHasBeenUpdatedOnBranch("master");
+        assertContentHasBeenUpdatedOnBranch(MASTER_BRANCH);
 
         verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
                 eq(resourceToUpdate),
@@ -231,11 +234,11 @@ public class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
-        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", "master")).thenReturn(null);
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(null);
 
         actionToPerformService.perform(bulkActionToPerform);
 
-        assertContentHasBeenUpdatedOnBranch("master");
+        assertContentHasBeenUpdatedOnBranch(MASTER_BRANCH);
 
         verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
                 eq(resourceToUpdate),
@@ -251,7 +254,7 @@ public class ActionToPerformServiceTest {
 
         testActionToPerform.setContinueIfResourceDoesntExist(false);
 
-        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", "master")).thenReturn(null);
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(null);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -271,7 +274,7 @@ public class ActionToPerformServiceTest {
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
         testActionToPerform.setContinueIfResourceDoesntExist(false);
 
-        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", "masterbranch")).thenReturn(null);
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(null);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -292,7 +295,7 @@ public class ActionToPerformServiceTest {
 
         testActionToPerform.setThrowIssueProvidingContentException(true);
 
-        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", "master")).thenReturn(fakeResourceContentBeforeUpdate);
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentBeforeUpdate);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -341,7 +344,7 @@ public class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
-        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", "master")).thenReturn(fakeResourceContentBeforeUpdate);
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentBeforeUpdate);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -405,6 +408,37 @@ public class ActionToPerformServiceTest {
 
     }
 
+    @Test
+    public void shouldCreatePRbranchFromProvidedBranch() throws GitHubAuthorizationException, BranchAlreadyExistsException {
+
+        BulkActionToPerform bulkActionToPerform = doApullRequestAction();
+
+        bulkActionToPerform.setResourcesToUpdate(Arrays.asList( new ResourceToUpdate(REPO_FULL_NAME, "someFile.txt", "someBranch", StringUtils.EMPTY)));
+
+        String sha1ForHeadOnSomeBranch = "987456poiuytrewq";
+
+        Reference fakeHeadOnSomeBranchReference = new Faker<Reference>() {
+            Reference.ObjectReference object = new Reference.ObjectReference("commit", sha1ForHeadOnSomeBranch);
+        }.get();
+
+        when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, "someBranch")).thenReturn(fakeHeadOnSomeBranchReference);
+        when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnSomeBranch, SOME_OAUTH_TOKEN))
+                .thenReturn(fakeBranchCreatedReference);
+
+
+        when(mockRemoteGitHub.createPullRequest(eq(REPO_FULL_NAME), newPrCaptor.capture(), anyString())).thenReturn(fakePullRequest);
+
+
+        actionToPerformService.perform(bulkActionToPerform);
+
+        verify(mockRemoteGitHub,times(1)).createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnSomeBranch, SOME_OAUTH_TOKEN);
+
+        PullRequestToCreate pr=newPrCaptor.getValue();
+        assertThat(pr.getHead()).isEqualTo(branchNameToCreateForPR);
+        assertThat(pr.getBase()).isEqualTo("someBranch");
+
+    }
+
     private BulkActionToPerform doApullRequestAction() throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         mockPullRequestSpecificBehavior();
@@ -414,7 +448,7 @@ public class ActionToPerformServiceTest {
 
     private void assertPullRequestHasBeenCreated(String expectedCommitMessage) {
         PullRequestToCreate actualPrToCreate = newPrCaptor.getValue();
-        assertThat(actualPrToCreate.getBase()).isEqualTo("masterBranch");
+        assertThat(actualPrToCreate.getBase()).isEqualTo(MASTER_BRANCH);
         assertThat(actualPrToCreate.getHead()).isEqualTo(branchNameToCreateForPR);
         assertThat(actualPrToCreate.getTitle()).isEqualTo(branchNameToCreateForPR);
 
@@ -443,7 +477,7 @@ public class ActionToPerformServiceTest {
 
     private void mockPullRequestSpecificBehavior() throws BranchAlreadyExistsException, GitHubAuthorizationException {
         when(mockRemoteGitHub.fetchRepository(REPO_FULL_NAME)).thenReturn(fakeRepository);
-        when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, "masterBranch")).thenReturn(fakeHeadOnMasterReference);
+        when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, MASTER_BRANCH)).thenReturn(fakeHeadOnMasterReference);
         when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_OAUTH_TOKEN))
                 .thenReturn(fakeBranchCreatedReference);
     }
