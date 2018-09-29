@@ -1,6 +1,6 @@
 {
   "gitLogin": "vincent.fuchs",
-  "gitPassword": "*******",
+  "gitHubOauthToken": "abcdfeflijhhs4834edqfwg",
   "email": "vincent.fuchs@sgcib.com",
 
   "commitMessage" : "adding lombok exclusion config",
@@ -12,7 +12,8 @@
 
   "gitHubInteractionType": {
     "@c": ".PullRequestGitHubInteraction",
-    "branchNameToCreate": "lombokUpgrade"
+    "branchNameToCreate":"lombokUpgrade",
+    "pullRequestTitle":"new Lombok config"
   },
 
   "resourcesToUpdate": [
@@ -20,5 +21,4 @@
     {"repoFullName": "vincent-fuchs/in-memory-testing","filePathOnRepo": "lombok.config","branchName": "master"}
 
   ]
-
 }
