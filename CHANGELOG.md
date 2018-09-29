@@ -11,8 +11,11 @@
 ### Removed
 
 ### Fixed
-- issue #17 - now creating the PR branch on top of the expected branch
 
+## [1.0.7] - 2018-09-29
+
+### Fixed
+- issue #17 - now creating the PR branch on top of the expected branch
 
 ## [1.0.6] - 2018-09-20
 
