@@ -67,6 +67,7 @@
         <janino.version>3.0.6</janino.version>
         <jgit.version>4.10.0.201712302008-r</jgit.version>
         <commons-lang3.version>3.7</commons-lang3.version>
+        <jackson.version>2.9.5</jackson.version>
 
         <net.code-story.version>2.104</net.code-story.version>
         <awaitility.version>1.7.0</awaitility.version>
