@@ -122,6 +122,19 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
+    public void isPassingResourceToUpdateToTheAction_toGenerateItsContent()  {
+
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
+
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentBeforeUpdate);
+
+        actionToPerformService.perform(bulkActionToPerform);
+
+        assertThat(testActionToPerform.getUsedResourceToUpdate()).isEqualTo(resourceToUpdate);
+    }
+
+
+    @Test
     public void dontPushWhenContentIsNotModifiedByAction_andActionIs_DIRECT_PUSH() throws GitHubAuthorizationException {
 
         String contentThatWillNotBeModified = "some content that will not change";
