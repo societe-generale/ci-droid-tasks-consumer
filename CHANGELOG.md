@@ -12,6 +12,16 @@
 
 ### Fixed
 
+## [1.0.8] - 2018-11-08
+
+### Changed
+- upgraded to ci-droid-extensions 1.0.6
+- upgraded to ci-droid-internal-api 1.0.5
+
+### Fixed
+- fixed vulnerability CVE-2018-7489 
+- issue #22 - avoid NPEs when providing content for certain actionToReplicate
+
 ## [1.0.7] - 2018-09-29
 
 ### Fixed
