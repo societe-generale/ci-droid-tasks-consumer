@@ -6,7 +6,7 @@
     <artifactId>ci-droid-tasks-consumer-parent</artifactId>
     <name>ci-droid-tasks-consumer Service</name>
 
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.0.8</version>
 
     <packaging>pom</packaging>
 
@@ -87,7 +87,7 @@
         <url>https://github.com/societe-generale/ci-droid-tasks-consumer</url>
         <connection>scm:git:git@github.com:societe-generale/ci-droid-tasks-consumer.git</connection>
         <developerConnection>scm:git:git@github.com:societe-generale/ci-droid-tasks-consumer.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>cidroid-tasks-consumer_1.0.8</tag>
     </scm>
 
     <distributionManagement>
