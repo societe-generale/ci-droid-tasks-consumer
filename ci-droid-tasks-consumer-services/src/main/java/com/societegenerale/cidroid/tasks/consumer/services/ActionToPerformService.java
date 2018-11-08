@@ -117,7 +117,7 @@ public class ActionToPerformService {
         try {
             if (existingResourceExists(existingResourceContent)) {
                 decodedOriginalContent = GitHubContentBase64codec.decode(existingResourceContent.getBase64EncodedContent());
-                newContent = actionToReplicate.provideContent(decodedOriginalContent);
+                newContent = actionToReplicate.provideContent(decodedOriginalContent,resourceToUpdate);
             }
             else if (actionToReplicate.canContinueIfResourceDoesntExist()) {
                 newContent = actionToReplicate.provideContent(null);

@@ -3,6 +3,7 @@ package com.societegenerale.cidroid.tasks.consumer.services;
 import com.societegenerale.cidroid.api.IssueProvidingContentException;
 import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Map;
@@ -18,8 +19,13 @@ public class TestActionToPerform implements ActionToReplicate {
     @Setter
     private boolean throwIssueProvidingContentException = false;
 
+    @Getter
+    private ResourceToUpdate usedResourceToUpdate;
+
     @Override
     public String provideContent(String initialContent, ResourceToUpdate resourceToUpdate) throws IssueProvidingContentException {
+
+        usedResourceToUpdate=resourceToUpdate;
 
         if (throwIssueProvidingContentException) {
             throw new IssueProvidingContentException("throwing exception as configured...");
