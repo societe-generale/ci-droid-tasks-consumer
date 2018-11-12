@@ -12,6 +12,15 @@
 
 ### Fixed
 
+## [1.0.9] - 2018-11-12
+
+### Fixed
+- issue #26 - now configuring Github Oauth token for all actions in FeignClient
+- issue #27 - now catching runtime exceptions to avoid that a handler throwing it would prevent others from being called
+
+### Removed
+- some dummy classes
+
 ## [1.0.8] - 2018-11-08
 
 ### Changed
