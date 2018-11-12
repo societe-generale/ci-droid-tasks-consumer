@@ -13,7 +13,6 @@ import feign.slf4j.Slf4jLogger;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.context.annotation.Bean;
@@ -157,25 +156,9 @@ class RemoteGitHubConfig {
 
     @Bean
     RequestInterceptor oauthTokenSetterInterceptor(@Value("${gitHub.oauthToken:#{null}}") String oauthToken) {
-        return new GitHubOauthTokenSetter(oauthToken);
+        return new OAuthInterceptor(oauthToken);
     }
 
-    class GitHubOauthTokenSetter implements RequestInterceptor {
-
-        private String oauthToken;
-
-        public GitHubOauthTokenSetter(String oauthToken) {
-            this.oauthToken = oauthToken;
-        }
-
-        @Override
-        public void apply(RequestTemplate requestTemplate) {
-
-            if (requestTemplate != null && oauthToken != null) {
-                requestTemplate.header("Authorization", "token " + oauthToken);
-            }
-        }
-    }
 }
 
 interface ContentClient {
