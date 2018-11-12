@@ -22,11 +22,9 @@ public class PushEventOnDefaultBranchService {
     private List<PushEventOnDefaultBranchHandler> actionHandlers;
 
     @Setter
-    //@Value("${action.mergeable.retry.sleep:300}")
     private long sleepDurationBeforeTryingAgainToFetchMergeableStatus = 300;
 
     @Setter
-    //@Value("${action.mergeable.retry.max:10}")
     private int maxRetriesForMergeableStatus = 10;
 
     public PushEventOnDefaultBranchService(RemoteGitHub gitHub, List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers) {
@@ -53,7 +51,12 @@ public class PushEventOnDefaultBranchService {
         logPrMergeabilityStatus(openPRsWithDefinedMergeabilityStatus);
 
         for (PushEventOnDefaultBranchHandler pushEventOnDefaultBranchHandler : actionHandlers) {
-            pushEventOnDefaultBranchHandler.handle(pushEvent, openPRsWithDefinedMergeabilityStatus);
+
+            try {
+                pushEventOnDefaultBranchHandler.handle(pushEvent, openPRsWithDefinedMergeabilityStatus);
+            } catch (RuntimeException e) {
+                log.warn("exception thrown during event handling by "+pushEventOnDefaultBranchHandler.getClass(),e);
+            }
         }
 
         stopWatch.stop();
