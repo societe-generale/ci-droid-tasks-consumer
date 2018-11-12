@@ -13,6 +13,7 @@ import feign.slf4j.Slf4jLogger;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +41,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     PullRequest fetchPullRequestDetails(@PathVariable("repoFullName") String repoFullName,
-            @PathVariable("prNumber") int prNumber);
+                                        @PathVariable("prNumber") int prNumber);
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/users/{login}",
@@ -55,8 +56,8 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     void addCommentDescribingRebase(@PathVariable("repoFullName") String repoFullName,
-            @PathVariable("prNumber") int prNumber,
-            @RequestBody Comment comment);
+                                    @PathVariable("prNumber") int prNumber,
+                                    @RequestBody Comment comment);
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/repos/{repoFullName}/pulls/{prNumber}/files",
@@ -64,7 +65,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     List<PullRequestFile> fetchPullRequestFiles(@PathVariable("repoFullName") String repoFullName,
-            @PathVariable("prNumber") int prNumber);
+                                                @PathVariable("prNumber") int prNumber);
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/repos/{repoFullName}/issues/{prNumber}/comments",
@@ -72,7 +73,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     List<PullRequestComment> fetchPullRequestComments(@PathVariable("repoFullName") String repoFullName,
-            @PathVariable("prNumber") int prNumber);
+                                                      @PathVariable("prNumber") int prNumber);
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/repos/{repoFullName}/contents/{path}?ref={branch}",
@@ -80,7 +81,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     ResourceContent fetchContent(@PathVariable("repoFullName") String repoFullName,
-            @PathVariable("path") String path, @RequestParam("branch") String branch);
+                                 @PathVariable("path") String path, @RequestParam("branch") String branch);
 
     @Override
     default UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken) throws
@@ -90,7 +91,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
                 .logger(new Slf4jLogger(ContentClient.class))
                 .encoder(new JacksonEncoder())
                 .decoder(new JacksonDecoder())
-                .errorDecoder(new UpdateContentErrorDecoder ())
+                .errorDecoder(new UpdateContentErrorDecoder())
                 .requestInterceptor(new OAuthInterceptor(oauthToken))
                 .logLevel(Logger.Level.FULL)
                 .target(ContentClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/contents/" + path);
@@ -116,7 +117,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
 
     @Override
     default Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String oauthToken)
-            throws BranchAlreadyExistsException,GitHubAuthorizationException {
+            throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(oauthToken)
                 .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/git/refs");
@@ -125,7 +126,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
     }
 
     @Override
-    default PullRequest createPullRequest(String repoFullName,PullRequestToCreate newPr, String oauthToken)
+    default PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String oauthToken)
             throws GitHubAuthorizationException {
 
         GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(oauthToken)
@@ -153,6 +154,11 @@ class RemoteGitHubConfig {
         return Logger.Level.FULL;
     }
 
+    @Bean
+    RequestInterceptor oauthTokenSetterInterceptor(@Value("${gitHub.oauthToken:#{null}}") String oauthToken) {
+        return new OAuthInterceptor(oauthToken);
+    }
+
 }
 
 interface ContentClient {
@@ -166,7 +172,7 @@ interface GitReferenceClient {
 
     @RequestLine("POST")
     @Headers("Content-Type: application/json")
-    Reference createBranch(FeignRemoteGitHub.InputRef inputRef) throws BranchAlreadyExistsException,GitHubAuthorizationException;
+    Reference createBranch(FeignRemoteGitHub.InputRef inputRef) throws BranchAlreadyExistsException, GitHubAuthorizationException;
 
     @RequestLine("POST")
     @Headers("Content-Type: application/json")
@@ -189,13 +195,13 @@ class OAuthInterceptor implements RequestInterceptor {
     private String oauthToken;
 
     public OAuthInterceptor(String OauthToken) {
-        this.oauthToken =OauthToken;
+        this.oauthToken = OauthToken;
     }
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
 
-        requestTemplate.header(AUTHORIZATION_HEADER, "token "+ oauthToken);
+        requestTemplate.header(AUTHORIZATION_HEADER, "token " + oauthToken);
     }
 }
 

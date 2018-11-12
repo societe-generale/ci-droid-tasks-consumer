@@ -8,8 +8,10 @@ spring:
       virtual-host: dev
 
 gitHub:
+  api.url: "http://api.github.com"
   login: "yourLogin"
   password: "yourPassword"
+  oauthToken: "token"
 
 server:
   port: 8081
