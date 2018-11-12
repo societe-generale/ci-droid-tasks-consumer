@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class PushOnDefaultBranchServiceTest {
+public class PushEventOnDefaultBranchServiceTest {
 
     private static final String FULL_REPO_NAME = "baxterthehacker/public-repo";
 
@@ -70,6 +70,26 @@ public class PushOnDefaultBranchServiceTest {
         when(mockRemoteGitHub.fetchPullRequestDetails(FULL_REPO_NAME, PULL_REQUEST_ID)).thenReturn(singlePr);
 
         when(mockRemoteGitHub.fetchUser("octocat")).thenReturn(new User("octocat", "octocat@github.com"));
+
+    }
+
+    @Test
+    public void runtimeExceptionInHandlerShouldNotPreventOthersToExecute() {
+
+        List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers = new ArrayList<>();
+
+        PushEventOnDefaultBranchHandler mockPushEventOnDefaultBranchHandlerThrowingException = mock(PushEventOnDefaultBranchHandler.class);
+        doThrow(RuntimeException.class).when(mockPushEventOnDefaultBranchHandlerThrowingException).handle(any(GitHubEvent.class),anyList());
+
+
+        pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandlerThrowingException);
+        pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandler);
+
+        pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteGitHub, pushEventOnDefaultBranchHandlers);
+
+        pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
+
+        verify(mockPushEventOnDefaultBranchHandler,times(1)).handle(any(GitHubEvent.class),anyList());
 
     }
 

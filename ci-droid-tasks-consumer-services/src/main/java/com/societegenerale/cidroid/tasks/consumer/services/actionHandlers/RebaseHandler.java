@@ -23,11 +23,12 @@ public class RebaseHandler implements PushEventOnDefaultBranchHandler {
     public RebaseHandler(Rebaser rebaser,RemoteGitHub gitHub) {
         this.rebaser = rebaser;
         this.gitHub=gitHub;
-
     }
 
     @Override
     public void handle(GitHubEvent event,List<PullRequest> pullRequests) {
+
+        log.info("handling rebase for {} PRs on repo {}",pullRequests.size(),event.getRepositoryUrl());
 
         Map<PullRequest, List<GitCommit>> rebasedCommits = pullRequests.stream()
                 // rebase only the mergeable PRs
