@@ -100,7 +100,6 @@ public class InfraConfig {
         return new PullRequestEventService(pullRequestEventHandlers);
     }
 
-
     @Bean
     public HttpMessageConverters feignHttpMessageConverters() {
         return new HttpMessageConverters();
@@ -113,13 +112,11 @@ public class InfraConfig {
         return new ActionToPerformService(remoteGitHub, notificationService);
     }
 
-
     @Bean
     public ActionNotificationService actionNotificationService(MailSender javaMailSender,
             @Value("${spring.mail.sender}") String mailSender) {
 
         return new ActionNotificationService(new EMailActionNotifier(javaMailSender, mailSender));
-
     }
 
 }
