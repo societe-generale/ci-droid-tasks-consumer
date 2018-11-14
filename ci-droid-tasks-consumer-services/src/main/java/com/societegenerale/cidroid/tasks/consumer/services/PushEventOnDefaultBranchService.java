@@ -78,13 +78,16 @@ public class PushEventOnDefaultBranchService {
     private void logPrMergeabilityStatus(List<PullRequest> openPRsWithDefinedMergeabilityStatus) {
         if (log.isInfoEnabled()) {
 
-            StringBuilder sb = new StringBuilder("PR status :\n");
+            if(openPRsWithDefinedMergeabilityStatus.size() > 0) {
 
-            for (PullRequest pr : openPRsWithDefinedMergeabilityStatus) {
-                sb.append("\t- PR #").append(pr.getNumber()).append(" : ").append(pr.getMergeStatus()).append("\n");
+                StringBuilder sb = new StringBuilder("PR status :\n");
+
+                for (PullRequest pr : openPRsWithDefinedMergeabilityStatus) {
+                    sb.append("\t- PR #").append(pr.getNumber()).append(" : ").append(pr.getMergeStatus()).append("\n");
+                }
+
+                log.info(sb.toString());
             }
-
-            log.info(sb.toString());
         }
     }
 
