@@ -135,6 +135,19 @@ public class ActionNotificationServiceTest {
     }
 
     @Test
+    public void when_PULL_REQUEST_and_openPR_already_exists() {
+
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction()).build();
+
+        updatedResource.setUpdateStatus(UPDATE_OK_WITH_PR_ALREADY_EXISTING);
+
+        actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
+
+        assertNotificationContent("CI-droid updated an existing PR on your behalf", "you can double check its content here : http:");
+
+    }
+
+    @Test
     public void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_DIRECT_PUSH() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
