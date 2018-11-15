@@ -11,6 +11,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPer
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -92,15 +93,33 @@ public class ActionToPerformService {
     }
 
     private void createPullRequest(BulkActionToPerform action, Repository impactedRepo, Reference prBranch, String targetBranchForPR, UpdatedResource updatedResource) {
-        Optional<PullRequest> createdPr = createPrOnBranch(impactedRepo, prBranch, targetBranchForPR, action);
 
-        if (createdPr.isPresent()) {
-            updatedResource.getContent().setHtmlUrl(createdPr.get().getHtmlUrl());
-            updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_CREATED);
-        } else {
-            //TODO test this scenario
-            updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_BUT_PR_CREATION_KO);
+        Optional<PullRequest> existingOpenPRforBranch=findExistingOpenPRforBranch(impactedRepo,prBranch);
+
+        if(existingOpenPRforBranch.isPresent()){
+            updatedResource.getContent().setHtmlUrl(existingOpenPRforBranch.get().getHtmlUrl());
+            updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_ALREADY_EXISTING);
         }
+        else{
+            Optional<PullRequest> createdPr = createPrOnBranch(impactedRepo, prBranch, targetBranchForPR, action);
+
+            if (createdPr.isPresent()) {
+                updatedResource.getContent().setHtmlUrl(createdPr.get().getHtmlUrl());
+                updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_CREATED);
+            } else {
+                //TODO test this scenario
+                updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_BUT_PR_CREATION_KO);
+            }
+        }
+
+    }
+
+    private Optional<PullRequest> findExistingOpenPRforBranch(Repository repo, Reference prBranch) {
+
+        List<PullRequest> openPRs=remoteGitHub.fetchOpenPullRequests(repo.getFullName());
+
+        return openPRs.stream().filter(pr -> pr.doneOnBranch(prBranch.getBranchName())).findAny();
+
     }
 
     private UpdatedResource updateRemoteResource(String repoFullName, ResourceToUpdate resourceToUpdate, BulkActionToPerform action,

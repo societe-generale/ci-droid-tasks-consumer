@@ -57,7 +57,14 @@ public class ActionNotificationService {
                         "CI-droid has created a PR on your behalf.\n you can double check its content here : " +
                                 updatedResource.getContent().getHtmlUrl());
             }
-            if (updatedResource.getUpdateStatus().equals(UPDATE_OK_BUT_PR_CREATION_KO)) {
+            else if (updatedResource.getUpdateStatus().equals(UPDATE_OK_WITH_PR_ALREADY_EXISTING)) {
+
+                notifier.notify(user,
+                        "[OK] " + notificationSubject,
+                        "CI-droid updated an existing PR on your behalf.\n you can double check its content here : " +
+                                updatedResource.getContent().getHtmlUrl());
+            }
+            else if (updatedResource.getUpdateStatus().equals(UPDATE_OK_BUT_PR_CREATION_KO)) {
                 //TODO
             }
 
@@ -81,6 +88,7 @@ public class ActionNotificationService {
                     "[KO] " + notificationSubject,
                     notificationContent.toString());
         }
+
     }
 
     private void manageDirectPush(UpdatedResource updatedResource, User user, String notificationSubject) {
