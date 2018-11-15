@@ -54,6 +54,10 @@ public class PullRequest {
         this.number = number;
     }
 
+    public boolean doneOnBranch(String branch){
+        return branchName.equals(branch);
+    }
+
     public PRmergeableStatus getMergeStatus(){
 
        return PRmergeableStatus.mapping.get(mergeable);

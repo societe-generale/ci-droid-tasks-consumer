@@ -451,6 +451,36 @@ public class ActionToPerformServiceTest {
 
     }
 
+    @Test
+    public void dontCreatePR_ifAlreadyAnOpenPRonSameBranch() throws BranchAlreadyExistsException, GitHubAuthorizationException {
+
+        mockPullRequestSpecificBehavior();
+
+        int prNumber=3;
+
+        PullRequest openPRonBranch1=new PullRequest(prNumber);
+        openPRonBranch1.setBranchName(branchNameToCreateForPR);
+
+        when(mockRemoteGitHub.fetchOpenPullRequests(eq(REPO_FULL_NAME))).thenReturn(Arrays.asList(openPRonBranch1));
+
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR,null)).build();
+
+        actionToPerformService.perform(bulkActionToPerform);
+
+        verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
+                eq(resourceToUpdate),
+                updatedResourceCaptor.capture());
+
+        assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_OK_WITH_PR_ALREADY_EXISTING);
+
+
+
+
+
+
+
+    }
+
     private BulkActionToPerform doApullRequestAction() throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         mockPullRequestSpecificBehavior();

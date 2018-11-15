@@ -63,6 +63,7 @@ public class UpdatedResource {
 
         UPDATE_OK(true),
         UPDATE_OK_WITH_PR_CREATED(true),
+        UPDATE_OK_WITH_PR_ALREADY_EXISTING(true),
         UPDATE_OK_BUT_PR_CREATION_KO(true),
 
         UPDATE_KO_FILE_DOESNT_EXIST(false),
