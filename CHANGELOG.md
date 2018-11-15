@@ -12,6 +12,15 @@
 
 ### Fixed
 
+## [1.0.10] - 2018-11-12
+
+### Changed
+- issue #28 - bulk actions - don't create a PR if there's already an open one on same branch
+
+### Fixed
+- issue #29 - re-adding some dummy classes to instantiate, in case none is instantiated through config. Added auto-config order this time, so that they get instantiated ONLY if required
+- issue #31 - MDC related issue when logging specific event
+
 ## [1.0.9] - 2018-11-12
 
 ### Fixed
