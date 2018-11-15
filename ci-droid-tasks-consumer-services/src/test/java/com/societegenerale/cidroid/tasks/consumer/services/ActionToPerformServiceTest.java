@@ -472,13 +472,6 @@ public class ActionToPerformServiceTest {
                 updatedResourceCaptor.capture());
 
         assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_OK_WITH_PR_ALREADY_EXISTING);
-
-
-
-
-
-
-
     }
 
     private BulkActionToPerform doApullRequestAction() throws BranchAlreadyExistsException, GitHubAuthorizationException {
