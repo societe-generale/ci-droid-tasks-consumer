@@ -14,6 +14,8 @@ public interface RemoteGitHub {
 
     User fetchUser(String login);
 
+    User fetchCurrentUser(String oAuthToken);
+
     void addCommentDescribingRebase(String repoFullName,
             int prNumber,
             Comment comment);

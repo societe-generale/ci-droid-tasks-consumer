@@ -55,7 +55,8 @@ public class ActionNotificationServiceTest {
         testActionToPerform.setContentToProvide(MODIFIED_CONTENT);
         testActionToPerform.setContinueIfResourceDoesntExist(true);
 
-        bulkActionToPerformBuilder = BulkActionToPerform.builder().gitLogin(SOME_USER_NAME)
+        bulkActionToPerformBuilder = BulkActionToPerform.builder()
+                .userRequestingAction(new User(SOME_USER_NAME,"someEmail)"))
                 .gitHubOauthToken(SOME_OAUTH_TOKEN)
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)

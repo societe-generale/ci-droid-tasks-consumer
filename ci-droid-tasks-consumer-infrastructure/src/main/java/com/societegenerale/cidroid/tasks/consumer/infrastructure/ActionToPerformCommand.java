@@ -1,5 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.gitHubInteractions.AbstractGitHubInteraction;
 import lombok.Data;
@@ -14,10 +15,8 @@ import java.util.List;
 @Data
 @ToString(exclude = "gitHubOauthToken")
 @Slf4j
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ActionToPerformCommand {
-
-    @NotEmpty
-    private String gitLogin;
 
     @NotEmpty
     private String gitHubOauthToken;

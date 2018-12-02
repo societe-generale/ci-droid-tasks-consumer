@@ -23,7 +23,7 @@ public class ActionNotificationService {
 
         String repoFullName = resourceToUpdate.getRepoFullName();
 
-        User user = new User(action.getGitLogin(), action.getEmail());
+        User user = new User(action.getUserRequestingAction().getLogin(), action.getEmail());
 
         String notificationSubject = "Action '" + action.getActionType() + "' for " + resourceToUpdate.getFilePathOnRepo() + " on " +
                 repoFullName + " on branch " + resourceToUpdate.getBranchName();
