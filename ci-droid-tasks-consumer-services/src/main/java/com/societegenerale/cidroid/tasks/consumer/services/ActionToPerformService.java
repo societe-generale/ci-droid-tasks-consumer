@@ -199,8 +199,8 @@ public class ActionToPerformService {
         }
 
         directCommit.setBranch(onBranch);
-        directCommit.setCommitter(new DirectCommit.Committer(action.getGitLogin(), action.getEmail()));
-        directCommit.setCommitMessage(action.getCommitMessage() + " performed on behalf of " + action.getGitLogin() + " by CI-droid");
+        directCommit.setCommitter(new DirectCommit.Committer(action.getUserRequestingAction().getLogin(), action.getEmail()));
+        directCommit.setCommitMessage(action.getCommitMessage() + " performed on behalf of " + action.getUserRequestingAction().getLogin() + " by CI-droid");
 
         directCommit.setBase64EncodedContent(GitHubContentBase64codec.encode(newContent));
 
@@ -233,7 +233,7 @@ public class ActionToPerformService {
         String providedPrTitle=pullRequestGitHubInteraction.getPullRequestTitle();
 
         newPr.setTitle(providedPrTitle!=null ? providedPrTitle : prBranch.getBranchName());
-        newPr.setBody("performed on behalf of " + action.getGitLogin() + " by CI-droid\n\n" + action.getCommitMessage());
+        newPr.setBody("performed on behalf of " + action.getUserRequestingAction().getLogin() + " by CI-droid\n\n" + action.getCommitMessage());
 
         try{
             return Optional.of(remoteGitHub.createPullRequest(impactedRepo.getFullName(), newPr, action.getGitHubOauthToken()));

@@ -75,9 +75,9 @@ public class InfraConfig {
 
     @Bean
     public ActionToPerformListener actionToPerformListener(ActionToPerformService actionToPerformService,
-            List<ActionToReplicate> actionsToReplicate) {
+            List<ActionToReplicate> actionsToReplicate, RemoteGitHub remoteGitHub) {
 
-        return new ActionToPerformListener(actionToPerformService, actionsToReplicate);
+        return new ActionToPerformListener(actionToPerformService, actionsToReplicate,remoteGitHub);
     }
 
     @Bean

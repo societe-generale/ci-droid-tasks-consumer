@@ -2,6 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -19,11 +20,14 @@ public class ActionToPerformListener {
 
     private List<ActionToReplicate> actionsToReplicate;
 
+    private RemoteGitHub remoteGitHub;
+
     private Map<String, Class<? extends ActionToReplicate>> registeredActionsToReplicate;
 
-    public ActionToPerformListener(ActionToPerformService actionToPerformService, List<ActionToReplicate> actionsToReplicate) {
+    public ActionToPerformListener(ActionToPerformService actionToPerformService, List<ActionToReplicate> actionsToReplicate, RemoteGitHub remoteGitHub) {
         this.actionToPerformService = actionToPerformService;
         this.actionsToReplicate = actionsToReplicate;
+        this.remoteGitHub=remoteGitHub;
     }
 
     @PostConstruct
@@ -58,7 +62,7 @@ public class ActionToPerformListener {
             actionToReplicate.init(updateActionInfos);
 
             BulkActionToPerform actionToPerform = BulkActionToPerform.builder()
-                    .gitLogin(actionToPerformCommand.getGitLogin())
+                    .userRequestingAction(remoteGitHub.fetchCurrentUser(actionToPerformCommand.getGitHubOauthToken()))
                     .gitHubOauthToken(actionToPerformCommand.getGitHubOauthToken())
                     .email(actionToPerformCommand.getEmail())
                     .commitMessage(actionToPerformCommand.getCommitMessage())

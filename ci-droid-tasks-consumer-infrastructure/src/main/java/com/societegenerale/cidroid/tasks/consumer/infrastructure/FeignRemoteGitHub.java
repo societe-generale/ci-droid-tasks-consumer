@@ -125,6 +125,17 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
         return gitReferenceClient.createBranch(new InputRef("refs/heads/" + branchName, fromReferenceSha1));
     }
 
+
+    @Override
+    default User fetchCurrentUser(String oAuthToken){
+
+        GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(oAuthToken)
+                .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/user");
+
+        return gitReferenceClient.getCurrentUser();
+
+    }
+
     @Override
     default PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String oauthToken)
             throws GitHubAuthorizationException {
@@ -177,6 +188,10 @@ interface GitReferenceClient {
     @RequestLine("POST")
     @Headers("Content-Type: application/json")
     PullRequest createPullRequest(PullRequestToCreate newPr) throws GitHubAuthorizationException;
+
+    @RequestLine("GET")
+    @Headers("Content-Type: application/json")
+    User getCurrentUser() ;
 
     static Feign.Builder buildGitReferenceClient(String oauthToken) {
         return Feign.builder()

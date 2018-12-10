@@ -3,6 +3,7 @@ package com.societegenerale.cidroid.tasks.consumer.services.model;
 import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.api.gitHubInteractions.AbstractGitHubInteraction;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -18,7 +19,7 @@ import java.util.List;
 public class BulkActionToPerform {
 
     @NotEmpty
-    protected String gitLogin;
+    private User userRequestingAction;
 
     @NotEmpty
     private String gitHubOauthToken;

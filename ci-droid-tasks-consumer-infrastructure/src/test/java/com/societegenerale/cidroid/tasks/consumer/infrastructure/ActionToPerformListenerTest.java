@@ -5,7 +5,9 @@ import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.OverwriteStaticFileAction;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,8 +27,11 @@ public class ActionToPerformListenerTest {
 
     private ActionToPerformService mockActionToPerformService = mock(ActionToPerformService.class);
 
-    private ActionToPerformListener actionToPerformListener = new ActionToPerformListener(mockActionToPerformService, Arrays.asList(
-            overWriteStaticContentAction, mockSomeOtherAction));
+    private RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
+
+    private ActionToPerformListener actionToPerformListener = new ActionToPerformListener(mockActionToPerformService,
+                                                                                            Arrays.asList(overWriteStaticContentAction, mockSomeOtherAction),
+                                                                                            mockRemoteGitHub);
 
     private ArgumentCaptor<BulkActionToPerform> bulkActionToPerformCaptor = ArgumentCaptor.forClass(BulkActionToPerform.class);
 
@@ -39,6 +44,8 @@ public class ActionToPerformListenerTest {
                 .toString(ActionToPerformListenerTest.class.getClassLoader().getResourceAsStream("incomingOverWriteStaticContentAction.json"),
                         "UTF-8");
         incomingCommand = new ObjectMapper().readValue(incomingCommandAsString, ActionToPerformCommand.class);
+
+        when(mockRemoteGitHub.fetchCurrentUser("someToken")).thenReturn(new User("someUserName","someEmail"));
 
     }
 
@@ -53,8 +60,8 @@ public class ActionToPerformListenerTest {
 
         BulkActionToPerform actualBulkActionToPerform = bulkActionToPerformCaptor.getValue();
 
-        assertThat(actualBulkActionToPerform.getGitLogin()).isEqualTo("someUserName");
-        assertThat(actualBulkActionToPerform.getGitHubOauthToken()).isEqualTo("somePassword");
+        assertThat(actualBulkActionToPerform.getUserRequestingAction().getLogin()).isEqualTo("someUserName");
+        assertThat(actualBulkActionToPerform.getGitHubOauthToken()).isEqualTo("someToken");
         assertThat(actualBulkActionToPerform.getEmail()).isEqualTo("someEmail@someDomain.com");
 
         assertThat(actualBulkActionToPerform.getActionToReplicate()).isInstanceOf(OverwriteStaticFileAction.class);
@@ -69,7 +76,7 @@ public class ActionToPerformListenerTest {
     public void shouldFailSilentlyIfNoMatchingTypeRegistered() {
 
         //only one action registered, not matching the one
-        actionToPerformListener = new ActionToPerformListener(mockActionToPerformService, Arrays.asList(mockSomeOtherAction));
+        actionToPerformListener = new ActionToPerformListener(mockActionToPerformService, Arrays.asList(mockSomeOtherAction),mockRemoteGitHub);
 
         actionToPerformListener.registerActionsToReplicate();
         actionToPerformListener.onActionToPerform(incomingCommand);
