@@ -29,10 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -58,7 +55,6 @@ public class GitRebaser implements Rebaser {
     private String gitPassword;
 
     private GitWrapper gitWrapper;
-
 
     public GitRebaser(@Value("${gitHub.login}") String gitLogin, @Value("${gitHub.password}") String gitPassword, GitWrapper gitWrapper) {
 
@@ -101,18 +97,17 @@ public class GitRebaser implements Rebaser {
                 return new ImmutablePair(pr, emptyList());
             }
 
-            List<RevCommit> commitsToRebase = getCommitsOnWhichBranchIsLateComparedToBaseBranch(git, pr);
+            performPullIfNecessary(git, pr);
 
-            List<RevCommit> commitsInRemoteBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, false);
+            List<RevCommit> commitsInRemoteBranchOnlyBeforeRebase = getCommitsInBranchOnly(git, pr, false);
 
-            List<RevCommit> commitsInLocalBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, true);
-
-            log.info("nb of commits:\n\t- in master, to rebase : {}\n\t- in remote branch : {}\n\t- in local branch : {}", commitsToRebase.size(),
-                    commitsInRemoteBranchOnlyBeforeWeDoAnything.size(), commitsInLocalBranchOnlyBeforeWeDoAnything.size());
+            List<RevCommit> commitsInLocalBranchOnlyBeforeRebase = getCommitsInBranchOnly(git, pr, true);
 
             boolean isRebaseSuccessful = false;
 
             boolean isPushSuccessful = false;
+
+            List<RevCommit> commitsToRebase = getCommitsOnWhichBranchIsLateComparedToBaseBranch(git, pr);
 
             if (commitsToRebase.size() > 0) {
 
@@ -129,9 +124,9 @@ public class GitRebaser implements Rebaser {
 
                     List<RevCommit> commitsInLocalBranchAfterRebase = getCommitsInBranchOnly(git, pr, true);
 
-                    if (commitsInRemoteBranchOnlyBeforeWeDoAnything.size() != commitsInLocalBranchAfterRebase.size()) {
+                    if (commitsInRemoteBranchOnlyBeforeRebase.size() != commitsInLocalBranchAfterRebase.size()) {
                         log.warn("we had {} commits in branch before rebase, but {} after - are we sure we want to force push ?",
-                                commitsInRemoteBranchOnlyBeforeWeDoAnything.size(), commitsInLocalBranchAfterRebase.size());
+                                commitsInRemoteBranchOnlyBeforeRebase.size(), commitsInLocalBranchAfterRebase.size());
                     }
 
                     isRebaseSuccessful = true;
@@ -142,17 +137,17 @@ public class GitRebaser implements Rebaser {
 
                     List<RevCommit> commitsInBranchOnlyAfterPush = getCommitsInBranchOnly(git, pr, false);
 
-                    if (commitsInRemoteBranchOnlyBeforeWeDoAnything.size() != commitsInBranchOnlyAfterPush.size()) {
+                    if (commitsInRemoteBranchOnlyBeforeRebase.size() != commitsInBranchOnlyAfterPush.size()) {
 
                         markPrWithWarnMessageAndLog(pr, "strange outcome of the push for PR " + pr.getNumber() +
                                 " as we don't have the same number of commits in branch before and after push - please check the logs for more details, and your branch to make sure all your commits are still there");
 
-                        GitWrapper.logDiffCommits(commitsInRemoteBranchOnlyBeforeWeDoAnything,
-                                "Before rebase/push, there was " + commitsInRemoteBranchOnlyBeforeWeDoAnything.size() +
+                        GitWrapper.logDiffCommits(commitsInRemoteBranchOnlyBeforeRebase,
+                                "Before rebase/push, there was " + commitsInRemoteBranchOnlyBeforeRebase.size() +
                                         " commit(s) in the remote branch");
 
-                        GitWrapper.logDiffCommits(commitsInLocalBranchOnlyBeforeWeDoAnything,
-                                "Before rebase/push, there was " + commitsInLocalBranchOnlyBeforeWeDoAnything.size() +
+                        GitWrapper.logDiffCommits(commitsInLocalBranchOnlyBeforeRebase,
+                                "Before rebase/push, there was " + commitsInLocalBranchOnlyBeforeRebase.size() +
                                         " commit(s) in the local branch");
 
                         GitWrapper.logDiffCommits(commitsInBranchOnlyAfterPush,
@@ -214,7 +209,46 @@ public class GitRebaser implements Rebaser {
         return new ImmutablePair(pr, emptyList());
     }
 
+    private void performPullIfNecessary(Git git, PullRequest pr)
+            throws GitAPIException, IOException {
 
+        compareAndLogLocalAndRemoteBranches(git, pr);
+
+        List<RevCommit> commitsInRemoteBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, false);
+
+        List<RevCommit> commitsInLocalBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, true);
+
+        if (commitsInRemoteBranchOnlyBeforeWeDoAnything.size() > commitsInLocalBranchOnlyBeforeWeDoAnything.size()) {
+            log.info("more commits in remote branch than in local branch -> need for 'git pull'..");
+
+            PullResult pullResult = gitWrapper.pull(git);
+
+            if (pullResult.isSuccessful()) {
+                log.info("pull result OK - merged commits : ");
+                Arrays.stream(pullResult.getMergeResult().getMergedCommits()).forEach(commit -> log.info("\t - {}", commit.toObjectId()));
+            } else {
+                String errorMessage = "unexpected things happened during simple pull operation";
+
+                log.warn(errorMessage);
+
+                throw new CiDroidGitApiException(errorMessage);
+            }
+            compareAndLogLocalAndRemoteBranches(git, pr);
+        }
+    }
+
+    private void compareAndLogLocalAndRemoteBranches(Git git, PullRequest pr) throws GitAPIException, IOException {
+
+        List<RevCommit> commitsToRebase = getCommitsOnWhichBranchIsLateComparedToBaseBranch(git, pr);
+
+        List<RevCommit> commitsInRemoteBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, false);
+
+        List<RevCommit> commitsInLocalBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, true);
+
+        log.info("nb of commits:\n\t- in master, to rebase : {}\n\t- in remote branch : {}\n\t- in local branch : {}", commitsToRebase.size(),
+                commitsInRemoteBranchOnlyBeforeWeDoAnything.size(), commitsInLocalBranchOnlyBeforeWeDoAnything.size());
+
+    }
 
     private void markPrWithWarnMessageAndLog(PullRequest pr, String warnMessage) {
         pr.setWarningMessageDuringRebasing(warnMessage);
@@ -230,8 +264,6 @@ public class GitRebaser implements Rebaser {
 
         return (nbCommitsWithNotOkStatus == 0);
     }
-
-
 
     private void switchToBranch(Git git, String branchName) throws IOException, GitAPIException {
 
@@ -469,8 +501,6 @@ public class GitRebaser implements Rebaser {
 
         return branchCommits;
     }
-
-
 
     private void logGitStatus(Git git) throws GitAPIException {
 
