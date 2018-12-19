@@ -15,6 +15,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Optional;
 
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -403,6 +404,25 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
+    public void notifyProperlyWhenRepoDoesntExist() throws BranchAlreadyExistsException, GitHubAuthorizationException {
+
+        BulkActionToPerform bulkActionToPerform = doApullRequestAction();
+
+        when(mockRemoteGitHub.fetchRepository(eq(REPO_FULL_NAME)))
+                .thenReturn(Optional.empty());
+
+        actionToPerformService.perform(bulkActionToPerform);
+
+        verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
+                eq(resourceToUpdate),
+                updatedResourceCaptor.capture());
+
+        assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_REPO_DOESNT_EXIST);
+
+        verify(mockRemoteGitHub,never()).fetchHeadReferenceFrom(any(),any());
+    }
+
+    @Test
     public void shouldCreatePRwithProvidedTitle() throws GitHubAuthorizationException, BranchAlreadyExistsException {
 
         mockPullRequestSpecificBehavior();
@@ -529,7 +549,7 @@ public class ActionToPerformServiceTest {
     }
 
     private void mockPullRequestSpecificBehavior() throws BranchAlreadyExistsException, GitHubAuthorizationException {
-        when(mockRemoteGitHub.fetchRepository(REPO_FULL_NAME)).thenReturn(fakeRepository);
+        when(mockRemoteGitHub.fetchRepository(REPO_FULL_NAME)).thenReturn(Optional.of(fakeRepository));
 
         Reference dummyHeadOnMasterReference = new Reference(REFS_HEADS +MASTER_BRANCH,new Reference.ObjectReference("commit", sha1ForHeadOnMaster));
         when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, MASTER_BRANCH)).thenReturn(dummyHeadOnMasterReference);

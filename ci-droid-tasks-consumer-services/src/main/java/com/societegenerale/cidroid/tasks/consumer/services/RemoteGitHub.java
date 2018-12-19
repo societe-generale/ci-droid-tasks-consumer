@@ -5,6 +5,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuth
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RemoteGitHub {
 
@@ -31,7 +32,7 @@ public interface RemoteGitHub {
 
     PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String oauthToken)throws GitHubAuthorizationException;
 
-    Repository fetchRepository(String repoFullName);
+    Optional<Repository> fetchRepository(String repoFullName);
 
     Reference fetchHeadReferenceFrom(String repoFullName, String branchName);
 
