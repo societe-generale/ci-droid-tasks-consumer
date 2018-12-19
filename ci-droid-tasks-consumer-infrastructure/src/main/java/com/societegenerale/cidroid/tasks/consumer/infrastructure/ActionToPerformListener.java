@@ -4,8 +4,11 @@ import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.cloud.stream.annotation.StreamListener;
 
 import javax.annotation.PostConstruct;
@@ -16,18 +19,21 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ActionToPerformListener {
 
-    private ActionToPerformService actionToPerformService;
+    private final ActionToPerformService actionToPerformService;
 
-    private List<ActionToReplicate> actionsToReplicate;
+    private final List<ActionToReplicate> actionsToReplicate;
 
-    private RemoteGitHub remoteGitHub;
+    private final RemoteGitHub remoteGitHub;
+
+    private final ActionNotifier notifier;
 
     private Map<String, Class<? extends ActionToReplicate>> registeredActionsToReplicate;
 
-    public ActionToPerformListener(ActionToPerformService actionToPerformService, List<ActionToReplicate> actionsToReplicate, RemoteGitHub remoteGitHub) {
+    public ActionToPerformListener(ActionToPerformService actionToPerformService, List<ActionToReplicate> actionsToReplicate, RemoteGitHub remoteGitHub, ActionNotifier notifier) {
         this.actionToPerformService = actionToPerformService;
         this.actionsToReplicate = actionsToReplicate;
         this.remoteGitHub=remoteGitHub;
+        this.notifier=notifier;
     }
 
     @PostConstruct
@@ -75,9 +81,20 @@ public class ActionToPerformListener {
 
         } catch (UnknownActionTypeException e) {
             log.error("can't map the received command to a known action type", e);
+            notifyErrorToEndUser(actionToPerformCommand.getEmail(),e);
         } catch (Exception e) {
             log.warn("some unexpected error happened", e);
+            notifyErrorToEndUser(actionToPerformCommand.getEmail(),e);
         }
+
+    }
+
+    private void notifyErrorToEndUser(String endUserEmail, Exception e){
+
+        User user = new User("unknown user name ", endUserEmail);
+
+        notifier.notify(user,"[KO] unexpected error when request received, before 'core processing' actually happened", "please contact support team to report the issue\n\n"+
+                ExceptionUtils.getStackTrace(e));
 
     }
 

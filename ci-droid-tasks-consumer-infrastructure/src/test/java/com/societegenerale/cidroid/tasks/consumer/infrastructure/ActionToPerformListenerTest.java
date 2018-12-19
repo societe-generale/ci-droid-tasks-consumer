@@ -8,6 +8,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformServic
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,9 +30,12 @@ public class ActionToPerformListenerTest {
 
     private RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
 
+    private ActionNotifier mockNotifier = mock(ActionNotifier.class);
+
     private ActionToPerformListener actionToPerformListener = new ActionToPerformListener(mockActionToPerformService,
                                                                                             Arrays.asList(overWriteStaticContentAction, mockSomeOtherAction),
-                                                                                            mockRemoteGitHub);
+                                                                                            mockRemoteGitHub,
+                                                                                            mockNotifier);
 
     private ArgumentCaptor<BulkActionToPerform> bulkActionToPerformCaptor = ArgumentCaptor.forClass(BulkActionToPerform.class);
 
@@ -71,17 +75,27 @@ public class ActionToPerformListenerTest {
         assertThat(actualBulkActionToPerform.getGitHubInteraction()).isInstanceOf(DirectPushGitHubInteraction.class);
     }
 
-
     @Test
-    public void shouldFailSilentlyIfNoMatchingTypeRegistered() {
+    public void shouldNotifyIfUnexpectedExceptionDuringDeserialization_and_notPerformAnything() {
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        ArgumentCaptor<String> notificationBodyCaptor = ArgumentCaptor.forClass(String.class);
 
         //only one action registered, not matching the one
-        actionToPerformListener = new ActionToPerformListener(mockActionToPerformService, Arrays.asList(mockSomeOtherAction),mockRemoteGitHub);
+        actionToPerformListener = new ActionToPerformListener(mockActionToPerformService, Arrays.asList(mockSomeOtherAction),mockRemoteGitHub,mockNotifier);
 
         actionToPerformListener.registerActionsToReplicate();
+
         actionToPerformListener.onActionToPerform(incomingCommand);
 
+        //not performing anything
         verify(mockActionToPerformService, never()).perform(bulkActionToPerformCaptor.capture());
+
+        //checking notification
+        verify(mockNotifier, times(1)).notify(userCaptor.capture(),eq("[KO] unexpected error when request received, before 'core processing' actually happened"),notificationBodyCaptor.capture());
+        assertThat(userCaptor.getValue().getEmail()).isEqualTo("someEmail@someDomain.com");
+        assertThat(notificationBodyCaptor.getValue()).contains("Exception");
     }
+
 
 }
