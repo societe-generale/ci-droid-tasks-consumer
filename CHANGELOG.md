@@ -12,6 +12,7 @@
 
 ### Fixed
 - issue #39 - notification when unexpected error while processing bulkAction
+- issue #40 - specific notification when repository doesn't exist
 
 ## [1.0.11] - 2018-12-18
 

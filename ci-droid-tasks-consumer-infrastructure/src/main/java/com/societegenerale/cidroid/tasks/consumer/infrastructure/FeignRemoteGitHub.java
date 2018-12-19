@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import static feign.FeignException.errorStatus;
 
@@ -106,7 +107,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    Repository fetchRepository(@PathVariable("repoFullName") String repoFullName);
+    Optional<Repository> fetchRepository(@PathVariable("repoFullName") String repoFullName);
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/repos/{repoFullName}/git/refs/heads/{branchName}",

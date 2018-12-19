@@ -269,6 +269,25 @@ public class ActionNotificationServiceTest {
     }
 
 
+    @Test
+    public void sendKOnotification_whenRepoDoesntExist() {
+
+        String expectedSubject = "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
+
+        String expectedContent ="repository "+resourceToUpdate.getRepoFullName()+" doesn't exist - make sure you provide its full name, ie 'org/repo' ";
+
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
+        updatedResource.setUpdateStatus(UPDATE_KO_REPO_DOESNT_EXIST);
+
+        actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
+
+        verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
+        assertThat(notificationContentCaptor.getValue())
+                .isEqualTo(expectedContent);
+
+    }
+
+
     private void assertNotificationWhenDirectPush() {
         assertNotificationContent("CI-droid has updated the resource on your behalf", "Link to the version we committed : http://");
     }

@@ -46,7 +46,16 @@ public class ActionToPerformService {
 
                 PullRequestGitHubInteraction pullRequestAction = (PullRequestGitHubInteraction) action.getGitHubInteraction();
 
-                Repository impactedRepo = remoteGitHub.fetchRepository(repoFullName);
+                Optional<Repository> optionalImpactedRepo = remoteGitHub.fetchRepository(repoFullName);
+
+                //if repo doesn't exist, notify
+                if(!optionalImpactedRepo.isPresent()){
+                    actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_REPO_DOESNT_EXIST));
+                    return;
+                }
+
+                Repository impactedRepo=optionalImpactedRepo.get();
+
                 String branchNameForPR = pullRequestAction.getBranchNameToCreate();
 
                 String branchFromWhichToCreatePrBranch= resourceToUpdate.getBranchName() == null ? impactedRepo.getDefaultBranch() : resourceToUpdate.getBranchName();

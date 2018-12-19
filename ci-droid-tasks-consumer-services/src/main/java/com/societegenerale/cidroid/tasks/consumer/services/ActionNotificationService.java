@@ -48,6 +48,12 @@ public class ActionNotificationService {
                     "Unexpected issue happened during processing - please check the logs for more details");
         }
 
+        else if(updatedResource.getUpdateStatus()==UPDATE_KO_REPO_DOESNT_EXIST){
+            notifier.notify(user,
+                    "[KO] " + notificationSubject,
+                    "repository "+resourceToUpdate.getRepoFullName()+" doesn't exist - make sure you provide its full name, ie 'org/repo' ");
+        }
+
         //TODO refactor, as code in manageDirectPush and managePullRequest is very similar
         else if (action.getGitHubInteraction() instanceof DirectPushGitHubInteraction) {
 
