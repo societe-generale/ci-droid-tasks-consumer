@@ -202,6 +202,10 @@ public class ActionNotificationServiceTest {
 
         actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
 
+        verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
+        assertThat(notificationContentCaptor.getValue())
+                .isEqualTo(expectedContent);
+
         //for pull request
         reset(mockNotifier);
         bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction()).build();
@@ -214,6 +218,38 @@ public class ActionNotificationServiceTest {
                 .isEqualTo(expectedContent);
 
     }
+
+    @Test
+    public void sendKOnotification_whenUnexpectedError() {
+
+        String expectedSubject = "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
+
+        String expectedContent =
+                "Unexpected issue happened during processing - please check the logs for more details";
+
+        //for direct push
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
+        updatedResource.setUpdateStatus(UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING);
+
+        actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
+
+        verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
+        assertThat(notificationContentCaptor.getValue())
+                .isEqualTo(expectedContent);
+
+        //for pull request
+        reset(mockNotifier);
+        bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction()).build();
+        updatedResource.setUpdateStatus(UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING);
+
+        actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
+
+        verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
+        assertThat(notificationContentCaptor.getValue())
+                .isEqualTo(expectedContent);
+
+    }
+
 
     private void assertNotificationWhenDirectPush() {
         assertNotificationContent("CI-droid has updated the resource on your behalf", "Link to the version we committed : http://");

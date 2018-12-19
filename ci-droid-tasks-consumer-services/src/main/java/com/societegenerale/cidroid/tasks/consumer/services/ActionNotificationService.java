@@ -34,6 +34,12 @@ public class ActionNotificationService {
                     "Content hasn't been modified on repository, as we haven't been able to commit content due to an authorization issue. please double check the credentials you provided");
         }
 
+        else if(updatedResource.getUpdateStatus()==UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING){
+            notifier.notify(user,
+                    "[KO] " + notificationSubject,
+                    "Unexpected issue happened during processing - please check the logs for more details");
+        }
+
         //TODO refactor, as code in manageDirectPush and managePullRequest is very similar
         else if (action.getGitHubInteraction() instanceof DirectPushGitHubInteraction) {
 

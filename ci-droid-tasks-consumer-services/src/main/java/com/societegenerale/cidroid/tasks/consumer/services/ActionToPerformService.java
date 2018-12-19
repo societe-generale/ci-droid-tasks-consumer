@@ -89,6 +89,10 @@ public class ActionToPerformService {
         } catch (GitHubAuthorizationException e) {
             actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_AUTHENTICATION_ISSUE));
         }
+        catch (Exception e) {
+            actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING));
+        }
+
 
     }
 
