@@ -251,6 +251,24 @@ public class ActionNotificationServiceTest {
     }
 
 
+    @Test
+    public void sendKOnotification_whenResourceToUpdateIsNull() {
+
+        String expectedSubject = "[KO] unclear status for action " + testActionToPerform.getClass().getName();
+
+        String expectedContent ="resourceToUpdate is null, so unable to perform any action";
+
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
+
+        actionNotificationService.handleNotificationsFor(bulkActionToPerform, null, updatedResource);
+
+        verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
+        assertThat(notificationContentCaptor.getValue())
+                .isEqualTo(expectedContent);
+
+    }
+
+
     private void assertNotificationWhenDirectPush() {
         assertNotificationContent("CI-droid has updated the resource on your behalf", "Link to the version we committed : http://");
     }

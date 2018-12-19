@@ -21,9 +21,17 @@ public class ActionNotificationService {
 
     public void handleNotificationsFor(BulkActionToPerform action, ResourceToUpdate resourceToUpdate, UpdatedResource updatedResource) {
 
-        String repoFullName = resourceToUpdate.getRepoFullName();
-
         User user = new User(action.getUserRequestingAction().getLogin(), action.getEmail());
+
+        if(resourceToUpdate==null){
+            notifier.notify(user,
+                    "[KO] unclear status for action "+action.getActionType(),
+                    "resourceToUpdate is null, so unable to perform any action");
+
+            return;
+        }
+
+        String repoFullName = resourceToUpdate.getRepoFullName();
 
         String notificationSubject = "Action '" + action.getActionType() + "' for " + resourceToUpdate.getFilePathOnRepo() + " on " +
                 repoFullName + " on branch " + resourceToUpdate.getBranchName();
