@@ -9,6 +9,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMail
 import com.societegenerale.cidroid.tasks.consumer.services.*;
 import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PushEventOnDefaultBranchHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
@@ -71,13 +72,11 @@ public class InfraConfig {
     }
 
 
-
-
     @Bean
     public ActionToPerformListener actionToPerformListener(ActionToPerformService actionToPerformService,
-            List<ActionToReplicate> actionsToReplicate, RemoteGitHub remoteGitHub) {
+            List<ActionToReplicate> actionsToReplicate, RemoteGitHub remoteGitHub,ActionNotifier actionNotifier) {
 
-        return new ActionToPerformListener(actionToPerformService, actionsToReplicate,remoteGitHub);
+        return new ActionToPerformListener(actionToPerformService, actionsToReplicate,remoteGitHub,actionNotifier);
     }
 
     @Bean
@@ -113,10 +112,16 @@ public class InfraConfig {
     }
 
     @Bean
-    public ActionNotificationService actionNotificationService(MailSender javaMailSender,
+    public ActionNotificationService actionNotificationService(ActionNotifier actionNotifier) {
+
+        return new ActionNotificationService(actionNotifier);
+    }
+
+    @Bean
+    public ActionNotifier emailActionNotifier(MailSender javaMailSender,
             @Value("${spring.mail.sender}") String mailSender) {
 
-        return new ActionNotificationService(new EMailActionNotifier(javaMailSender, mailSender));
+        return new EMailActionNotifier(javaMailSender, mailSender);
     }
 
 }

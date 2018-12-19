@@ -71,7 +71,8 @@ public class UpdatedResource {
         UPDATE_KO_BRANCH_CREATION_ISSUE(false),
         UPDATE_KO_CANT_PROVIDE_CONTENT_ISSUE(false),
         UPDATE_KO_NO_REASON(false),
-        UPDATE_KO_AUTHENTICATION_ISSUE(false);
+        UPDATE_KO_AUTHENTICATION_ISSUE(false),
+        UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING(false);
 
         private final boolean hasBeenUpdated;
 

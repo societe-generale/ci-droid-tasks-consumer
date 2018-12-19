@@ -21,9 +21,17 @@ public class ActionNotificationService {
 
     public void handleNotificationsFor(BulkActionToPerform action, ResourceToUpdate resourceToUpdate, UpdatedResource updatedResource) {
 
-        String repoFullName = resourceToUpdate.getRepoFullName();
-
         User user = new User(action.getUserRequestingAction().getLogin(), action.getEmail());
+
+        if(resourceToUpdate==null){
+            notifier.notify(user,
+                    "[KO] unclear status for action "+action.getActionType(),
+                    "resourceToUpdate is null, so unable to perform any action");
+
+            return;
+        }
+
+        String repoFullName = resourceToUpdate.getRepoFullName();
 
         String notificationSubject = "Action '" + action.getActionType() + "' for " + resourceToUpdate.getFilePathOnRepo() + " on " +
                 repoFullName + " on branch " + resourceToUpdate.getBranchName();
@@ -32,6 +40,12 @@ public class ActionNotificationService {
             notifier.notify(user,
                     "[KO] " + notificationSubject,
                     "Content hasn't been modified on repository, as we haven't been able to commit content due to an authorization issue. please double check the credentials you provided");
+        }
+
+        else if(updatedResource.getUpdateStatus()==UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING){
+            notifier.notify(user,
+                    "[KO] " + notificationSubject,
+                    "Unexpected issue happened during processing - please check the logs for more details");
         }
 
         //TODO refactor, as code in manageDirectPush and managePullRequest is very similar

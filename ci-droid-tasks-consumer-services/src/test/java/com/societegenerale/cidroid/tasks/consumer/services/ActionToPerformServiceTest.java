@@ -386,6 +386,23 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
+    public void notifyProperlyWhenUnexpectedError() throws BranchAlreadyExistsException, GitHubAuthorizationException {
+
+        BulkActionToPerform bulkActionToPerform = doApullRequestAction();
+
+        when(mockRemoteGitHub.createBranch(eq(REPO_FULL_NAME), anyString(), anyString(), anyString()))
+                .thenThrow(new NullPointerException("some dummy NPE"));
+
+        actionToPerformService.perform(bulkActionToPerform);
+
+        verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
+                eq(resourceToUpdate),
+                updatedResourceCaptor.capture());
+
+        assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING);
+    }
+
+    @Test
     public void shouldCreatePRwithProvidedTitle() throws GitHubAuthorizationException, BranchAlreadyExistsException {
 
         mockPullRequestSpecificBehavior();

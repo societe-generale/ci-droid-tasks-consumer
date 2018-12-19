@@ -11,11 +11,12 @@
 ### Removed
 
 ### Fixed
+- issue #39 - notification when unexpected error while processing bulkAction
 
 ## [1.0.11] - 2018-12-18
 
 ### Fixed
-- PR # 37 - avoiding to overwrite commits during rebase, in some scenarios
+- PR #37 - avoiding to overwrite commits during rebase, in some scenarios
 
 ## [1.0.10] - 2018-11-12
 

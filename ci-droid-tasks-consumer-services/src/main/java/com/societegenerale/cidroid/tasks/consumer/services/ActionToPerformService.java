@@ -28,12 +28,13 @@ public class ActionToPerformService {
 
     public void perform(BulkActionToPerform action) {
 
-        //we're supposed to have only one element in list, but this may change in the future : we'll loop over them.
-        ResourceToUpdate resourceToUpdate = action.getResourcesToUpdate().get(0);
-
-        String repoFullName = resourceToUpdate.getRepoFullName();
+        ResourceToUpdate resourceToUpdate=null;
 
         try {
+            //we're supposed to have only one element in list, but this may change in the future : we'll loop over them.
+            resourceToUpdate = action.getResourcesToUpdate().get(0);
+
+            String repoFullName = resourceToUpdate.getRepoFullName();
 
             if (action.getGitHubInteraction() instanceof DirectPushGitHubInteraction) {
 
@@ -89,6 +90,10 @@ public class ActionToPerformService {
         } catch (GitHubAuthorizationException e) {
             actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_AUTHENTICATION_ISSUE));
         }
+        catch (Exception e) {
+            actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING));
+        }
+
 
     }
 
