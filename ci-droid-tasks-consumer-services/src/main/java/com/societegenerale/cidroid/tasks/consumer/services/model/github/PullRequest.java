@@ -5,12 +5,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.beans.ConstructorProperties;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
@@ -34,6 +40,14 @@ public class PullRequest {
 
     private String branchStartedFromCommit;
 
+    @JsonProperty("created_at")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime creationDate;
+
+    @JsonProperty("html_url")
+    private String htmlUrl;
+
     @JsonIgnore
     private boolean isMadeFromForkedRepo;
 
@@ -43,10 +57,8 @@ public class PullRequest {
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private ObjectMapper objectMapper=new ObjectMapper();
-
-    @JsonProperty("html_url")
-    private String htmlUrl;
+    private ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule());
 
     @ConstructorProperties({ "number" })
     @JsonCreator
@@ -60,7 +72,7 @@ public class PullRequest {
 
     public PRmergeableStatus getMergeStatus(){
 
-       return PRmergeableStatus.mapping.get(mergeable);
+        return PRmergeableStatus.mapping.get(mergeable);
 
     }
 
@@ -77,8 +89,8 @@ public class PullRequest {
     private void unpackNestedHeadProperty(Map<String,Object> base) {
         this.branchName=(String)base.get("ref");
 
-       Repository repoFromWhichPrOriginates=objectMapper.convertValue(base.get("repo"), Repository.class);
-       isMadeFromForkedRepo=repoFromWhichPrOriginates.isFork();
+        Repository repoFromWhichPrOriginates=objectMapper.convertValue(base.get("repo"), Repository.class);
+        isMadeFromForkedRepo=repoFromWhichPrOriginates.isFork();
     }
 
 }
