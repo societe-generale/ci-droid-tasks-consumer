@@ -27,10 +27,13 @@ public interface RemoteGitHub {
 
     ResourceContent fetchContent(String repoFullName, String path, String branch);
 
-    UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken) throws
-            GitHubAuthorizationException;
+    UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
+            throws GitHubAuthorizationException;
 
-    PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String oauthToken)throws GitHubAuthorizationException;
+    PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String oauthToken)
+            throws GitHubAuthorizationException;
+
+    void closePullRequest(String repoFullName, int prNumber);
 
     Optional<Repository> fetchRepository(String repoFullName);
 
