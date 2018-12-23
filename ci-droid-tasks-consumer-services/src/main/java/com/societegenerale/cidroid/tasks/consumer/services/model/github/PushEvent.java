@@ -17,8 +17,8 @@ public class PushEvent implements GitHubEvent {
     private Commit headCommit;
 
     @Override
-    public String getRepositoryUrl() {
-        return getRepository().getUrl();
+    public Repository getRepository() {
+        return repository;
     }
 
     public boolean happenedOnDefaultBranch(){
