@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.mail.MailSender;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Configuration
@@ -34,7 +35,6 @@ public class CiDroidTasksConsumerAutoConfiguration {
         return new CiDroidBehavior();
     }
 
-
     @Bean
     @ConditionalOnProperty(value = "ciDroidBehavior.notifyOwnerForNonMergeablePr.enabled", havingValue = "true")
     @AutoConfigureOrder(1)
@@ -43,14 +43,21 @@ public class CiDroidTasksConsumerAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(value = "ciDroidBehavior.tryToRebaseOpenPrs.enabled", havingValue = "true")
+    @ConditionalOnProperty(value = "ciDroidBehavior.closeOldPullRequests.enabled", havingValue = "true")
     @AutoConfigureOrder(2)
+    public PushEventOnDefaultBranchHandler pullRequestCleaningHandler(RemoteGitHub gitHub,
+                                                                      @Value("${ciDroidBehavior.closeOldPullRequests.limitInDays}") int prAgeLimitInDays) {
+        return new PullRequestCleaningHandler(gitHub, LocalDateTime::now, prAgeLimitInDays);
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "ciDroidBehavior.tryToRebaseOpenPrs.enabled", havingValue = "true")
+    @AutoConfigureOrder(3)
     public PushEventOnDefaultBranchHandler rebaseHandler(RemoteGitHub gitHub, @Value("${gitHub.login}") String gitLogin,
-            @Value("${gitHub.password}") String gitPassword) {
+                                                         @Value("${gitHub.password}") String gitPassword) {
 
         return new RebaseHandler(new GitRebaser(gitLogin, gitPassword, new GitWrapper()), gitHub);
     }
-
 
     @Bean
     @ConditionalOnMissingBean(PushEventOnDefaultBranchHandler.class)
@@ -60,16 +67,11 @@ public class CiDroidTasksConsumerAutoConfiguration {
         return new DummyPushEventOnDefaultBranchHandler();
     }
 
-
-
-
-
-
     @Bean
     @ConditionalOnProperty(value = "ciDroidBehavior.bestPracticeNotifier.enabled", havingValue = "true")
     @AutoConfigureOrder(1)
     public PullRequestEventHandler bestPracticeNotifierHandler(CiDroidBehavior ciDroidBehavior, List<Notifier> notifiers,
-            RemoteGitHub remoteGitHub) {
+                                                               RemoteGitHub remoteGitHub) {
 
         return new BestPracticeNotifierHandler(ciDroidBehavior.getPatternToResourceMapping(), notifiers, remoteGitHub,
                 new RestTemplateResourceFetcher());

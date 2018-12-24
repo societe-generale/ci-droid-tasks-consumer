@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
 
-import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,7 +43,13 @@ public class TestConfig {
     @Bean
     public PushEventOnDefaultBranchHandler notificationsHandler(RemoteGitHub remoteGitHub, NotifierMock notifierMock) {
 
-        return new NotificationsHandler(remoteGitHub, Arrays.asList(notifierMock));
+        return new NotificationsHandler(remoteGitHub, Collections.singletonList(notifierMock));
+    }
+
+    @Bean
+    public PushEventOnDefaultBranchHandler pullRequestCleaningHandler(RemoteGitHub remoteGitHub) {
+
+        return new PullRequestCleaningHandler(remoteGitHub, LocalDateTime::now, 180);
     }
 
     @Bean
