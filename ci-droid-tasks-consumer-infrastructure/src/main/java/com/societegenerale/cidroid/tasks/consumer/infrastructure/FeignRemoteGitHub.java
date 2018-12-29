@@ -7,6 +7,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuth
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import feign.*;
 import feign.codec.ErrorDecoder;
+import feign.httpclient.ApacheHttpClient;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.slf4j.Slf4jLogger;
@@ -148,7 +149,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
 
     @Override
     default void closePullRequest(String repoFullName, int prNumber) {
-        HashMap<String, String> body = new HashMap<>();
+        Map<String, String> body = new HashMap<>();
         body.put("state", "closed");
 
         updatePullRequest(repoFullName, prNumber, body);
@@ -184,6 +185,11 @@ class RemoteGitHubConfig {
     @Bean
     RequestInterceptor oauthTokenSetterInterceptor(@Value("${gitHub.oauthToken:#{null}}") String oauthToken) {
         return new OAuthInterceptor(oauthToken);
+    }
+
+    @Bean
+    Client apacheHttpClient() {
+        return new ApacheHttpClient();
     }
 
 }
