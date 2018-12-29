@@ -70,6 +70,7 @@
         <jackson.version>2.9.5</jackson.version>
 
         <net.code-story.version>2.104</net.code-story.version>
+        <mockserver.version>5.5.1</mockserver.version>
         <awaitility.version>1.7.0</awaitility.version>
         <greenmail.version>1.5.6</greenmail.version>
         <fakir.version>1.0.10</fakir.version>
@@ -79,7 +80,6 @@
 
         <ci-droid-api.version>1.0.5</ci-droid-api.version>
         <ci-droid-extensions.version>1.0.6</ci-droid-extensions.version>
-
     </properties>
 
     <!-- required by maven-release-plugin -->
@@ -223,6 +223,17 @@
                 <artifactId>http</artifactId>
                 <version>${net.code-story.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mock-server</groupId>
+                <artifactId>mockserver-netty</artifactId>
+                <version>${mockserver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mock-server</groupId>
+                <artifactId>mockserver-client-java</artifactId>
+                <version>${mockserver.version}</version>
             </dependency>
 
             <dependency>

@@ -14,6 +14,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,7 +84,7 @@ public class GithubEventListenerIT {
             githubMockServer.start();
 
             await().atMost(5, SECONDS)
-                    .until(() -> assertThat(GitHubMock.hasStarted()));
+                    .until(() -> assertThat(GitHubMock.hasStarted()).isTrue());
 
             hasGitHubMockServerStarted = true;
         }
@@ -92,6 +93,12 @@ public class GithubEventListenerIT {
         notifier.getNotifications().clear();
 
         githubMockServer.updatePRmergeabilityStatus(PULL_REQUEST_ID,NOT_MERGEABLE);
+    }
+
+    @After
+    public void tearDown() {
+        githubMockServer.stop();
+        hasGitHubMockServerStarted = false;
     }
 
     @Test

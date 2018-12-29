@@ -23,6 +23,8 @@ public class GitHubMock {
 
     private static boolean hasStarted = false;
 
+    private WebServer gitHubWebServer;
+
     public static boolean hasStarted() {
         return hasStarted;
     }
@@ -42,7 +44,7 @@ public class GitHubMock {
 
     public boolean start() {
 
-        WebServer gitHubWebServer = new WebServer();
+        gitHubWebServer = new WebServer();
         gitHubWebServer.configure(
                 routes -> {
                     routes.get("/api/v3/repos/baxterthehacker/public-repo/pulls?state=open", context -> getOpenPullRequests());
@@ -123,6 +125,10 @@ public class GitHubMock {
         openPullRequestsFetchCount =0;
         hitsPerPullRequestNumber.clear();
         commentsPerPr.clear();
+    }
+
+    public void stop() {
+        gitHubWebServer.stop();
     }
 
 }
