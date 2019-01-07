@@ -75,6 +75,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.netflix.feign</groupId>
+            <artifactId>feign-httpclient</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-jackson</artifactId>
         </dependency>
@@ -107,6 +112,14 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-netty</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-client-java</artifactId>
+        </dependency>
 
     </dependencies>
 </project>

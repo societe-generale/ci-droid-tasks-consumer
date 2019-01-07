@@ -54,6 +54,7 @@
         <spring-cloud-stream.version>Ditmars.SR3</spring-cloud-stream.version>
         <spring-cloud.version>Edgware.SR2</spring-cloud.version>
         <spring.cloud.feign.version>1.3.4.RELEASE</spring.cloud.feign.version>
+        <feign-httpclient.version>8.18.0</feign-httpclient.version>
         <spring.boot.version>1.5.10.RELEASE</spring.boot.version>
 
         <lombok.version>1.18.2</lombok.version>
@@ -70,6 +71,7 @@
         <jackson.version>2.9.8</jackson.version>
 
         <net.code-story.version>2.104</net.code-story.version>
+        <mockserver.version>5.5.1</mockserver.version>
         <awaitility.version>1.7.0</awaitility.version>
         <greenmail.version>1.5.6</greenmail.version>
         <fakir.version>1.0.10</fakir.version>
@@ -79,7 +81,6 @@
 
         <ci-droid-api.version>1.0.5</ci-droid-api.version>
         <ci-droid-extensions.version>1.0.6</ci-droid-extensions.version>
-
     </properties>
 
     <!-- required by maven-release-plugin -->
@@ -138,6 +139,12 @@
                         <artifactId>feign-hystrix</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.netflix.feign</groupId>
+                <artifactId>feign-httpclient</artifactId>
+                <version>${feign-httpclient.version}</version>
             </dependency>
 
             <dependency>
@@ -226,6 +233,17 @@
             </dependency>
 
             <dependency>
+                <groupId>org.mock-server</groupId>
+                <artifactId>mockserver-netty</artifactId>
+                <version>${mockserver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mock-server</groupId>
+                <artifactId>mockserver-client-java</artifactId>
+                <version>${mockserver.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
@@ -235,6 +253,12 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
 

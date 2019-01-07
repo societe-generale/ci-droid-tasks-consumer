@@ -7,6 +7,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuth
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import feign.*;
 import feign.codec.ErrorDecoder;
+import feign.httpclient.ApacheHttpClient;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.slf4j.Slf4jLogger;
@@ -20,14 +21,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static feign.FeignException.errorStatus;
 
 @FeignClient(name = "github", url = "${gitHub.api.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
 public interface FeignRemoteGitHub extends RemoteGitHub {
-
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/repos/{repoFullName}/pulls?status=open",
@@ -101,7 +103,6 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
 
     }
 
-
     @RequestMapping(method = RequestMethod.GET,
             value = "/repos/{repoFullName}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -126,7 +127,6 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
         return gitReferenceClient.createBranch(new InputRef("refs/heads/" + branchName, fromReferenceSha1));
     }
 
-
     @Override
     default User fetchCurrentUser(String oAuthToken){
 
@@ -146,6 +146,22 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
 
         return gitReferenceClient.createPullRequest(newPr);
     }
+
+    @Override
+    default void closePullRequest(String repoFullName, int prNumber) {
+        Map<String, String> body = new HashMap<>();
+        body.put("state", "closed");
+
+        updatePullRequest(repoFullName, prNumber, body);
+    }
+
+    @RequestMapping(method = RequestMethod.PATCH,
+            value = "/repos/{repoFullName}/pulls/{prNumber}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    void updatePullRequest(@PathVariable("repoFullName") String repoFullName,
+                           @PathVariable("prNumber") int prNumber,
+                           @RequestBody Map<String, String> body);
 
     @Data
     @AllArgsConstructor
@@ -169,6 +185,11 @@ class RemoteGitHubConfig {
     @Bean
     RequestInterceptor oauthTokenSetterInterceptor(@Value("${gitHub.oauthToken:#{null}}") String oauthToken) {
         return new OAuthInterceptor(oauthToken);
+    }
+
+    @Bean
+    Client apacheHttpClient() {
+        return new ApacheHttpClient();
     }
 
 }
