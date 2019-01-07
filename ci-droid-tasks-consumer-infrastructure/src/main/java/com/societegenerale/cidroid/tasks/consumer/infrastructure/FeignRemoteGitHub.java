@@ -44,7 +44,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     PullRequest fetchPullRequestDetails(@PathVariable("repoFullName") String repoFullName,
-                                        @PathVariable("prNumber") int prNumber);
+            @PathVariable("prNumber") int prNumber);
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/users/{login}",
@@ -59,8 +59,8 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     void addCommentDescribingRebase(@PathVariable("repoFullName") String repoFullName,
-                                    @PathVariable("prNumber") int prNumber,
-                                    @RequestBody Comment comment);
+            @PathVariable("prNumber") int prNumber,
+            @RequestBody Comment comment);
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/repos/{repoFullName}/pulls/{prNumber}/files",
@@ -68,7 +68,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     List<PullRequestFile> fetchPullRequestFiles(@PathVariable("repoFullName") String repoFullName,
-                                                @PathVariable("prNumber") int prNumber);
+            @PathVariable("prNumber") int prNumber);
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/repos/{repoFullName}/issues/{prNumber}/comments",
@@ -76,7 +76,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     List<PullRequestComment> fetchPullRequestComments(@PathVariable("repoFullName") String repoFullName,
-                                                      @PathVariable("prNumber") int prNumber);
+            @PathVariable("prNumber") int prNumber);
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/repos/{repoFullName}/contents/{path}?ref={branch}",
@@ -84,7 +84,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     ResourceContent fetchContent(@PathVariable("repoFullName") String repoFullName,
-                                 @PathVariable("path") String path, @RequestParam("branch") String branch);
+            @PathVariable("path") String path, @RequestParam("branch") String branch);
 
     @Override
     default UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken) throws
@@ -128,7 +128,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
     }
 
     @Override
-    default User fetchCurrentUser(String oAuthToken){
+    default User fetchCurrentUser(String oAuthToken) {
 
         GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(oAuthToken)
                 .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/user");
@@ -157,8 +157,8 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     void updatePullRequest(@PathVariable("repoFullName") String repoFullName,
-                           @PathVariable("prNumber") int prNumber,
-                           @RequestBody Map<String, String> body);
+            @PathVariable("prNumber") int prNumber,
+            @RequestBody Map<String, String> body);
 
     @Data
     @AllArgsConstructor
@@ -213,7 +213,7 @@ interface GitReferenceClient {
 
     @RequestLine("GET")
     @Headers("Content-Type: application/json")
-    User getCurrentUser() ;
+    User getCurrentUser();
 
     static Feign.Builder buildGitReferenceClient(String oauthToken) {
         return Feign.builder()
@@ -247,10 +247,9 @@ The body to close a PR is always the same, so making it static so that it's reus
  */
 class BodyToClosePR {
 
-    static Map<String, String> body = new HashMap<>();
+    private static Map<String, String> body = new HashMap<>();
 
-    static
-    {
+    static {
         body.put("state", "closed");
     }
 
