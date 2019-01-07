@@ -18,11 +18,14 @@ import static org.mockito.Mockito.*;
 public class PullRequestCleaningHandlerTest {
 
     private static final int PR_AGE_LIMIT_IN_DAYS = 180;
+    private static final int PULL_REQUEST_NUMBER = 7;
 
     private PullRequestCleaningHandler pullRequestCleaningHandler;
     private RemoteGitHub remoteGitHub;
     private DateProvider dateProvider;
     private PushEvent pushEvent;
+
+
 
     @Before
     public void setUp() throws IOException {
@@ -42,23 +45,22 @@ public class PullRequestCleaningHandlerTest {
 
     @Test
     public void shouldClosePRWhichOutlivedTheLimit() {
-        int pullRequestNumber = 7;
         LocalDateTime oldDate = dateProvider.now().minusDays(PR_AGE_LIMIT_IN_DAYS + 10);
-        PullRequest oldPullRequest = new PullRequest(pullRequestNumber);
+        PullRequest oldPullRequest = new PullRequest(PULL_REQUEST_NUMBER);
         oldPullRequest.setCreationDate(oldDate);
 
         pullRequestCleaningHandler.handle(pushEvent, Collections.singletonList(oldPullRequest));
 
         String expectedRepositoryName = pushEvent.getRepository().getFullName();
         verify(remoteGitHub, times(1))
-                .closePullRequest(expectedRepositoryName, pullRequestNumber);
+                .closePullRequest(expectedRepositoryName, PULL_REQUEST_NUMBER);
     }
 
     @Test
     public void shouldNotClosePRWhichAgeIsBelowTheLimit() {
-        int pullRequestNumber = 5;
+
         LocalDateTime recentDate = dateProvider.now().minusDays(1);
-        PullRequest recentPullRequest = new PullRequest(pullRequestNumber);
+        PullRequest recentPullRequest = new PullRequest(PULL_REQUEST_NUMBER);
         recentPullRequest.setCreationDate(recentDate);
 
         pullRequestCleaningHandler.handle(pushEvent, Collections.singletonList(recentPullRequest));
