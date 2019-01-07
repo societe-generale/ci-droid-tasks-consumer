@@ -18,8 +18,9 @@ ciDroidBehavior:
 # whenPushOnDefaultBranch:
   tryToRebaseOpenPrs.enabled: true
   notifyOwnerForNonMergeablePr.enabled: true
-  closeOldPullRequests.enabled: true
-  closeOldPullRequests.limitInDays: 180
+  closeOldPullRequests:
+    enabled: true
+    limitInDays: 180
 # whenPullRequestEvent:
   bestPracticeNotifier.enabled: true
   patternToResourceMapping:
