@@ -149,10 +149,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
 
     @Override
     default void closePullRequest(String repoFullName, int prNumber) {
-        Map<String, String> body = new HashMap<>();
-        body.put("state", "closed");
-
-        updatePullRequest(repoFullName, prNumber, body);
+        updatePullRequest(repoFullName, prNumber, BodyToClosePR.getContent());
     }
 
     @RequestMapping(method = RequestMethod.PATCH,
@@ -188,6 +185,9 @@ class RemoteGitHubConfig {
     }
 
     @Bean
+    /**
+     * adding an ApacheHttpClient to enable PATCH requests with Feign
+     */
     Client apacheHttpClient() {
         return new ApacheHttpClient();
     }
@@ -239,6 +239,23 @@ class OAuthInterceptor implements RequestInterceptor {
     public void apply(RequestTemplate requestTemplate) {
 
         requestTemplate.header(AUTHORIZATION_HEADER, "token " + oauthToken);
+    }
+}
+
+/*
+The body to close a PR is always the same, so making it static so that it's reused every time
+ */
+class BodyToClosePR {
+
+    static Map<String, String> body = new HashMap<>();
+
+    static
+    {
+        body.put("state", "closed");
+    }
+
+    public static Map getContent() {
+        return body;
     }
 }
 
