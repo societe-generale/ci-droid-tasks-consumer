@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- PR #45 - handler to close old PRs automatically - Thanks @juliette-derancourt !!
 
 ### Changed
 
