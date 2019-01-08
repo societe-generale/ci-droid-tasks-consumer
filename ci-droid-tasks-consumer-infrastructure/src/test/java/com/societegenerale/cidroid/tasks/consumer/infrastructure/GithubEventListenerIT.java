@@ -3,14 +3,10 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMock;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -45,12 +41,6 @@ import static org.mockito.Mockito.*;
 public class GithubEventListenerIT {
 
     private final int PULL_REQUEST_ID=1347;
-
-    @Autowired
-    private NotifierMock notifier;
-
-    @Autowired
-    List<Notifier> notifiers;
 
     static boolean hasGitHubMockServerStarted = false;
 
@@ -90,7 +80,6 @@ public class GithubEventListenerIT {
         }
 
         githubMockServer.reset();
-        notifier.getNotifications().clear();
 
         githubMockServer.updatePRmergeabilityStatus(PULL_REQUEST_ID,NOT_MERGEABLE);
     }
@@ -100,26 +89,6 @@ public class GithubEventListenerIT {
         githubMockServer.stop();
         hasGitHubMockServerStarted = false;
     }
-
-    @Test
-    public void shouldNotifyPRownerIFNotMergeable() {
-
-        githubEventListener.onGitHubPushEventOnDefaultBranch(pushEvent);
-
-        await().atMost(2, SECONDS)
-                .until(() -> assertThat(notifier.getNotifications()).hasSize(1));
-
-        Pair<User,Message> notification=notifier.getNotifications().get(0);
-
-        User prOwner=notification.getKey();
-        Message message=notification.getValue();
-
-        assertThat(prOwner.getLogin()).isEqualTo("octocat");
-        assertThat(prOwner.getEmail()).isEqualTo("octocat@github.com");
-
-        assertThat(message.getContent()).startsWith("PR "+PULL_REQUEST_ID+" is not mergeable following commit");
-    }
-
 
     @Test
     public void shouldRebaseMergeablePr() throws Exception {

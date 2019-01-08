@@ -32,7 +32,9 @@ public class GitHubMockServer {
     }
 
     public void stop() {
-        githubMockServer.stop();
+        if (githubMockServer.isRunning()) {
+            githubMockServer.stop();
+        }
     }
 
     private void initRoutes() {
