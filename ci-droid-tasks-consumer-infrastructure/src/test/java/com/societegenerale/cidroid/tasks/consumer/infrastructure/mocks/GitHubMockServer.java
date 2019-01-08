@@ -40,7 +40,7 @@ public class GitHubMockServer {
                 .when(request()
                         .withMethod("GET")
                         .withPath("/api/v3/repos/baxterthehacker/public-repo/pulls")
-                        .withQueryStringParameter("status", "open"))
+                        .withQueryStringParameter("state", "open"))
                 .respond(getOpenPullRequests());
 
         githubMockServer
