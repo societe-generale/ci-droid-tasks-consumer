@@ -5,7 +5,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergea
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.HttpResponse;
 
 import java.io.IOException;
@@ -13,69 +12,55 @@ import java.io.InputStream;
 import java.util.Objects;
 
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.NOT_MERGEABLE;
-import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 @Slf4j
-public class GitHubMockServer {
+public class GitHubMockServer extends MockServer {
 
     public static final int GITHUB_MOCK_PORT = 9900;
 
-    private ClientAndServer githubMockServer;
     private PRmergeableStatus pullRequestMergeableStatus;
     private ObjectMapper objectMapper;
 
     public GitHubMockServer() {
+        super(GITHUB_MOCK_PORT);
         pullRequestMergeableStatus = NOT_MERGEABLE;
         objectMapper = new ObjectMapper();
-    }
-
-    public void start() {
-        if (githubMockServer != null && githubMockServer.isRunning()) {
-            return;
-        }
-        githubMockServer = startClientAndServer(GITHUB_MOCK_PORT);
-        initRoutes();
-    }
-
-    public void stop() {
-        if (githubMockServer.isRunning()) {
-            githubMockServer.stop();
-        }
     }
 
     public void updatePullRequestMergeabilityStatus(PRmergeableStatus status) {
         pullRequestMergeableStatus = status;
     }
 
-    private void initRoutes() {
-        githubMockServer
+    @Override
+    protected void initRoutes() {
+        mockServer
                 .when(request()
                         .withMethod("GET")
                         .withPath("/api/v3/repos/baxterthehacker/public-repo/pulls")
                         .withQueryStringParameter("state", "open"))
                 .respond(getOpenPullRequests());
 
-        githubMockServer
+        mockServer
                 .when(request()
                         .withMethod("GET")
                         .withPath("/api/v3/repos/baxterthehacker/public-repo/pulls/[0-9]+"))
                 .respond(request -> getPullRequest());
 
-        githubMockServer
+        mockServer
                 .when(request()
                         .withMethod("GET")
                         .withPath("/api/v3/users/baxterthehacker"))
                 .respond(getUser());
 
-        githubMockServer
+        mockServer
                 .when(request()
                         .withMethod("POST")
                         .withPath("/api/v3/repos/baxterthehacker/public-repo/issues/[0-9]+/comment"))
                 .respond(response().withStatusCode(200));
 
-        githubMockServer
+        mockServer
                 .when(request()
                         .withMethod("PATCH")
                         .withPath("/api/v3/repos/baxterthehacker/public-repo/pulls/[0-9]+"))
