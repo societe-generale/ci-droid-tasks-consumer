@@ -3,8 +3,10 @@
 ## [Unreleased]
 
 ### Added
+- PR #45 - handler to close old PRs automatically - Thanks [@juliette-derancourt](https://github.com/juliette-derancourt) !!
 
 ### Changed
+- upgraded to ci-droid-api 1.0.6 (CVE fix)
 
 ### Deprecated
 

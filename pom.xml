@@ -79,7 +79,7 @@
 
         <jacoco.version>0.8.1</jacoco.version>
 
-        <ci-droid-api.version>1.0.5</ci-droid-api.version>
+        <ci-droid-api.version>1.0.6</ci-droid-api.version>
         <ci-droid-extensions.version>1.0.6</ci-droid-extensions.version>
     </properties>
 
@@ -236,11 +236,7 @@
                 <groupId>org.mock-server</groupId>
                 <artifactId>mockserver-netty</artifactId>
                 <version>${mockserver.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mock-server</groupId>
-                <artifactId>mockserver-client-java</artifactId>
-                <version>${mockserver.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <dependency>
