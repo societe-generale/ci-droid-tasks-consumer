@@ -19,7 +19,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMock.GITHUB_MOCK_PORT;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,12 +37,13 @@ public class PullRequestNotificationsIT {
     @Autowired
     private NotifierMock notifier;
 
+    @Autowired
     private GitHubMockServer githubMockServer;
+
     private PushEvent pushEvent;
 
     @Before
     public void setUp() throws IOException {
-        githubMockServer = new GitHubMockServer(GITHUB_MOCK_PORT);
         githubMockServer.start();
 
         notifier.getNotifications().clear();

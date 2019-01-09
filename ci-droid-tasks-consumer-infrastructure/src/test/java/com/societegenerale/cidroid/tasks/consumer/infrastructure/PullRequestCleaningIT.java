@@ -29,12 +29,13 @@ public class PullRequestCleaningIT {
     @Autowired
     private GithubEventListener githubEventListener;
 
+    @Autowired
     private GitHubMockServer githubMockServer;
+
     private PushEvent pushEvent;
 
     @Before
     public void setUp() throws IOException {
-        githubMockServer = new GitHubMockServer(GITHUB_MOCK_PORT);
         githubMockServer.start();
 
         pushEvent = new ObjectMapper().readValue(

@@ -20,13 +20,13 @@ import static org.mockserver.model.HttpResponse.response;
 @Slf4j
 public class GitHubMockServer {
 
+    public static final int GITHUB_MOCK_PORT = 9900;
+
     private ClientAndServer githubMockServer;
-    private int port;
     private PRmergeableStatus pullRequestMergeableStatus;
     private ObjectMapper objectMapper;
 
-    public GitHubMockServer(int port) {
-        this.port = port;
+    public GitHubMockServer() {
         pullRequestMergeableStatus = NOT_MERGEABLE;
         objectMapper = new ObjectMapper();
     }
@@ -35,7 +35,7 @@ public class GitHubMockServer {
         if (githubMockServer != null && githubMockServer.isRunning()) {
             return;
         }
-        githubMockServer = startClientAndServer(port);
+        githubMockServer = startClientAndServer(GITHUB_MOCK_PORT);
         initRoutes();
     }
 

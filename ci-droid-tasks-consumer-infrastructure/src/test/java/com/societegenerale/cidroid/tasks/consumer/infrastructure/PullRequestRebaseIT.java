@@ -22,7 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.util.List;
 
-import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMock.GITHUB_MOCK_PORT;
+import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer.GITHUB_MOCK_PORT;
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.MERGEABLE;
 import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -44,13 +44,14 @@ public class PullRequestRebaseIT {
     @Autowired
     private Rebaser mockRebaser;
 
+    @Autowired
     private GitHubMockServer githubMockServer;
+
     private PushEvent pushEvent;
     private PullRequest pullRequest;
 
     @Before
     public void setUp() throws IOException {
-        githubMockServer = new GitHubMockServer(GITHUB_MOCK_PORT);
         githubMockServer.start();
 
         ObjectMapper objectMapper = new ObjectMapper();
