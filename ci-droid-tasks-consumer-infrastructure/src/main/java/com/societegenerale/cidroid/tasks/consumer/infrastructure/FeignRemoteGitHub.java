@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +30,8 @@ import static feign.FeignException.errorStatus;
 
 @FeignClient(name = "github", url = "${gitHub.api.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
 public interface FeignRemoteGitHub extends RemoteGitHub {
+
+    Map<String, String> bodyToClosePR = Collections.singletonMap("state", "closed");
 
     @RequestMapping(method = RequestMethod.GET,
             value = "/repos/{repoFullName}/pulls?state=open",
@@ -149,7 +151,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
 
     @Override
     default void closePullRequest(String repoFullName, int prNumber) {
-        updatePullRequest(repoFullName, prNumber, BodyToClosePR.getContent());
+        updatePullRequest(repoFullName, prNumber, bodyToClosePR);
     }
 
     @RequestMapping(method = RequestMethod.PATCH,
@@ -242,21 +244,6 @@ class OAuthInterceptor implements RequestInterceptor {
     }
 }
 
-/*
-The body to close a PR is always the same, so making it static so that it's reused every time
- */
-class BodyToClosePR {
-
-    private static Map<String, String> body = new HashMap<>();
-
-    static {
-        body.put("state", "closed");
-    }
-
-    public static Map getContent() {
-        return body;
-    }
-}
 
 @Slf4j
 class BranchCreationErrorDecoder implements ErrorDecoder {
