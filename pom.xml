@@ -70,7 +70,6 @@
         <commons-lang3.version>3.7</commons-lang3.version>
         <jackson.version>2.9.8</jackson.version>
 
-        <net.code-story.version>2.104</net.code-story.version>
         <mockserver.version>5.5.1</mockserver.version>
         <awaitility.version>1.7.0</awaitility.version>
         <greenmail.version>1.5.6</greenmail.version>
@@ -206,6 +205,7 @@
                 <artifactId>logstash-logback-encoder</artifactId>
                 <version>${logstash-logback-encoder.version}</version>
             </dependency>
+
             <!-- for conditional logging with logback -->
             <dependency>
                 <groupId>org.codehaus.janino</groupId>
@@ -226,13 +226,6 @@
             </dependency>
 
             <dependency>
-                <groupId>net.code-story</groupId>
-                <artifactId>http</artifactId>
-                <version>${net.code-story.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
                 <groupId>org.mock-server</groupId>
                 <artifactId>mockserver-netty</artifactId>
                 <version>${mockserver.version}</version>
@@ -244,7 +237,6 @@
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
-
 
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
