@@ -32,7 +32,7 @@ import static feign.FeignException.errorStatus;
 public interface FeignRemoteGitHub extends RemoteGitHub {
 
     @RequestMapping(method = RequestMethod.GET,
-            value = "/repos/{repoFullName}/pulls?status=open",
+            value = "/repos/{repoFullName}/pulls?state=open",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
