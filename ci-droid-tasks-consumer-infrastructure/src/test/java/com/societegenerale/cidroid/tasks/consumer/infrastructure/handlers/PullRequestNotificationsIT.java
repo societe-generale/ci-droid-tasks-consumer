@@ -1,61 +1,29 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import java.io.IOException;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = { InfraConfig.class, TestConfig.class },
-        initializers = YamlFileApplicationContextInitializer.class)
-public class PullRequestNotificationsIT {
+public class PullRequestNotificationsIT extends GitHubEventHandlerIT {
 
     private static final String OWNER_LOGIN = "octocat";
     private static final String OWNER_EMAIL = "octocat@github.com";
     private static final int PULL_REQUEST_ID = 1347;
 
     @Autowired
-    private GithubEventListener githubEventListener;
-
-    @Autowired
     private NotifierMock notifier;
 
-    @Autowired
-    private GitHubMockServer githubMockServer;
-
-    private PushEvent pushEvent;
-
     @Before
-    public void setUp() throws IOException {
-        githubMockServer.start();
-
+    public void setUpNotifier() {
         notifier.getNotifications().clear();
-
-        pushEvent = new ObjectMapper().readValue(
-                getClass().getClassLoader().getResourceAsStream("pushEvent.json"),
-                PushEvent.class);
-    }
-
-    @After
-    public void tearDown() {
-        githubMockServer.stop();
     }
 
     @Test
