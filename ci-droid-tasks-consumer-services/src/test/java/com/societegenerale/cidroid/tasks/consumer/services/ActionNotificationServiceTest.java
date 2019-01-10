@@ -51,7 +51,7 @@ public class ActionNotificationServiceTest {
     private BulkActionToPerform.BulkActionToPerformBuilder bulkActionToPerformBuilder;
 
     @Before
-    public void setup() {
+    public void setUp() {
         testActionToPerform.setContentToProvide(MODIFIED_CONTENT);
         testActionToPerform.setContinueIfResourceDoesntExist(true);
 

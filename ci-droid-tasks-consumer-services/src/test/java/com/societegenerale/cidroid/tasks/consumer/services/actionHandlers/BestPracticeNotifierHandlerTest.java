@@ -47,7 +47,7 @@ public class BestPracticeNotifierHandlerTest {
     PullRequestEvent pullRequestEvent;
 
     @Before
-    public void setup() {
+    public void setUp() {
 
         matchingPullRequestFile.setFilename(MATCHING_FILENAME);
 

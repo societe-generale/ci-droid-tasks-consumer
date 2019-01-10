@@ -90,7 +90,7 @@ public class ActionToPerformServiceTest {
     private BulkActionToPerform.BulkActionToPerformBuilder bulkActionToPerformBuilder;
 
     @Before
-    public void setup() throws GitHubAuthorizationException {
+    public void setUp() throws GitHubAuthorizationException {
 
         testActionToPerform.setContentToProvide(MODIFIED_CONTENT);
         testActionToPerform.setContinueIfResourceDoesntExist(true);

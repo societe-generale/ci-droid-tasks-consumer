@@ -83,7 +83,7 @@ public class CiDroidTasksConsumerAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "notifiers", value = "github.prComment.enable", havingValue = "true")
-    public Notifier GitHubCommentOnPRnotifier(RemoteGitHub gitHub) {
+    public Notifier gitHubCommentOnPRnotifier(RemoteGitHub gitHub) {
 
         return new GitHubPullRequestCommentNotifier(gitHub);
     }

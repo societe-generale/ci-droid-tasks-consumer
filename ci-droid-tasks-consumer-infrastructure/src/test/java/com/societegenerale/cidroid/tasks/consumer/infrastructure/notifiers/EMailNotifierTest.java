@@ -29,7 +29,7 @@ public class EMailNotifierTest {
     private GreenMail mailServer = new GreenMail(ServerSetupTest.SMTP);
 
     @Before
-    public void setup() {
+    public void setUp() {
 
         emailNotifier=buildAndConfigure();
 

@@ -59,7 +59,7 @@ public class GitRebaserTest {
     CheckoutCommand mockCheckoutCommand = mock(CheckoutCommand.class);
 
     @Before
-    public void setup() throws IOException, GitAPIException {
+    public void setUp() throws IOException, GitAPIException {
 
         File tmpDirectory = createWorkingDirIfRequired();
 

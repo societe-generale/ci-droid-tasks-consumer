@@ -39,7 +39,7 @@ public class NotificationsHandlerTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
-    public void setup() throws IOException {
+    public void setUp() throws IOException {
 
         String prAsString = readFromInputStream(getClass().getResourceAsStream(SINGLE_PULL_REQUEST_JSON));
         singlePr = objectMapper.readValue(prAsString, PullRequest.class);

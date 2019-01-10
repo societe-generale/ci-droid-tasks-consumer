@@ -26,7 +26,7 @@ public class GithubEventListenerTest {
     private GithubEventListener listener;
 
     @Before
-    public void setup() {
+    public void setUp() {
 
         listener=new GithubEventListener(mockPushOnDefaultBranchService, mockPullRequestEventService);
     }

@@ -42,7 +42,7 @@ public class ActionToPerformListenerTest {
     private ActionToPerformCommand incomingCommand;
 
     @Before
-    public void setup() throws IOException {
+    public void setUp() throws IOException {
 
         String incomingCommandAsString = IOUtils
                 .toString(ActionToPerformListenerTest.class.getClassLoader().getResourceAsStream("incomingOverWriteStaticContentAction.json"),

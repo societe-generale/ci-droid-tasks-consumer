@@ -50,7 +50,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
 
     @Before
-    public void setup() throws IOException {
+    public void setUp() throws IOException {
 
         List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers = new ArrayList<>();
         pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandler);

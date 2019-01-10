@@ -22,7 +22,7 @@ public class PullRequestEventServiceTest {
     PullRequestEvent pullRequestEvent;
 
     @Before
-    public void setup() throws IOException {
+    public void setUp() throws IOException {
 
         pullRequestEventService = new PullRequestEventService(Arrays.asList(mockHandler));
 

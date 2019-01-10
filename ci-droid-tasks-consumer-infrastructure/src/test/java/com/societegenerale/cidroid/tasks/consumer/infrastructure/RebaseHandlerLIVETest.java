@@ -39,7 +39,7 @@ public class RebaseHandlerLIVETest {
     RebaseHandler rebaseHandler;
 
     @Before
-    public void setup() throws IOException {
+    public void setUp() throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
