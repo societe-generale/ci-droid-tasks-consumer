@@ -113,7 +113,8 @@ public class ActionToPerformService {
 
             Event techEvent = Event.technical(BULK_ACTION_PROCESSED);
             techEvent.addAttribute(REPO, repoFullName);
-            techEvent.addAttribute("bulkAction", action.toString());
+            techEvent.addAttribute("bulkActionReceived", action.toString());
+            techEvent.addAttribute("bulkActionType", action.getActionType());
             techEvent.addAttribute(DURATION, String.valueOf(stopWatchForMonitoring.getTime()));
             techEvent.publish();
         }
