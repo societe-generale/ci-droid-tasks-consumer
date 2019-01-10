@@ -3,58 +3,49 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.TargetHttpBackendForNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.TargetHttpBackendForNotifier.TARGET_HTTP_BACKEND_MOCK_PORT;
 import static java.util.Collections.emptyMap;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class HttpNotifierTest {
 
-    HttpNotifier httpNotifier=new HttpNotifier("http://localhost:9901/notify");
+    private HttpNotifier httpNotifier;
 
-    static boolean hasHttpNotifierBackendStarted = false;
-
-    TargetHttpBackendForNotifier httpBackendServer=new TargetHttpBackendForNotifier();
+    private TargetHttpBackendForNotifier httpBackendServer;
 
     @Before
-    public void setup(){
+    public void setUp(){
+        String notifierUrl = "http://localhost:" + TARGET_HTTP_BACKEND_MOCK_PORT + "/notify";
+        httpNotifier = new HttpNotifier(notifierUrl);
 
-        if (!hasHttpNotifierBackendStarted) {
+        httpBackendServer = new TargetHttpBackendForNotifier();
+        httpBackendServer.start();
+    }
 
-            httpBackendServer.start();
-
-            await().atMost(5, SECONDS)
-                    .until(() -> assertThat(TargetHttpBackendForNotifier.hasStarted()));
-
-            hasHttpNotifierBackendStarted = true;
-        }
-
-        httpBackendServer.reset();
+    @After
+    public void tearDown() {
+        httpBackendServer.stop();
     }
 
     @Test
-    public void shouldSendData(){
-
-        String emailUser="toto@socgen.com";
-
-        User user=User.builder().email(emailUser).build();
+    public void shouldSendData() {
+        String emailUser = "toto@socgen.com";
+        User user = User.builder().email(emailUser).build();
 
         String messageContent = "message content";
-        Message message=new Message(messageContent);
+        Message message = new Message(messageContent);
 
-        httpNotifier.notify(user,message, emptyMap());
+        httpNotifier.notify(user, message, emptyMap());
 
         assertThat(httpBackendServer.getNotificationsReceived()).hasSize(1);
 
-        String notif=httpBackendServer.getNotificationsReceived().get(0);
+        String notification = httpBackendServer.getNotificationsReceived().get(0);
 
-        assertThat(notif).contains(emailUser);
-        assertThat(notif).contains(messageContent);
+        assertThat(notification).contains(emailUser, messageContent);
     }
-
-
 
 }

@@ -1,6 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMock;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
@@ -30,12 +30,12 @@ public class TestConfig {
     }
 
     @Bean
-    public GitHubMock mockGitHub() {
-        return new GitHubMock();
+    public GitHubMockServer gitHubMockServer() {
+        return new GitHubMockServer();
     }
 
     @Bean
-    public PushEventOnDefaultBranchHandler rebaseHandler(Rebaser rebaser,RemoteGitHub remoteGitHub){
+    public PushEventOnDefaultBranchHandler rebaseHandler(Rebaser rebaser, RemoteGitHub remoteGitHub){
 
         return new RebaseHandler(rebaser, remoteGitHub);
     }
