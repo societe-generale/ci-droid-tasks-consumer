@@ -3,14 +3,15 @@ package com.societegenerale.cidroid.tasks.consumer.services;
 import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
+import com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.PR_NUMBER;
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.REPO;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
 
 @Slf4j
 public class PullRequestEventService {

@@ -33,9 +33,9 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.*;
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.PR_NOT_REBASED;
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.PR_REBASED;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.*;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PR_NOT_REBASED;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PR_REBASED;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 

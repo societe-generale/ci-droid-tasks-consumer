@@ -16,8 +16,8 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.util.List;
 import java.util.Optional;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.*;
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.*;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.*;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.*;
 
 @Slf4j
 public class ActionToPerformService {

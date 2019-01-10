@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.PR_NUMBER;
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.REPO;
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.NOTIFICATION_FOR_NON_MERGEABLE_PR;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.NOTIFICATION_FOR_NON_MERGEABLE_PR;
 import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
 
 @Slf4j

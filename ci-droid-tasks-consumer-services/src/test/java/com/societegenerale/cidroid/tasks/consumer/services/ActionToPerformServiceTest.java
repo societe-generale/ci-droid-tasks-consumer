@@ -22,8 +22,8 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.*;
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.*;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
