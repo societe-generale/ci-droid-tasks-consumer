@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.services.actionHandlers;
+package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;

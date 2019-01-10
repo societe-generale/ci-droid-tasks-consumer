@@ -1,7 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PullRequestEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
