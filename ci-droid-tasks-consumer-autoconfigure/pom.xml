@@ -4,7 +4,7 @@
 
     <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
     <artifactId>ci-droid-tasks-consumer-autoconfigure</artifactId>
-    <version>1.0.12-SNAPSHOT</version>
+    <version>1.0.12</version>
     <packaging>jar</packaging>
 
     <name>CI droid tasks consumer autoconfigure</name>
@@ -12,7 +12,7 @@
     <parent>
         <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
         <artifactId>ci-droid-tasks-consumer-parent</artifactId>
-        <version>1.0.12-SNAPSHOT</version>
+        <version>1.0.12</version>
     </parent>
 
 
