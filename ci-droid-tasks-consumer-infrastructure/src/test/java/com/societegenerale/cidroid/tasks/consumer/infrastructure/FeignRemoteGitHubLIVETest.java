@@ -29,7 +29,7 @@ public class FeignRemoteGitHubLIVETest {
     @Test
     public void manualTestForPublishingComment(){
 
-        feignRemoteGitHub.addCommentDescribingRebase("myOrga/myProject", 2, new Comment("test Vincent"));
+        feignRemoteGitHub.addCommentOnPR("myOrga/myProject", 2, new Comment("test Vincent"));
 
     }
 

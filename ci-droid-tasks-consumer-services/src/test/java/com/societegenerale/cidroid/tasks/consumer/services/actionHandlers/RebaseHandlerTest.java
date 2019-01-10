@@ -72,7 +72,7 @@ public class RebaseHandlerTest {
 
         ArgumentCaptor<Comment> commentCaptor=ArgumentCaptor.forClass(Comment.class);
 
-        verify(mockRemoteGitHub,times(1)).addCommentDescribingRebase(eq(singlePr.getRepo().getFullName()),eq(singlePr.getNumber()),commentCaptor.capture());
+        verify(mockRemoteGitHub,times(1)).addCommentOnPR(eq(singlePr.getRepo().getFullName()),eq(singlePr.getNumber()),commentCaptor.capture());
 
         String comment=commentCaptor.getValue().getBody();
 
@@ -112,7 +112,7 @@ public class RebaseHandlerTest {
 
         ArgumentCaptor<Comment> commentCaptor=ArgumentCaptor.forClass(Comment.class);
 
-        verify(mockRemoteGitHub,times(1)).addCommentDescribingRebase(eq(singlePr.getRepo().getFullName()),eq(singlePr.getNumber()),commentCaptor.capture());
+        verify(mockRemoteGitHub,times(1)).addCommentOnPR(eq(singlePr.getRepo().getFullName()),eq(singlePr.getNumber()),commentCaptor.capture());
 
         String comment=commentCaptor.getValue().getBody();
 

@@ -60,7 +60,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
                     consumes = MediaType.APPLICATION_JSON_VALUE,
                     produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
-    void addCommentDescribingRebase(@PathVariable("repoFullName") String repoFullName,
+    void addCommentOnPR(@PathVariable("repoFullName") String repoFullName,
                                     @PathVariable("prNumber") int prNumber,
                                     @RequestBody Comment comment);
 

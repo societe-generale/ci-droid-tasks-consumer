@@ -27,7 +27,7 @@ public class GitHubPullRequestCommentNotifier implements Notifier {
 
         PullRequest pr=(PullRequest)additionalInfos.get(PULL_REQUEST);
 
-        remoteGitHub.addCommentDescribingRebase(pr.getRepo().getFullName(),pr.getNumber(),new Comment(message.getContent()));
+        remoteGitHub.addCommentOnPR(pr.getRepo().getFullName(),pr.getNumber(),new Comment(message.getContent()));
 
     }
 

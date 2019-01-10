@@ -49,7 +49,7 @@ public class RebaseHandler implements PushEventOnDefaultBranchHandler {
             if(isNotEmpty(pr.getWarningMessageDuringRebasing())){
 
                 log.info("adding a warn comment on PR {}", pr.getNumber());
-                gitHub.addCommentDescribingRebase(pr.getRepo().getFullName(), pr.getNumber(), new Comment("There was a problem during the rebase/push process :\n"+pr.getWarningMessageDuringRebasing()));
+                gitHub.addCommentOnPR(pr.getRepo().getFullName(), pr.getNumber(), new Comment("There was a problem during the rebase/push process :\n"+pr.getWarningMessageDuringRebasing()));
 
                 if(!rebasedCommitsForPr.isEmpty()){
                     log.warn("since PR was marked with a warn message, no rebased commits should be reported.. please check what happened - a bug ??");
@@ -62,7 +62,7 @@ public class RebaseHandler implements PushEventOnDefaultBranchHandler {
 
                 log.info("adding an INFO comment on PR {}", pr.getNumber());
 
-                gitHub.addCommentDescribingRebase(pr.getRepo().getFullName(), pr.getNumber(), new Comment(comment));
+                gitHub.addCommentOnPR(pr.getRepo().getFullName(), pr.getNumber(), new Comment(comment));
             }
         }
 
