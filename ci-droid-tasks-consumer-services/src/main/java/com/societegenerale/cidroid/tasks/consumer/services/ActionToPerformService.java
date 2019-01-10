@@ -109,16 +109,8 @@ public class ActionToPerformService {
             actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING));
         }
         finally {
-            stopWatchForMonitoring.stop();
-
-            Event techEvent = Event.technical(BULK_ACTION_PROCESSED);
-            techEvent.addAttribute(REPO, repoFullName);
-            techEvent.addAttribute("bulkActionReceived", action.toString());
-            techEvent.addAttribute("bulkActionType", action.getActionType());
-            techEvent.addAttribute(DURATION, String.valueOf(stopWatchForMonitoring.getTime()));
-            techEvent.publish();
+            publishMonitoringEventForBulkActionProcessed(action, stopWatchForMonitoring, repoFullName);
         }
-
 
     }
 
@@ -137,11 +129,7 @@ public class ActionToPerformService {
                 updatedResource.getContent().setHtmlUrl(createdPr.get().getHtmlUrl());
                 updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_CREATED);
 
-                Event techEvent = Event.technical(BULK_ACTION_PR_CREATED);
-                techEvent.addAttribute(REPO, impactedRepo.getFullName());
-                techEvent.addAttribute("targetBranchForPR", targetBranchForPR);
-                techEvent.addAttribute(PR_NUMBER, String.valueOf(createdPr.get().getNumber()));
-                techEvent.publish();
+                publishMonitoringEventForPRcreated(impactedRepo, targetBranchForPR, createdPr);
 
             } else {
                 //TODO test this scenario
@@ -245,19 +233,39 @@ public class ActionToPerformService {
                 .updateContent(resourceToUpdate.getRepoFullName(), resourceToUpdate.getFilePathOnRepo(), directCommit,
                         action.getGitHubOauthToken());
 
-        publishMonitoringEvent(resourceToUpdate, updatedResource);
+        publishMonitoringEventForCommitPerformed(resourceToUpdate, updatedResource);
 
         updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK);
 
         return updatedResource;
     }
 
-    private void publishMonitoringEvent(ResourceToUpdate resourceToUpdate, UpdatedResource updatedResource) {
+    private void publishMonitoringEventForCommitPerformed(ResourceToUpdate resourceToUpdate, UpdatedResource updatedResource) {
         Event techEvent = Event.technical(BULK_ACTION_COMMIT_PERFORMED);
         techEvent.addAttribute(REPO, resourceToUpdate.getRepoFullName());
         techEvent.addAttribute("resourceName", resourceToUpdate.getFilePathOnRepo());
         techEvent.addAttribute("branchName", resourceToUpdate.getBranchName());
         techEvent.addAttribute("newCommitSha", updatedResource.getCommit().getSha());
+        techEvent.publish();
+    }
+
+    private void publishMonitoringEventForPRcreated(Repository impactedRepo, String targetBranchForPR, Optional<PullRequest> createdPr) {
+        Event techEvent = Event.technical(BULK_ACTION_PR_CREATED);
+        techEvent.addAttribute(REPO, impactedRepo.getFullName());
+        techEvent.addAttribute("targetBranchForPR", targetBranchForPR);
+        techEvent.addAttribute(PR_NUMBER, String.valueOf(createdPr.get().getNumber()));
+        techEvent.publish();
+    }
+
+    public void publishMonitoringEventForBulkActionProcessed(BulkActionToPerform action, StopWatch stopWatchForMonitoring, String repoFullName) {
+
+        stopWatchForMonitoring.stop();
+
+        Event techEvent = Event.technical(BULK_ACTION_PROCESSED);
+        techEvent.addAttribute(REPO, repoFullName);
+        techEvent.addAttribute("bulkActionReceived", action.toString());
+        techEvent.addAttribute("bulkActionType", action.getActionType());
+        techEvent.addAttribute(DURATION, String.valueOf(stopWatchForMonitoring.getTime()));
         techEvent.publish();
     }
 
