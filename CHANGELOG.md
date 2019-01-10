@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Monitoring closing of old PRs now
 
 ### Changed
 

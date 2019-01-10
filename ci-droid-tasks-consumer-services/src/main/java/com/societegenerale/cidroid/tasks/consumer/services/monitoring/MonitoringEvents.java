@@ -12,6 +12,8 @@ public class MonitoringEvents {
 
     public final static String NOTIFICATION_FOR_NON_MERGEABLE_PR="notificationForPrWithConflicts";
 
+    public final static String OLD_PR_CLOSED="oldPrClosed";
+
     public final static String BULK_ACTION_COMMIT_PERFORMED="bulkActionCommitPerformed";
 
     public final static String BULK_ACTION_PR_CREATED="bulkActionPrCreated";

@@ -4,10 +4,15 @@ import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.model.DateProvider;
 import com.societegenerale.cidroid.tasks.consumer.services.model.GitHubEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.OLD_PR_CLOSED;
 
 @Slf4j
 public class PullRequestCleaningHandler implements PushEventOnDefaultBranchHandler {
@@ -42,6 +47,11 @@ public class PullRequestCleaningHandler implements PushEventOnDefaultBranchHandl
 
     private void closePullRequest(String repoFullName, PullRequest pullRequest) {
         remoteGitHub.closePullRequest(repoFullName, pullRequest.getNumber());
+
+        Event techEvent = Event.technical(OLD_PR_CLOSED);
+        techEvent.addAttribute(REPO, repoFullName);
+        techEvent.addAttribute(PR_NUMBER, String.valueOf(pullRequest.getNumber()));
+        techEvent.publish();
     }
 
 }
