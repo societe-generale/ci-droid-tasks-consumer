@@ -9,10 +9,13 @@ import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlre
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
+import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.BULK_ACTION_COMMIT_PERFORMED;
 
 @Slf4j
 public class ActionToPerformService {
@@ -222,9 +225,20 @@ public class ActionToPerformService {
                 .updateContent(resourceToUpdate.getRepoFullName(), resourceToUpdate.getFilePathOnRepo(), directCommit,
                         action.getGitHubOauthToken());
 
+        publishMonitoringEvent(resourceToUpdate, updatedResource);
+
         updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK);
 
         return updatedResource;
+    }
+
+    private void publishMonitoringEvent(ResourceToUpdate resourceToUpdate, UpdatedResource updatedResource) {
+        Event techEvent = Event.technical(BULK_ACTION_COMMIT_PERFORMED);
+        techEvent.addAttribute("repo", resourceToUpdate.getRepoFullName());
+        techEvent.addAttribute("resourceName", resourceToUpdate.getFilePathOnRepo());
+        techEvent.addAttribute("branchName", resourceToUpdate.getBranchName());
+        techEvent.addAttribute("newCommitSha", updatedResource.getCommit().getSha());
+        techEvent.publish();
     }
 
     private boolean resourceWasNotExisting(String decodedOriginalContent) {
