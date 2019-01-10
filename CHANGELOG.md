@@ -3,19 +3,32 @@
 ## [Unreleased]
 
 ### Added
-- PR #45 - handler to close old PRs automatically - Thanks [@juliette-derancourt](https://github.com/juliette-derancourt) !!
-- PR #54 - Adding some monitoring events around bulk actions
 
 ### Changed
-- upgraded to ci-droid-api 1.0.6 (CVE fix)
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
-- issue #39 - notification when unexpected error while processing bulkAction
-- issue #40 - specific notification when repository doesn't exist
+
+
+## [1.0.12] - 2019-01-10
+
+### Added
+- PR #45 - Handler to close old PRs automatically - Thanks [@juliette-derancourt](https://github.com/juliette-derancourt) !!
+- PR #54 - Adding some monitoring events around bulk actions
+
+### Changed
+- PR #46 - upgraded to ci-droid-api 1.0.6 (CVE fix)
+
+### Removed
+- PR #53 - removed test dependency on code-story - Thanks again [@juliette-derancourt](https://github.com/juliette-derancourt) !!
+
+### Fixed
+- PR #42 - Send notifications when unexpected exception happens during bulkAction processing
+- PR #43 - Sending specific notification when repo mentioned in bulkAction doesn't exist
+- PR #51 - using proper parameter name when calling Github API and fetch open PRs 
 
 ## [1.0.11] - 2018-12-18
 
