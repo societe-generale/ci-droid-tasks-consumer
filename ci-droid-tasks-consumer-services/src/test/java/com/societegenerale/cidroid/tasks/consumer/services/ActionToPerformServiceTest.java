@@ -1,5 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.oneeyedmen.fakir.Faker;
 import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
@@ -8,17 +10,21 @@ import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlre
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
+import com.societegenerale.cidroid.tasks.consumer.services.monitoring.TestAppender;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
 
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class ActionToPerformServiceTest {
@@ -42,6 +48,8 @@ public class ActionToPerformServiceTest {
     private String sha1ForHeadOnMaster = "123456abcdef";
 
     private String branchNameToCreateForPR = "myPrBranch";
+
+    private TestAppender testAppender=new TestAppender();
 
 
     private RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
@@ -103,6 +111,17 @@ public class ActionToPerformServiceTest {
 
         when(mockRemoteGitHub.updateContent(anyString(), anyString(), any(DirectCommit.class), anyString()))
                 .thenReturn(updatedResource); // lenient mocking - we're asserting in verify.
+
+        LoggerContext logCtx = (LoggerContext) LoggerFactory.getILoggerFactory();
+        Logger log = logCtx.getLogger("Main");
+        log.addAppender(testAppender);
+
+    }
+
+    @After
+    public void after(){
+        assertAtLeastOneMonitoringEventOfType(BULK_ACTION_PROCESSED);
+        testAppender.events.clear();
     }
 
     @Test
@@ -527,6 +546,9 @@ public class ActionToPerformServiceTest {
 
         assertThat(actualPrToCreate.getBody()).startsWith("performed on behalf of someUserName by CI-droid");
         assertThat(actualPrToCreate.getBody()).endsWith(expectedCommitMessage);
+
+        assertAtLeastOneMonitoringEventOfType(BULK_ACTION_PR_CREATED);
+
     }
 
     private void assertContentHasBeenUpdatedOnBranch(String branchName) throws GitHubAuthorizationException {
@@ -546,6 +568,14 @@ public class ActionToPerformServiceTest {
         String expectedEncodedContent = new String(Base64.getEncoder().encode(MODIFIED_CONTENT.getBytes()));
         assertThat(actualCommit.getBase64EncodedContent()).isEqualTo(expectedEncodedContent);
 
+        assertAtLeastOneMonitoringEventOfType(BULK_ACTION_COMMIT_PERFORMED);
+    }
+
+    private void assertAtLeastOneMonitoringEventOfType(String eventType) {
+
+        assertThat(testAppender.events.stream()
+                .filter(logEvent -> logEvent.getMDCPropertyMap().getOrDefault("metricName", "NOT_FOUND").equals(eventType)).findAny())
+                .isPresent();
     }
 
     private void mockPullRequestSpecificBehavior() throws BranchAlreadyExistsException, GitHubAuthorizationException {

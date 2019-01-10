@@ -9,10 +9,15 @@ import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlre
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
+import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.*;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.*;
 
 @Slf4j
 public class ActionToPerformService {
@@ -28,13 +33,14 @@ public class ActionToPerformService {
 
     public void perform(BulkActionToPerform action) {
 
-        ResourceToUpdate resourceToUpdate=null;
+        StopWatch stopWatchForMonitoring = StopWatch.createStarted();
+
+        //we're supposed to have only one element in list, but this may change in the future : we'll loop over them.
+        ResourceToUpdate resourceToUpdate = action.getResourcesToUpdate().get(0);
+
+        String repoFullName = resourceToUpdate.getRepoFullName();
 
         try {
-            //we're supposed to have only one element in list, but this may change in the future : we'll loop over them.
-            resourceToUpdate = action.getResourcesToUpdate().get(0);
-
-            String repoFullName = resourceToUpdate.getRepoFullName();
 
             if (action.getGitHubInteraction() instanceof DirectPushGitHubInteraction) {
 
@@ -102,7 +108,9 @@ public class ActionToPerformService {
         catch (Exception e) {
             actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING));
         }
-
+        finally {
+            publishMonitoringEventForBulkActionProcessed(action, stopWatchForMonitoring, repoFullName);
+        }
 
     }
 
@@ -120,6 +128,9 @@ public class ActionToPerformService {
             if (createdPr.isPresent()) {
                 updatedResource.getContent().setHtmlUrl(createdPr.get().getHtmlUrl());
                 updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_CREATED);
+
+                publishMonitoringEventForPRcreated(impactedRepo, targetBranchForPR, createdPr);
+
             } else {
                 //TODO test this scenario
                 updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_BUT_PR_CREATION_KO);
@@ -222,9 +233,40 @@ public class ActionToPerformService {
                 .updateContent(resourceToUpdate.getRepoFullName(), resourceToUpdate.getFilePathOnRepo(), directCommit,
                         action.getGitHubOauthToken());
 
+        publishMonitoringEventForCommitPerformed(resourceToUpdate, updatedResource);
+
         updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK);
 
         return updatedResource;
+    }
+
+    private void publishMonitoringEventForCommitPerformed(ResourceToUpdate resourceToUpdate, UpdatedResource updatedResource) {
+        Event techEvent = Event.technical(BULK_ACTION_COMMIT_PERFORMED);
+        techEvent.addAttribute(REPO, resourceToUpdate.getRepoFullName());
+        techEvent.addAttribute("resourceName", resourceToUpdate.getFilePathOnRepo());
+        techEvent.addAttribute("branchName", resourceToUpdate.getBranchName());
+        techEvent.addAttribute("newCommitSha", updatedResource.getCommit().getSha());
+        techEvent.publish();
+    }
+
+    private void publishMonitoringEventForPRcreated(Repository impactedRepo, String targetBranchForPR, Optional<PullRequest> createdPr) {
+        Event techEvent = Event.technical(BULK_ACTION_PR_CREATED);
+        techEvent.addAttribute(REPO, impactedRepo.getFullName());
+        techEvent.addAttribute("targetBranchForPR", targetBranchForPR);
+        techEvent.addAttribute(PR_NUMBER, String.valueOf(createdPr.get().getNumber()));
+        techEvent.publish();
+    }
+
+    public void publishMonitoringEventForBulkActionProcessed(BulkActionToPerform action, StopWatch stopWatchForMonitoring, String repoFullName) {
+
+        stopWatchForMonitoring.stop();
+
+        Event techEvent = Event.technical(BULK_ACTION_PROCESSED);
+        techEvent.addAttribute(REPO, repoFullName);
+        techEvent.addAttribute("bulkActionReceived", action.toString());
+        techEvent.addAttribute("bulkActionType", action.getActionType());
+        techEvent.addAttribute(DURATION, String.valueOf(stopWatchForMonitoring.getTime()));
+        techEvent.publish();
     }
 
     private boolean resourceWasNotExisting(String decodedOriginalContent) {

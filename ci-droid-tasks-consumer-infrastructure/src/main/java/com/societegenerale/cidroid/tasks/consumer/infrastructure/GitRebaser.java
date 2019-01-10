@@ -33,8 +33,9 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.PR_NOT_REBASED;
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.PR_REBASED;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.*;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PR_NOT_REBASED;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PR_REBASED;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
@@ -42,9 +43,6 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class GitRebaser implements Rebaser {
 
-    public static final String REPOSITORY_KEY_FOR_MONITORING = "repository";
-
-    public static final String PR_NUMBER_KEY_FOR_MONITORING = "prNumber";
 
     public static final String REBASE_STATUS_FOR_MONITORING = "rebaseStatus";
 
@@ -67,8 +65,8 @@ public class GitRebaser implements Rebaser {
     @Override
     public Pair<PullRequest, List<GitCommit>> rebase(PullRequest pr) {
 
-        MDC.put(REPOSITORY_KEY_FOR_MONITORING, pr.getRepo().getFullName());
-        MDC.put(PR_NUMBER_KEY_FOR_MONITORING, String.valueOf(pr.getNumber()));
+        MDC.put(REPO, pr.getRepo().getFullName());
+        MDC.put(PR_NUMBER, String.valueOf(pr.getNumber()));
 
         log.info("rebasing PR #{}...", pr.getNumber());
 
@@ -200,8 +198,8 @@ public class GitRebaser implements Rebaser {
             log.warn("exception and stacktrace :", e);
         } finally {
 
-            MDC.remove(REPOSITORY_KEY_FOR_MONITORING);
-            MDC.remove(PR_NUMBER_KEY_FOR_MONITORING);
+            MDC.remove(REPO);
+            MDC.remove(PR_NUMBER);
             MDC.remove(REBASE_STATUS_FOR_MONITORING);
 
         }
@@ -461,10 +459,10 @@ public class GitRebaser implements Rebaser {
         stopWatchForMonitoring.stop();
 
         Event techEvent = Event.technical(outcome);
-        techEvent.addAttribute("pullRequestNumber", String.valueOf(pr.getNumber()));
+        techEvent.addAttribute(PR_NUMBER, String.valueOf(pr.getNumber()));
         techEvent.addAttribute("pullRequestUrl", pr.getHtmlUrl());
-        techEvent.addAttribute("repo", pr.getRepo().getFullName());
-        techEvent.addAttribute("duration", String.valueOf(stopWatchForMonitoring.getTime()));
+        techEvent.addAttribute(REPO, pr.getRepo().getFullName());
+        techEvent.addAttribute(DURATION, String.valueOf(stopWatchForMonitoring.getTime()));
         techEvent.publish();
     }
 
