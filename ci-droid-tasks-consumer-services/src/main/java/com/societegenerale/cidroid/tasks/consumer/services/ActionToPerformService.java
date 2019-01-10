@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.PR_NUMBER;
+import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.REPO;
 import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.BULK_ACTION_COMMIT_PERFORMED;
 import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.BULK_ACTION_PR_CREATED;
 
@@ -127,7 +128,7 @@ public class ActionToPerformService {
                 updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_CREATED);
 
                 Event techEvent = Event.technical(BULK_ACTION_PR_CREATED);
-                techEvent.addAttribute("repo", impactedRepo.getFullName());
+                techEvent.addAttribute(REPO, impactedRepo.getFullName());
                 techEvent.addAttribute("targetBranchForPR", targetBranchForPR);
                 techEvent.addAttribute(PR_NUMBER, String.valueOf(createdPr.get().getNumber()));
                 techEvent.publish();
@@ -243,7 +244,7 @@ public class ActionToPerformService {
 
     private void publishMonitoringEvent(ResourceToUpdate resourceToUpdate, UpdatedResource updatedResource) {
         Event techEvent = Event.technical(BULK_ACTION_COMMIT_PERFORMED);
-        techEvent.addAttribute("repo", resourceToUpdate.getRepoFullName());
+        techEvent.addAttribute(REPO, resourceToUpdate.getRepoFullName());
         techEvent.addAttribute("resourceName", resourceToUpdate.getFilePathOnRepo());
         techEvent.addAttribute("branchName", resourceToUpdate.getBranchName());
         techEvent.addAttribute("newCommitSha", updatedResource.getCommit().getSha());

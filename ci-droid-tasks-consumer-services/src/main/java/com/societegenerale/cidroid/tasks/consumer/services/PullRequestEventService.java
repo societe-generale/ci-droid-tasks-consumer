@@ -9,6 +9,9 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.PR_NUMBER;
+import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.REPO;
+
 @Slf4j
 public class PullRequestEventService {
 
@@ -28,8 +31,8 @@ public class PullRequestEventService {
         }
 
         Event techEvent = Event.technical(MonitoringEvents.PULL_REQUEST_EVENT_TO_PROCESS);
-        techEvent.addAttribute("repo", pullRequestEvent.getRepository().getFullName());
-        techEvent.addAttribute("prNumber", String.valueOf(pullRequestEvent.getPrNumber()));
+        techEvent.addAttribute(REPO, pullRequestEvent.getRepository().getFullName());
+        techEvent.addAttribute(PR_NUMBER, String.valueOf(pullRequestEvent.getPrNumber()));
 
         StopWatch stopWatch = StopWatch.createStarted();
 

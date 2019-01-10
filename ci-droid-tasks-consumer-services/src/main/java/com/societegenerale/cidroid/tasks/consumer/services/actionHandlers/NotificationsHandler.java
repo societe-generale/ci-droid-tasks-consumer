@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.PR_NUMBER;
+import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.REPO;
 import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.NOTIFICATION_FOR_NON_MERGEABLE_PR;
 import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
 
@@ -52,9 +54,9 @@ public class NotificationsHandler implements PushEventOnDefaultBranchHandler {
                                 User user = User.buildFrom(pr, gitHub);
 
                                 Event techEvent = Event.technical(NOTIFICATION_FOR_NON_MERGEABLE_PR);
-                                techEvent.addAttribute("pullRequestNumber", String.valueOf(pr.getNumber()));
+                                techEvent.addAttribute(PR_NUMBER, String.valueOf(pr.getNumber()));
                                 techEvent.addAttribute("pullRequestUrl", pr.getHtmlUrl());
-                                techEvent.addAttribute("repo", pr.getRepo().getFullName());
+                                techEvent.addAttribute(REPO, pr.getRepo().getFullName());
                                 techEvent.addAttribute("pullRequestOwner", user.getLogin());
                                 techEvent.publish();
 

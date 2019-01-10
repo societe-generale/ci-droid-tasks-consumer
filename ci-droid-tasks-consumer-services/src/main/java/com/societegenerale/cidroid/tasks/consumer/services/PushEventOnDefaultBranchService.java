@@ -11,6 +11,7 @@ import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.List;
 
+import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.REPO;
 import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.PUSH_EVENT_TO_PROCESS;
 import static java.util.stream.Collectors.toList;
 
@@ -40,7 +41,7 @@ public class PushEventOnDefaultBranchService {
         }
 
         Event techEvent = Event.technical(PUSH_EVENT_TO_PROCESS);
-        techEvent.addAttribute("repo", pushEvent.getRepository().getFullName());
+        techEvent.addAttribute(REPO, pushEvent.getRepository().getFullName());
 
         StopWatch stopWatch = StopWatch.createStarted();
 
