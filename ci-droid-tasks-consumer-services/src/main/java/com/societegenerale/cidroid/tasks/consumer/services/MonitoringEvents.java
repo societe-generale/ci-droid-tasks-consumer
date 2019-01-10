@@ -19,4 +19,6 @@ public class MonitoringEvents {
     public final static String BULK_ACTION_COMMIT_PERFORMED="bulkActionCommitPerformed";
 
     public final static String BULK_ACTION_PR_CREATED="bulkActionPrCreated";
+
+    public final static String BULK_ACTION_PROCESSED="bulkActionProcessed";
 }

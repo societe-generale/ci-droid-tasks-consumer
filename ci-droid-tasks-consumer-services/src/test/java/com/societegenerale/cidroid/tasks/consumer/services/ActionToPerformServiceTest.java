@@ -12,6 +12,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPer
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.TestAppender;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -21,8 +22,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.BULK_ACTION_COMMIT_PERFORMED;
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.BULK_ACTION_PR_CREATED;
+import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.*;
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -116,6 +116,12 @@ public class ActionToPerformServiceTest {
         Logger log = logCtx.getLogger("Main");
         log.addAppender(testAppender);
 
+    }
+
+    @After
+    public void after(){
+        assertAtLeastOneMonitoringEventOfType(BULK_ACTION_PROCESSED);
+        testAppender.events.clear();
     }
 
     @Test
