@@ -22,6 +22,7 @@ import java.util.Base64;
 import java.util.Optional;
 
 import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.BULK_ACTION_COMMIT_PERFORMED;
+import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.BULK_ACTION_PR_CREATED;
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -539,6 +540,9 @@ public class ActionToPerformServiceTest {
 
         assertThat(actualPrToCreate.getBody()).startsWith("performed on behalf of someUserName by CI-droid");
         assertThat(actualPrToCreate.getBody()).endsWith(expectedCommitMessage);
+
+        assertAtLeastOneMonitoringEventOfType(BULK_ACTION_PR_CREATED);
+
     }
 
     private void assertContentHasBeenUpdatedOnBranch(String branchName) throws GitHubAuthorizationException {
@@ -558,10 +562,15 @@ public class ActionToPerformServiceTest {
         String expectedEncodedContent = new String(Base64.getEncoder().encode(MODIFIED_CONTENT.getBytes()));
         assertThat(actualCommit.getBase64EncodedContent()).isEqualTo(expectedEncodedContent);
 
-        assertThat(testAppender.events.stream().filter(logEvent -> logEvent.getMDCPropertyMap().get("metricName").equals(BULK_ACTION_COMMIT_PERFORMED)).findAny()).isPresent();
-
+        assertAtLeastOneMonitoringEventOfType(BULK_ACTION_COMMIT_PERFORMED);
     }
 
+    private void assertAtLeastOneMonitoringEventOfType(String eventType) {
+
+        assertThat(testAppender.events.stream()
+                .filter(logEvent -> logEvent.getMDCPropertyMap().getOrDefault("metricName", "NOT_FOUND").equals(eventType)).findAny())
+                .isPresent();
+    }
 
     private void mockPullRequestSpecificBehavior() throws BranchAlreadyExistsException, GitHubAuthorizationException {
         when(mockRemoteGitHub.fetchRepository(REPO_FULL_NAME)).thenReturn(Optional.of(fakeRepository));

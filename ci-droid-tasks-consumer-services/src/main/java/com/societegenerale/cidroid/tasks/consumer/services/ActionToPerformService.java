@@ -15,7 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Optional;
 
+import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringAttributes.PR_NUMBER;
 import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.BULK_ACTION_COMMIT_PERFORMED;
+import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.BULK_ACTION_PR_CREATED;
 
 @Slf4j
 public class ActionToPerformService {
@@ -123,6 +125,13 @@ public class ActionToPerformService {
             if (createdPr.isPresent()) {
                 updatedResource.getContent().setHtmlUrl(createdPr.get().getHtmlUrl());
                 updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_CREATED);
+
+                Event techEvent = Event.technical(BULK_ACTION_PR_CREATED);
+                techEvent.addAttribute("repo", impactedRepo.getFullName());
+                techEvent.addAttribute("targetBranchForPR", targetBranchForPR);
+                techEvent.addAttribute(PR_NUMBER, String.valueOf(createdPr.get().getNumber()));
+                techEvent.publish();
+
             } else {
                 //TODO test this scenario
                 updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_BUT_PR_CREATION_KO);
