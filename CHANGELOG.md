@@ -4,6 +4,7 @@
 
 ### Added
 - PR #45 - handler to close old PRs automatically - Thanks [@juliette-derancourt](https://github.com/juliette-derancourt) !!
+- PR #54 - Adding some monitoring events around bulk actions
 
 ### Changed
 - upgraded to ci-droid-api 1.0.6 (CVE fix)
