@@ -53,8 +53,6 @@
 
         <spring-cloud.version>Greenwich.RC2</spring-cloud.version>
 
-        <feign-httpclient.version>8.18.0</feign-httpclient.version>
-
         <spring.boot.version>2.1.1.RELEASE</spring.boot.version>
 
         <lombok.version>1.18.2</lombok.version>
@@ -119,12 +117,6 @@
                 <version>${spring-cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.netflix.feign</groupId>
-                <artifactId>feign-httpclient</artifactId>
-                <version>${feign-httpclient.version}</version>
             </dependency>
 
             <dependency>
