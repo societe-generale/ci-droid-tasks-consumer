@@ -60,7 +60,7 @@ notifiers:
 #  email.enable: true
 #  http.targetUrl: "http://localhost:9901/notify"
 
-ciDroidBehavior:
+cidroid-behavior:
 #  whenPushOnDefaultBranch:
   tryToRebaseOpenPrs.enabled: true
   notifyOwnerForNonMergeablePr.enabled: true

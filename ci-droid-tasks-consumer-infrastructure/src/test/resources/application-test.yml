@@ -14,7 +14,7 @@ notifiers:
   http.targetUrl: "http://localhost:9901/notify"
   github.prComment.enable: true
 
-ciDroidBehavior:
+cidroid-behavior:
 # whenPushOnDefaultBranch:
   tryToRebaseOpenPrs.enabled: true
   notifyOwnerForNonMergeablePr.enabled: true

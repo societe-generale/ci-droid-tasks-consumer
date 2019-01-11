@@ -36,22 +36,22 @@ public class CiDroidTasksConsumerAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(value = "ciDroidBehavior.notifyOwnerForNonMergeablePr.enabled", havingValue = "true")
+    @ConditionalOnProperty(value = "cidroid-behavior.notifyOwnerForNonMergeablePr.enabled", havingValue = "true")
     @AutoConfigureOrder(1)
     public PushEventOnDefaultBranchHandler notificationHandler(RemoteGitHub gitHub, List<Notifier> notifiers) {
         return new NotificationsHandler(gitHub, notifiers);
     }
 
     @Bean
-    @ConditionalOnProperty(value = "ciDroidBehavior.closeOldPullRequests.enabled", havingValue = "true")
+    @ConditionalOnProperty(value = "cidroid-behavior.closeOldPullRequests.enabled", havingValue = "true")
     @AutoConfigureOrder(2)
     public PushEventOnDefaultBranchHandler pullRequestCleaningHandler(RemoteGitHub gitHub,
-                                                                      @Value("${ciDroidBehavior.closeOldPullRequests.limitInDays}") int prAgeLimitInDays) {
+                                                                      @Value("${cidroid-behavior.closeOldPullRequests.limitInDays}") int prAgeLimitInDays) {
         return new PullRequestCleaningHandler(gitHub, LocalDateTime::now, prAgeLimitInDays);
     }
 
     @Bean
-    @ConditionalOnProperty(value = "ciDroidBehavior.tryToRebaseOpenPrs.enabled", havingValue = "true")
+    @ConditionalOnProperty(value = "cidroid-behavior.tryToRebaseOpenPrs.enabled", havingValue = "true")
     @AutoConfigureOrder(3)
     public PushEventOnDefaultBranchHandler rebaseHandler(RemoteGitHub gitHub, @Value("${gitHub.login}") String gitLogin,
                                                          @Value("${gitHub.password}") String gitPassword) {
@@ -68,7 +68,7 @@ public class CiDroidTasksConsumerAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(value = "ciDroidBehavior.bestPracticeNotifier.enabled", havingValue = "true")
+    @ConditionalOnProperty(value = "cidroid-behavior.bestPracticeNotifier.enabled", havingValue = "true")
     @AutoConfigureOrder(1)
     public PullRequestEventHandler bestPracticeNotifierHandler(CiDroidBehavior ciDroidBehavior, List<Notifier> notifiers,
                                                                RemoteGitHub remoteGitHub) {
