@@ -27,8 +27,8 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
     private ResourceFetcher resourceFetcher;
 
-    public BestPracticeNotifierHandler(Map configuredPatternToContentMapping,
-            List<Notifier> notifiers, RemoteGitHub remoteGitHub, ResourceFetcher resourceFetcher) {
+    public BestPracticeNotifierHandler(Map<String, String> configuredPatternToContentMapping,
+                                       List<Notifier> notifiers, RemoteGitHub remoteGitHub, ResourceFetcher resourceFetcher) {
 
         this.configuredPatternToContentMapping = configuredPatternToContentMapping;
         this.notifiers = notifiers;

@@ -12,9 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.util.Arrays;
-
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.*;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -25,16 +24,15 @@ public class ActionNotificationServiceTest {
 
     private static final String REPO_FULL_NAME = "repoFullName";
 
-    private final String SOME_USER_NAME = "someUserName";
+    private static final String SOME_USER_NAME = "someUserName";
 
-    private final String SOME_OAUTH_TOKEN = "123456789abcdef";
+    private static final String SOME_OAUTH_TOKEN = "123456789abcdef";
 
-    private final String SOME_EMAIL = "someEmail@someDomain.com";
+    private static final String SOME_EMAIL = "someEmail@someDomain.com";
 
-    private final String SOME_COMMIT_MESSAGE = "this is the original commit message by the user";
+    private static final String SOME_COMMIT_MESSAGE = "this is the original commit message by the user";
 
     private ArgumentCaptor<String> notificationContentCaptor = ArgumentCaptor.forClass(String.class);
-
 
     private TestActionToPerform testActionToPerform = new TestActionToPerform();
 
@@ -56,11 +54,11 @@ public class ActionNotificationServiceTest {
         testActionToPerform.setContinueIfResourceDoesntExist(true);
 
         bulkActionToPerformBuilder = BulkActionToPerform.builder()
-                .userRequestingAction(new User(SOME_USER_NAME,"someEmail)"))
+                .userRequestingAction(new User(SOME_USER_NAME, "someEmail)"))
                 .gitHubOauthToken(SOME_OAUTH_TOKEN)
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)
-                .resourcesToUpdate(Arrays.asList(resourceToUpdate))
+                .resourcesToUpdate(singletonList(resourceToUpdate))
                 .actionToReplicate(testActionToPerform);
 
         UpdatedResource.Content content = new UpdatedResource.Content();
@@ -256,7 +254,7 @@ public class ActionNotificationServiceTest {
 
         String expectedSubject = "[KO] unclear status for action " + testActionToPerform.getClass().getName();
 
-        String expectedContent ="resourceToUpdate is null, so unable to perform any action";
+        String expectedContent = "resourceToUpdate is null, so unable to perform any action";
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -274,7 +272,7 @@ public class ActionNotificationServiceTest {
 
         String expectedSubject = "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
 
-        String expectedContent ="repository "+resourceToUpdate.getRepoFullName()+" doesn't exist - make sure you provide its full name, ie 'org/repo' ";
+        String expectedContent = "repository " + resourceToUpdate.getRepoFullName() + " doesn't exist - make sure you provide its full name, ie 'org/repo' ";
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
         updatedResource.setUpdateStatus(UPDATE_KO_REPO_DOESNT_EXIST);

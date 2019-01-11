@@ -46,11 +46,4 @@ public class EMailNotifier implements Notifier {
     }
 
 
-
-    @Override
-    public String getNotificationMode() {
-        return "EMAIL";
-    }
-
-
 }

@@ -202,10 +202,10 @@ class RemoteGitHubConfig {
         return new OAuthInterceptor(oauthToken);
     }
 
-    @Bean
     /**
      * adding an ApacheHttpClient to enable PATCH requests with Feign
      */
+    @Bean
     Client apacheHttpClient() {
         return new ApacheHttpClient();
     }

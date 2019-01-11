@@ -21,8 +21,4 @@ public class NotifierMock implements Notifier {
         notifications.add(new ImmutablePair(user, message));
     }
 
-    @Override
-    public String getNotificationMode() {
-        return "inMemoryMock";
-    }
 }

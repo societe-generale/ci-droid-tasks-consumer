@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -36,7 +37,7 @@ public class BestPracticeNotifierHandlerTest {
     private final Map<String, String> patternToContentMapping = new HashMap<>();
 
     private final BestPracticeNotifierHandler handler = new BestPracticeNotifierHandler(
-            patternToContentMapping, Arrays.asList(mockNotifier), mockRemoteGitHub, mockResourceFetcher);
+            patternToContentMapping, singletonList(mockNotifier), mockRemoteGitHub, mockResourceFetcher);
 
     private final ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
 
@@ -52,7 +53,7 @@ public class BestPracticeNotifierHandlerTest {
         matchingPullRequestFile.setFilename(MATCHING_FILENAME);
 
         when(mockResourceFetcher.fetch("http://someUrl/liquibaseBestPractices.md")).thenReturn(Optional.of("careful with Liquibase changes !"));
-        when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123)).thenReturn(Arrays.asList(matchingPullRequestFile));
+        when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123)).thenReturn(singletonList(matchingPullRequestFile));
 
         patternToContentMapping.put("**/db/changelog/**/*.yml", "http://someUrl/liquibaseBestPractices.md");
 
@@ -137,7 +138,7 @@ public class BestPracticeNotifierHandlerTest {
         PullRequestComment existingPrComment = new PullRequestComment("some comments about " + MATCHING_FILENAME,
                 new User("someLogin", "firstName.lastName@domain.com"));
 
-        List<PullRequestComment> existingPRcomments = Arrays.asList(existingPrComment);
+        List<PullRequestComment> existingPRcomments = singletonList(existingPrComment);
         when(mockRemoteGitHub.fetchPullRequestComments(REPO_FULL_NAME, 123)).thenReturn(existingPRcomments);
 
         handler.handle(pullRequestEvent);
@@ -159,7 +160,7 @@ public class BestPracticeNotifierHandlerTest {
         PullRequestComment existingPrComment = new PullRequestComment("some comments about " + MATCHING_FILENAME,
                 new User("someLogin", "firstName.lastName@domain.com"));
 
-        List<PullRequestComment> existingPRcomments = Arrays.asList(existingPrComment);
+        List<PullRequestComment> existingPRcomments = singletonList(existingPrComment);
         when(mockRemoteGitHub.fetchPullRequestComments(REPO_FULL_NAME, 123)).thenReturn(existingPRcomments);
 
         handler.handle(pullRequestEvent);

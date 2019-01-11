@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.*;
 import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.*;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -44,13 +45,13 @@ public class ActionToPerformServiceTest {
 
     private final String SOME_COMMIT_MESSAGE = "this is the original commit message by the user";
 
-    private final String MASTER_BRANCH="masterBranch";
+    private final String MASTER_BRANCH = "masterBranch";
 
     private String sha1ForHeadOnMaster = "123456abcdef";
 
     private String branchNameToCreateForPR = "myPrBranch";
 
-    private TestAppender testAppender=new TestAppender();
+    private TestAppender testAppender = new TestAppender();
 
 
     private RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
@@ -96,7 +97,7 @@ public class ActionToPerformServiceTest {
         testActionToPerform.setContinueIfResourceDoesntExist(true);
 
         bulkActionToPerformBuilder = BulkActionToPerform.builder()
-                .userRequestingAction(new User(SOME_USER_NAME,"someEmail)"))
+                .userRequestingAction(new User(SOME_USER_NAME, "someEmail)"))
                 .gitHubOauthToken(SOME_OAUTH_TOKEN)
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)
@@ -120,7 +121,7 @@ public class ActionToPerformServiceTest {
     }
 
     @After
-    public void after(){
+    public void after() {
         assertAtLeastOneMonitoringEventOfType(BULK_ACTION_PROCESSED);
         testAppender.events.clear();
     }
@@ -144,7 +145,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void isPassingResourceToUpdateToTheAction_toGenerateItsContent()  {
+    public void isPassingResourceToUpdateToTheAction_toGenerateItsContent() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -228,7 +229,7 @@ public class ActionToPerformServiceTest {
 
         assertContentHasBeenUpdatedOnBranch(branchNameToCreateForPR);
 
-        verify(mockRemoteGitHub, times(1)).createPullRequest(eq(REPO_FULL_NAME), newPrCaptor.capture(),anyString());
+        verify(mockRemoteGitHub, times(1)).createPullRequest(eq(REPO_FULL_NAME), newPrCaptor.capture(), anyString());
 
         assertPullRequestHasBeenCreated(bulkActionToPerform.getCommitMessage());
 
@@ -400,7 +401,7 @@ public class ActionToPerformServiceTest {
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
         when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, branchNameToCreateForPR)).thenReturn(new Reference(
-                REFS_HEADS +branchNameToCreateForPR,Faker.fakeA(Reference.ObjectReference.class)));
+                REFS_HEADS + branchNameToCreateForPR, Faker.fakeA(Reference.ObjectReference.class)));
 
         when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_OAUTH_TOKEN))
                 .thenThrow(new BranchAlreadyExistsException("branch already exists"));
@@ -495,7 +496,7 @@ public class ActionToPerformServiceTest {
 
         assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_REPO_DOESNT_EXIST);
 
-        verify(mockRemoteGitHub,never()).fetchHeadReferenceFrom(any(),any());
+        verify(mockRemoteGitHub, never()).fetchHeadReferenceFrom(any(), any());
     }
 
     @Test
@@ -504,7 +505,7 @@ public class ActionToPerformServiceTest {
         mockPullRequestSpecificBehavior();
         when(mockRemoteGitHub.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(fakePullRequest);
 
-        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR,"new feature branch")).build();
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR, "new feature branch")).build();
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -521,7 +522,7 @@ public class ActionToPerformServiceTest {
         mockPullRequestSpecificBehavior();
         when(mockRemoteGitHub.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(fakePullRequest);
 
-        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR,null)).build();
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR, null)).build();
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -538,28 +539,28 @@ public class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
-        bulkActionToPerform.setResourcesToUpdate(Arrays.asList( new ResourceToUpdate(REPO_FULL_NAME, "someFile.txt", "someBranch", StringUtils.EMPTY)));
+        bulkActionToPerform.setResourcesToUpdate(singletonList(new ResourceToUpdate(REPO_FULL_NAME, "someFile.txt", "someBranch", StringUtils.EMPTY)));
 
         String sha1ForHeadOnSomeBranch = "987456poiuytrewq";
 
-        String sourceBranchForPr="someBranch";
+        String sourceBranchForPr = "someBranch";
 
-        Reference dummyHeadOnSomeBranchReference=new Reference(
-                REFS_HEADS +sourceBranchForPr,new Reference.ObjectReference("commit", sha1ForHeadOnSomeBranch));
+        Reference dummyHeadOnSomeBranchReference = new Reference(
+                REFS_HEADS + sourceBranchForPr, new Reference.ObjectReference("commit", sha1ForHeadOnSomeBranch));
 
         when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, sourceBranchForPr)).thenReturn(dummyHeadOnSomeBranchReference);
 
         when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnSomeBranch, SOME_OAUTH_TOKEN))
-                .thenReturn(new Reference(REFS_HEADS +branchNameToCreateForPR,Faker.fakeA(Reference.ObjectReference.class)));
+                .thenReturn(new Reference(REFS_HEADS + branchNameToCreateForPR, Faker.fakeA(Reference.ObjectReference.class)));
 
         when(mockRemoteGitHub.createPullRequest(eq(REPO_FULL_NAME), newPrCaptor.capture(), anyString())).thenReturn(fakePullRequest);
 
 
         actionToPerformService.perform(bulkActionToPerform);
 
-        verify(mockRemoteGitHub,times(1)).createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnSomeBranch, SOME_OAUTH_TOKEN);
+        verify(mockRemoteGitHub, times(1)).createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnSomeBranch, SOME_OAUTH_TOKEN);
 
-        PullRequestToCreate pr=newPrCaptor.getValue();
+        PullRequestToCreate pr = newPrCaptor.getValue();
         assertThat(pr.getHead()).isEqualTo(branchNameToCreateForPR);
         assertThat(pr.getBase()).isEqualTo(sourceBranchForPr);
 
@@ -570,14 +571,14 @@ public class ActionToPerformServiceTest {
 
         mockPullRequestSpecificBehavior();
 
-        int prNumber=3;
+        int prNumber = 3;
 
-        PullRequest openPRonBranch1=new PullRequest(prNumber);
+        PullRequest openPRonBranch1 = new PullRequest(prNumber);
         openPRonBranch1.setBranchName(branchNameToCreateForPR);
 
-        when(mockRemoteGitHub.fetchOpenPullRequests(eq(REPO_FULL_NAME))).thenReturn(Arrays.asList(openPRonBranch1));
+        when(mockRemoteGitHub.fetchOpenPullRequests(eq(REPO_FULL_NAME))).thenReturn(singletonList(openPRonBranch1));
 
-        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR,null)).build();
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR, null)).build();
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -592,7 +593,7 @@ public class ActionToPerformServiceTest {
 
         mockPullRequestSpecificBehavior();
 
-        return bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR,null)).build();
+        return bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR, null)).build();
     }
 
     private void assertPullRequestHasBeenCreated(String expectedCommitMessage) {
@@ -638,11 +639,11 @@ public class ActionToPerformServiceTest {
     private void mockPullRequestSpecificBehavior() throws BranchAlreadyExistsException, GitHubAuthorizationException {
         when(mockRemoteGitHub.fetchRepository(REPO_FULL_NAME)).thenReturn(Optional.of(fakeRepository));
 
-        Reference dummyHeadOnMasterReference = new Reference(REFS_HEADS +MASTER_BRANCH,new Reference.ObjectReference("commit", sha1ForHeadOnMaster));
+        Reference dummyHeadOnMasterReference = new Reference(REFS_HEADS + MASTER_BRANCH, new Reference.ObjectReference("commit", sha1ForHeadOnMaster));
         when(mockRemoteGitHub.fetchHeadReferenceFrom(REPO_FULL_NAME, MASTER_BRANCH)).thenReturn(dummyHeadOnMasterReference);
 
         when(mockRemoteGitHub.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_OAUTH_TOKEN))
-                .thenReturn(new Reference(REFS_HEADS +branchNameToCreateForPR,Faker.fakeA(Reference.ObjectReference.class)));
+                .thenReturn(new Reference(REFS_HEADS + branchNameToCreateForPR, Faker.fakeA(Reference.ObjectReference.class)));
     }
 
 }
