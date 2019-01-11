@@ -31,11 +31,6 @@ import java.util.List;
 public class CiDroidTasksConsumerAutoConfiguration {
 
     @Bean
-    public CiDroidBehavior ciDroidBehavior(){
-        return new CiDroidBehavior();
-    }
-
-    @Bean
     @ConditionalOnProperty(value = "cidroid-behavior.notifyOwnerForNonMergeablePr.enabled", havingValue = "true")
     @AutoConfigureOrder(1)
     public PushEventOnDefaultBranchHandler notificationHandler(RemoteGitHub gitHub, List<Notifier> notifiers) {
