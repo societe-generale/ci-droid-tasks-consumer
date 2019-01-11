@@ -74,6 +74,10 @@ cidroid-behavior:
     "**/*Dto.java": "https://some_link_to_some_best_practices_repo/noDtoClass.md"
 
 
+feign:
+  httpclient:
+    enabled: false
+
 logging:
   level:
     root: info

@@ -6,6 +6,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
@@ -17,6 +18,7 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 
 @Configuration
+@EnableAutoConfiguration
 public class TestConfig {
 
     @Bean
