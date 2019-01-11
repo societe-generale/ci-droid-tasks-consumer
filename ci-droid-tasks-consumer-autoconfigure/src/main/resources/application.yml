@@ -60,7 +60,7 @@ notifiers:
 #  email.enable: true
 #  http.targetUrl: "http://localhost:9901/notify"
 
-ciDroidBehavior:
+cidroid-behavior:
 #  whenPushOnDefaultBranch:
   tryToRebaseOpenPrs.enabled: true
   notifyOwnerForNonMergeablePr.enabled: true
@@ -72,6 +72,7 @@ ciDroidBehavior:
   patternToResourceMapping:
 # example of associating a document with a file pattern
     "**/*Dto.java": "https://some_link_to_some_best_practices_repo/noDtoClass.md"
+
 
 
 logging:

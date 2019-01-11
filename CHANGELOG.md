@@ -7,6 +7,8 @@
 
 ### Changed
 
+- [BREAKING] upgrade to Spring Boot 2. Some properties need to be renamed
+
 ### Deprecated
 
 ### Removed

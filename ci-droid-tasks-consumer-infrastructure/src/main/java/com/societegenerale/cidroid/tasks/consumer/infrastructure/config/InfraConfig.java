@@ -11,10 +11,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PullRe
 import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PushEventOnDefaultBranchHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
-import org.springframework.cloud.netflix.feign.EnableFeignClients;
-import org.springframework.cloud.netflix.feign.FeignAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +22,6 @@ import java.util.List;
 
 @Configuration
 @EnableFeignClients(clients = { FeignRemoteGitHub.class})
-//is this @ImportAutoConfiguration really necessary ?
-@ImportAutoConfiguration({ FeignAutoConfiguration.class})
 @ComponentScan
 public class InfraConfig {
 
