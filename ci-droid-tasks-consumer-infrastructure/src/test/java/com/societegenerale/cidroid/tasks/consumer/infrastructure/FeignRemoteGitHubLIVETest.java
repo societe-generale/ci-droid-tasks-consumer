@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FeignRemoteGitHubLIVETest {
 
     @Autowired
-    FeignRemoteGitHub feignRemoteGitHub;
+    private FeignRemoteGitHub feignRemoteGitHub;
 
     @Test
     public void manualTestForPublishingComment(){

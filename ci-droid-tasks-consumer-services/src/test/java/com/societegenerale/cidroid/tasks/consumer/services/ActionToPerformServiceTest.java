@@ -34,7 +34,7 @@ public class ActionToPerformServiceTest {
 
     private static final String REPO_FULL_NAME = "repoFullName";
 
-    public static final String REFS_HEADS = "refs/heads/";
+    private static final String REFS_HEADS = "refs/heads/";
 
     private final String SOME_USER_NAME = "someUserName";
 
@@ -57,17 +57,17 @@ public class ActionToPerformServiceTest {
 
     private ActionNotificationService mockActionNotificationService = mock(ActionNotificationService.class);
 
-    ResourceContent fakeResourceContentBeforeUpdate = new Faker<ResourceContent>() {
+    private ResourceContent fakeResourceContentBeforeUpdate = new Faker<ResourceContent>() {
         String htmlLink = "http://github.com/someRepo/linkToTheResource";
     }.get();
 
-    PullRequest fakePullRequest = new Faker<PullRequest>() {
+    private PullRequest fakePullRequest = new Faker<PullRequest>() {
         int number = 789;
 
         String htmlUrl = "http://linkToThePr";
     }.get();
 
-    Repository fakeRepository = new Faker<Repository>() {
+    private Repository fakeRepository = new Faker<Repository>() {
         String defaultBranch = MASTER_BRANCH;
 
         String fullName = REPO_FULL_NAME;

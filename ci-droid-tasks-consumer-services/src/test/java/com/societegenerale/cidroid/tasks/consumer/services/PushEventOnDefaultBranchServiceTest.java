@@ -36,17 +36,17 @@ public class PushEventOnDefaultBranchServiceTest {
 
     private static final String SINGLE_PULL_REQUEST_JSON = "/singlePullRequest.json";
 
-    RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
+    private final RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
 
-    PushEventOnDefaultBranchHandler mockPushEventOnDefaultBranchHandler = mock(PushEventOnDefaultBranchHandler.class);
+    private final PushEventOnDefaultBranchHandler mockPushEventOnDefaultBranchHandler = mock(PushEventOnDefaultBranchHandler.class);
 
-    PushEventOnDefaultBranchService pushOnDefaultBranchService;
+    private PushEventOnDefaultBranchService pushOnDefaultBranchService;
 
-    PushEvent pushEvent;
+    private PushEvent pushEvent;
 
-    PullRequest singlePr;
+    private PullRequest singlePr;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 
     @Before

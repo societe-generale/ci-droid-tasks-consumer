@@ -26,17 +26,17 @@ public class NotificationsHandlerTest {
 
     private static final int PULL_REQUEST_ID = 1347;
 
-    RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
+    private final RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
 
-    Notifier mockNotifier = mock(Notifier.class);
+    private final Notifier mockNotifier = mock(Notifier.class);
 
-    NotificationsHandler notificationsHandler;
+    private NotificationsHandler notificationsHandler;
 
-    PullRequest singlePr;
+    private PullRequest singlePr;
 
-    PushEvent pushEvent;
+    private PushEvent pushEvent;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setUp() throws IOException {

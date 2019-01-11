@@ -22,9 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class EMailNotifierTest {
 
-    public static final String MAIL_SENT_FROM = "ci-droid@socgen.com";
+    private static final String MAIL_SENT_FROM = "ci-droid@socgen.com";
 
-    EMailNotifier emailNotifier;
+    private EMailNotifier emailNotifier;
 
     private GreenMail mailServer = new GreenMail(ServerSetupTest.SMTP);
 

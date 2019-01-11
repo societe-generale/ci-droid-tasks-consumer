@@ -19,9 +19,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class ActionToPerformListenerLIVETest {
 
     @Autowired
-    ActionToPerformListener actionToPerformListener;
+    private ActionToPerformListener actionToPerformListener;
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void actualLiveTest() throws Exception {

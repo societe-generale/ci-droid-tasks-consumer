@@ -27,20 +27,19 @@ import static org.mockito.Mockito.*;
 public class RebaseHandlerTest {
 
     private static final String SINGLE_PULL_REQUEST_JSON = "/singlePullRequest.json";
+    private static final int PULL_REQUEST_NUMBER = 1347;
 
-    RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
+    private RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
 
-    Rebaser mockRebaser = mock(Rebaser.class);
+    private Rebaser mockRebaser = mock(Rebaser.class);
 
-    RebaseHandler rebaseHandler;
+    private RebaseHandler rebaseHandler;
 
-    PullRequest singlePr;
+    private PullRequest singlePr;
 
-    int singlePrNumber=1347;
+    private PushEvent pushEvent;
 
-    PushEvent pushEvent;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setUp() throws IOException {
@@ -102,7 +101,7 @@ public class RebaseHandlerTest {
 
         Pair<PullRequest, List<GitCommit>> rebaseResult = new ImmutablePair(singlePr, emptyList());
 
-        PullRequestMatcher matchesSimplePr=new PullRequestMatcher(singlePrNumber);
+        PullRequestMatcher matchesSimplePr=new PullRequestMatcher(PULL_REQUEST_NUMBER);
 
         when(mockRebaser.rebase(argThat(matchesSimplePr))).thenReturn(rebaseResult);
 

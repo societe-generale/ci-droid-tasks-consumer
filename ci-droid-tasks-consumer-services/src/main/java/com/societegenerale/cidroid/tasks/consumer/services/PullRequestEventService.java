@@ -16,17 +16,17 @@ import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.Mon
 @Slf4j
 public class PullRequestEventService {
 
+    private static final List<String> acceptedPullRequestEventType = Arrays.asList("opened", "synchronize");
+
     private List<PullRequestEventHandler> actionHandlers;
 
     public PullRequestEventService(List<PullRequestEventHandler> actionHandlers) {
         this.actionHandlers = actionHandlers;
     }
 
-    private static List<String> acceptedPullrequestEventType = Arrays.asList("opened", "synchronize");
-
     public void onGitHubPullRequestEvent(PullRequestEvent pullRequestEvent) {
 
-        if (!acceptedPullrequestEventType.contains(pullRequestEvent.getAction())) {
+        if (!acceptedPullRequestEventType.contains(pullRequestEvent.getAction())) {
             log.debug("not processing pullRequest event of type {}", pullRequestEvent.getAction());
             return;
         }

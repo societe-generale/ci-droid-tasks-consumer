@@ -26,10 +26,10 @@ import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.Gi
 public abstract class GitHubEventHandlerIT {
 
     @Autowired
-    GithubEventListener githubEventListener;
+    protected GithubEventListener githubEventListener;
 
     @Autowired
-    GitHubMockServer githubMockServer;
+    protected GitHubMockServer githubMockServer;
 
     MockServerClient gitHubMockClient;
 
