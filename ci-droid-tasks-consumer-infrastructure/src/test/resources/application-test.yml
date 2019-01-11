@@ -25,7 +25,3 @@ cidroid-behavior:
   bestPracticeNotifier.enabled: true
   patternToResourceMapping:
     "**/*Dto.java": "https://someLinkToSomeResource/ci-droid-best-practices/noDtoClass.md"
-
-feign:
-  httpclient:
-    enabled: false
