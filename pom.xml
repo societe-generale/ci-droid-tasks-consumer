@@ -10,14 +10,6 @@
 
     <packaging>pom</packaging>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.1.RELEASE</version>
-        <relativePath /> <!-- lookup parent from repository -->
-    </parent>
-
-
     <description>consumer part of CI-droid</description>
     <url>https://github.com/societe-generale/ci-droid-tasks-consumer</url>
 
@@ -60,31 +52,29 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
+        <spring-boot.version>2.1.2.RELEASE</spring-boot.version>
         <spring-cloud.version>Greenwich.RC2</spring-cloud.version>
 
-        <spring.boot.version>2.1.1.RELEASE</spring.boot.version>
-
-        <lombok.version>1.18.2</lombok.version>
-        <jackson.version>2.9.4</jackson.version>
+        <lombok.version>1.18.4</lombok.version>
         <mockito.version>2.15.0</mockito.version>
         <assertj.version>3.9.1</assertj.version>
         <commons-io.version>2.6</commons-io.version>
         <ant-style-path-matcher.version>1.0.0</ant-style-path-matcher.version>
-        <logback-classic.version>1.2.1</logback-classic.version>
+        <logback-classic.version>1.2.3</logback-classic.version>
         <logstash-logback-encoder.version>4.11</logstash-logback-encoder.version>
         <janino.version>3.0.6</janino.version>
-        <jgit.version>4.10.0.201712302008-r</jgit.version>
+        <jgit.version>5.2.0.201812061821-r</jgit.version>
         <commons-lang3.version>3.7</commons-lang3.version>
         <jackson.version>2.9.8</jackson.version>
 
         <mockserver.version>5.5.1</mockserver.version>
         <awaitility.version>1.7.0</awaitility.version>
-        <greenmail.version>1.5.6</greenmail.version>
+        <greenmail.version>1.5.9</greenmail.version>
         <fakir.version>1.0.10</fakir.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
 
-        <jacoco.version>0.8.1</jacoco.version>
-        <guava.version>26.0-jre</guava.version>
+        <jacoco.version>0.8.2</jacoco.version>
+        <guava.version>27.0-jre</guava.version>
 
         <ci-droid-api.version>1.0.6</ci-droid-api.version>
         <ci-droid-extensions.version>1.0.7</ci-droid-extensions.version>
@@ -121,6 +111,14 @@
         <dependencies>
 
             <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
@@ -151,7 +149,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
-                <version>${spring.boot.version}</version>
+                <version>${spring-boot.version}</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
@@ -243,7 +241,6 @@
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
-
 
         </dependencies>
     </dependencyManagement>

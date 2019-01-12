@@ -3,6 +3,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 
@@ -16,7 +17,9 @@ public class YamlFileApplicationContextInitializer implements ApplicationContext
             Resource resource = applicationContext.getResource("classpath:application-test.yml");
             YamlPropertySourceLoader sourceLoader = new YamlPropertySourceLoader();
             List<PropertySource<?>> yamlTestProperties = sourceLoader.load("yamlTestProperties", resource);
-            applicationContext.getEnvironment().getPropertySources().addFirst(yamlTestProperties.get(0));
+
+            MutablePropertySources propertySources = applicationContext.getEnvironment().getPropertySources();
+            yamlTestProperties.forEach(propertySources::addFirst);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
