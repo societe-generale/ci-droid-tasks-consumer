@@ -1,6 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oneeyedmen.fakir.Faker;
 import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
@@ -22,10 +23,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -125,7 +126,7 @@ public class GitRebaserTest {
     }
 
     @After
-    public void assertGitIsClosed() {
+    public void assertGitIsClosed() throws GitAPIException {
 
         verify(mockGit, times(1)).close();
     }
@@ -150,6 +151,8 @@ public class GitRebaserTest {
         assertThat(Files.exists(dummyFileInRepoDirectory)).isTrue();
     }
 
+
+
     @Test
     public void shouldCloneRepoIfDoesntExist_thenSwitchToBranch() throws GitAPIException {
 
@@ -160,6 +163,39 @@ public class GitRebaserTest {
         assertSwitchToBranch();
 
     }
+
+    @Test
+    public void shouldPullForUpdatesIfMismatchBetweenLocalAndRemoteBranch() throws GitAPIException, IOException {
+
+        RevCommit commitInBothBranches=buildRevCommit("testFile1.txt", "in both branches");
+        RevCommit commitInRemoteBranchOnly=buildRevCommit("testFile2.txt", "in remote only");
+
+        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"master","remotes/origin/testBestPractices")).thenReturn(asList(commitInBothBranches,commitInRemoteBranchOnly));
+        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"master","testBestPractices")).thenReturn(asList(commitInBothBranches));
+
+        when(mockGitWrapper.pull(mockGit)).thenReturn(Faker.fakeA(PullResult.class));
+
+        rebaser.rebase(pr);
+
+        verify(mockGitWrapper, times(1)).pull(mockGit);
+        assertSwitchToBranch();
+    }
+
+    @Test
+    public void shouldNotPullForUpdatesIfBranchContentIsSame() throws GitAPIException, IOException {
+
+        RevCommit commit1InBothBranches=buildRevCommit("testFile1.txt", "in both branches 1");
+        RevCommit commit2InRBothBranches=buildRevCommit("testFile2.txt", "in both branches 2");
+
+        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"master","remotes/origin/testBestPractices")).thenReturn(asList(commit1InBothBranches,commit2InRBothBranches));
+        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"master","testBestPractices")).thenReturn(asList(commit1InBothBranches,commit2InRBothBranches));
+
+        rebaser.rebase(pr);
+
+        verify(mockGitWrapper, never()).pull(mockGit);
+        assertSwitchToBranch();
+    }
+
 
     private void assertSwitchToBranch() throws GitAPIException {
 
@@ -219,7 +255,7 @@ public class GitRebaserTest {
 
         mimickExistingRepo();
 
-        when(mockStatus.getModified()).thenReturn(new HashSet<>(Arrays.asList("aModifiedFile.txt")));
+        when(mockStatus.getModified()).thenReturn(new HashSet<>(asList("aModifiedFile.txt")));
 
         rebaser.rebase(pr);
 
@@ -238,8 +274,8 @@ public class GitRebaserTest {
 
         mimickExistingRepo();
 
-        when(mockStatus.getConflicting()).thenReturn(new HashSet<>(Arrays.asList("aConflictingFile.txt")));
-        when(mockStatus.getAdded()).thenReturn(new HashSet<>(Arrays.asList("anAddedFile.txt")));
+        when(mockStatus.getConflicting()).thenReturn(new HashSet<>(asList("aConflictingFile.txt")));
+        when(mockStatus.getAdded()).thenReturn(new HashSet<>(asList("anAddedFile.txt")));
 
         rebaser.rebase(pr);
 
@@ -257,7 +293,7 @@ public class GitRebaserTest {
     @Test
     public void shouldNotRebaseIfConflictsInBranch() throws GitAPIException, IOException {
 
-        when(mockStatus.getConflicting()).thenReturn(new HashSet<>(Arrays.asList("aConflictingFile.txt")));
+        when(mockStatus.getConflicting()).thenReturn(new HashSet<>(asList("aConflictingFile.txt")));
 
         val rebaseResult = rebaser.rebase(pr);
 
@@ -284,7 +320,7 @@ public class GitRebaserTest {
     public void shouldRebaseIfThereAreCommitsToRebase() throws GitAPIException, IOException {
 
         RevCommit dummyRevCommit = buildRevCommit("testFile1.txt", "dummy content");
-        when(mockGitWrapper.getCommitsOnWhichBranchIsLateComparedToBaseBranch(mockGit, pr)).thenReturn(Arrays.asList(dummyRevCommit));
+        when(mockGitWrapper.getCommitsOnWhichBranchIsLateComparedToBaseBranch(mockGit, pr)).thenReturn(asList(dummyRevCommit));
 
         RebaseResult mockRebaseResult = mock(RebaseResult.class);
         when(mockGitWrapper.rebaseFrom(mockGit, "master")).thenReturn(mockRebaseResult);
