@@ -46,6 +46,10 @@ public class GitRebaser implements Rebaser {
 
     public static final String REBASE_STATUS_FOR_MONITORING = "rebaseStatus";
 
+    private final static boolean ON_LOCAL_BRANCH=true;
+
+    private final static boolean ON_REMOTE_BRANCH=false;
+
     private File workingDirectory;
 
     private String gitLogin;
@@ -97,9 +101,9 @@ public class GitRebaser implements Rebaser {
 
             performPullIfNecessary(git, pr);
 
-            List<RevCommit> commitsInRemoteBranchOnlyBeforeRebase = getCommitsInBranchOnly(git, pr, false);
+            List<RevCommit> commitsInRemoteBranchOnlyBeforeRebase = getCommitsInBranchOnly(git, pr, ON_REMOTE_BRANCH);
 
-            List<RevCommit> commitsInLocalBranchOnlyBeforeRebase = getCommitsInBranchOnly(git, pr, true);
+            List<RevCommit> commitsInLocalBranchOnlyBeforeRebase = getCommitsInBranchOnly(git, pr, ON_LOCAL_BRANCH);
 
             boolean isRebaseSuccessful = false;
 
@@ -120,7 +124,7 @@ public class GitRebaser implements Rebaser {
 
                     log.info("Successful rebase - detailed status : " + rebaseResult.getStatus().name());
 
-                    List<RevCommit> commitsInLocalBranchAfterRebase = getCommitsInBranchOnly(git, pr, true);
+                    List<RevCommit> commitsInLocalBranchAfterRebase = getCommitsInBranchOnly(git, pr, ON_LOCAL_BRANCH);
 
                     if (commitsInRemoteBranchOnlyBeforeRebase.size() != commitsInLocalBranchAfterRebase.size()) {
                         log.warn("we had {} commits in branch before rebase, but {} after - are we sure we want to force push ?",
@@ -133,7 +137,7 @@ public class GitRebaser implements Rebaser {
 
                     val forcePushResult = gitWrapper.forcePush(git, gitLogin, gitPassword);
 
-                    List<RevCommit> commitsInBranchOnlyAfterPush = getCommitsInBranchOnly(git, pr, false);
+                    List<RevCommit> commitsInBranchOnlyAfterPush = getCommitsInBranchOnly(git, pr, ON_REMOTE_BRANCH);
 
                     if (commitsInRemoteBranchOnlyBeforeRebase.size() != commitsInBranchOnlyAfterPush.size()) {
 
@@ -212,9 +216,9 @@ public class GitRebaser implements Rebaser {
 
         compareAndLogLocalAndRemoteBranches(git, pr);
 
-        List<RevCommit> commitsInRemoteBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, false);
+        List<RevCommit> commitsInRemoteBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, ON_REMOTE_BRANCH);
 
-        List<RevCommit> commitsInLocalBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, true);
+        List<RevCommit> commitsInLocalBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, ON_LOCAL_BRANCH);
 
         if (commitsInRemoteBranchOnlyBeforeWeDoAnything.size() > commitsInLocalBranchOnlyBeforeWeDoAnything.size()) {
             log.info("more commits in remote branch than in local branch -> need for 'git pull'..");
@@ -239,9 +243,9 @@ public class GitRebaser implements Rebaser {
 
         List<RevCommit> commitsToRebase = getCommitsOnWhichBranchIsLateComparedToBaseBranch(git, pr);
 
-        List<RevCommit> commitsInRemoteBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, false);
+        List<RevCommit> commitsInRemoteBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, ON_REMOTE_BRANCH);
 
-        List<RevCommit> commitsInLocalBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, true);
+        List<RevCommit> commitsInLocalBranchOnlyBeforeWeDoAnything = getCommitsInBranchOnly(git, pr, ON_LOCAL_BRANCH);
 
         log.info("nb of commits:\n\t- in master, to rebase : {}\n\t- in remote branch : {}\n\t- in local branch : {}", commitsToRebase.size(),
                 commitsInRemoteBranchOnlyBeforeWeDoAnything.size(), commitsInLocalBranchOnlyBeforeWeDoAnything.size());
