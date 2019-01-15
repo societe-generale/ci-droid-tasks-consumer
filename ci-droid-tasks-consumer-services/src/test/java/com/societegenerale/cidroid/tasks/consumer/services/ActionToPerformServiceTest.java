@@ -9,6 +9,7 @@ import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInter
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
+import com.societegenerale.cidroid.tasks.consumer.services.model.DeleteResourceAction;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.TestAppender;
 import org.apache.commons.lang3.StringUtils;
@@ -334,6 +335,32 @@ public class ActionToPerformServiceTest {
                 updatedResourceCaptor.capture());
 
         assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_CANT_PROVIDE_CONTENT_ISSUE);
+
+    }
+
+    @Test
+    public void deleteResourceWhenRequested() throws GitHubAuthorizationException {
+
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction())
+                                                                            .actionToReplicate(new DeleteResourceAction())
+                                                                            .resourcesToUpdate(Arrays.asList(resourceToUpdate))
+                                                                            .gitHubOauthToken(SOME_OAUTH_TOKEN)
+                                                                            .build();
+
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentBeforeUpdate);
+
+        actionToPerformService.perform(bulkActionToPerform);
+
+        verify(mockRemoteGitHub, times(1)).deleteContent(eq(REPO_FULL_NAME),
+                eq(resourceToUpdate.getFilePathOnRepo()),
+                directCommitCaptor.capture(),
+                eq(SOME_OAUTH_TOKEN));
+
+//        verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
+//                eq(resourceToUpdate),
+//                updatedResourceCaptor.capture());
+//
+//        assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_CANT_PROVIDE_CONTENT_ISSUE);
 
     }
 

@@ -8,6 +8,7 @@ import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInter
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
+import com.societegenerale.cidroid.tasks.consumer.services.model.DeleteResourceAction;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import lombok.extern.slf4j.Slf4j;
@@ -153,6 +154,17 @@ public class ActionToPerformService {
         ResourceContent existingResourceContent = remoteGitHub
                 .fetchContent(repoFullName, resourceToUpdate.getFilePathOnRepo(), onBranch);
 
+        if(action.getActionToReplicate() instanceof DeleteResourceAction){
+            if (existingResourceExists(existingResourceContent)){
+                UpdatedResource deletedResource = deleteResource(action, resourceToUpdate, existingResourceContent, onBranch);
+
+                log.info("{} deleted on repo {}, on branch {}. SHA1: {}", resourceToUpdate.getFilePathOnRepo(), repoFullName, onBranch,
+                        deletedResource.getCommit().getSha());
+
+                return deletedResource;
+            }
+        }
+
         String decodedOriginalContent = null;
         String newContent = null;
 
@@ -195,6 +207,29 @@ public class ActionToPerformService {
 
         return updatedResource;
 
+    }
+
+    private UpdatedResource deleteResource(BulkActionToPerform action, ResourceToUpdate resourceToDelete, ResourceContent existingResourceContent, String onBranch) throws GitHubAuthorizationException {
+
+        DirectCommit directCommit = new DirectCommit();
+
+        if (existingResourceExists(existingResourceContent)) {
+            directCommit.setPreviousVersionSha1(existingResourceContent.getSha());
+        }
+
+        directCommit.setBranch(onBranch);
+        directCommit.setCommitter(new DirectCommit.Committer(action.getUserRequestingAction().getLogin(), action.getEmail()));
+        directCommit.setCommitMessage(action.getCommitMessage() + " performed on behalf of " + action.getUserRequestingAction().getLogin() + " by CI-droid");
+
+        UpdatedResource updatedResource = remoteGitHub
+                .deleteContent(resourceToDelete.getRepoFullName(), resourceToDelete.getFilePathOnRepo(), directCommit,
+                        action.getGitHubOauthToken());
+
+        publishMonitoringEventForCommitPerformed(resourceToDelete, updatedResource);
+
+        updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK);
+
+        return updatedResource;
     }
 
     private boolean existingResourceExists(ResourceContent existingResourceContent) {
