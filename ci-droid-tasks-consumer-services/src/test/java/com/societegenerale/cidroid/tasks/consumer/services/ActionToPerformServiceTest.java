@@ -320,6 +320,28 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
+    public void dontDoAnythingIfResourceDoesntExist_whenActionIsDeleteResource()
+            throws BranchAlreadyExistsException, GitHubAuthorizationException {
+
+        BulkActionToPerform bulkActionToPerform = doApullRequestAction();
+        bulkActionToPerform.setActionToReplicate(new DeleteResourceAction());
+
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(null);
+
+        actionToPerformService.perform(bulkActionToPerform);
+
+        verify(mockRemoteGitHub, never()).updateContent(anyString(), anyString(), any(DirectCommit.class), anyString());
+        verify(mockRemoteGitHub, never()).deleteContent(anyString(), anyString(), any(DirectCommit.class), anyString());
+
+        verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
+                eq(resourceToUpdate),
+                updatedResourceCaptor.capture());
+
+        assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_FILE_DOESNT_EXIST);
+
+    }
+
+    @Test
     public void dontDoAnythingIfProblemWhileComputingContent() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
@@ -366,7 +388,6 @@ public class ActionToPerformServiceTest {
         verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
                 eq(resourceToUpdate),
                 updatedResourceCaptor.capture());
-
     }
 
     @Test
