@@ -356,11 +356,16 @@ public class ActionToPerformServiceTest {
                 directCommitCaptor.capture(),
                 eq(SOME_OAUTH_TOKEN));
 
-//        verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
-//                eq(resourceToUpdate),
-//                updatedResourceCaptor.capture());
-//
-//        assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_CANT_PROVIDE_CONTENT_ISSUE);
+        DirectCommit actualCommit = directCommitCaptor.getValue();
+
+        assertThat(actualCommit.getBranch()).isEqualTo(MASTER_BRANCH);
+        assertThat(actualCommit.getCommitMessage()).isEqualTo(SOME_COMMIT_MESSAGE + " performed on behalf of someUserName by CI-droid");
+        assertThat(actualCommit.getCommitter().getEmail()).isEqualTo(SOME_EMAIL);
+        assertThat(actualCommit.getCommitter().getName()).isEqualTo(SOME_USER_NAME);
+
+        verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
+                eq(resourceToUpdate),
+                updatedResourceCaptor.capture());
 
     }
 
