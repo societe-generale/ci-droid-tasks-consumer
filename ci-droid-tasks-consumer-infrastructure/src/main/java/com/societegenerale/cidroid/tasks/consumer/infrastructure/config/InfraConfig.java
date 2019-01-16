@@ -9,7 +9,6 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMail
 import com.societegenerale.cidroid.tasks.consumer.services.*;
 import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PushEventOnDefaultBranchHandler;
-import com.societegenerale.cidroid.tasks.consumer.services.model.DeleteResourceAction;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
