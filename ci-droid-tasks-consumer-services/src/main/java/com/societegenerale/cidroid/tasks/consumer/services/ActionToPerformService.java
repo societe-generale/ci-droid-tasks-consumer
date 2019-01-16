@@ -211,15 +211,7 @@ public class ActionToPerformService {
 
     private UpdatedResource deleteResource(BulkActionToPerform action, ResourceToUpdate resourceToDelete, ResourceContent existingResourceContent, String onBranch) throws GitHubAuthorizationException {
 
-        DirectCommit directCommit = new DirectCommit();
-
-        if (existingResourceExists(existingResourceContent)) {
-            directCommit.setPreviousVersionSha1(existingResourceContent.getSha());
-        }
-
-        directCommit.setBranch(onBranch);
-        directCommit.setCommitter(new DirectCommit.Committer(action.getUserRequestingAction().getLogin(), action.getEmail()));
-        directCommit.setCommitMessage(action.getCommitMessage() + " performed on behalf of " + action.getUserRequestingAction().getLogin() + " by CI-droid");
+        DirectCommit directCommit = buildDirectCommit(action,existingResourceContent, onBranch);
 
         UpdatedResource updatedResource = remoteGitHub
                 .deleteContent(resourceToDelete.getRepoFullName(), resourceToDelete.getFilePathOnRepo(), directCommit,
@@ -230,6 +222,21 @@ public class ActionToPerformService {
         updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK);
 
         return updatedResource;
+    }
+
+    private DirectCommit buildDirectCommit(BulkActionToPerform action, ResourceContent existingResourceContent, String onBranch) {
+
+        DirectCommit directCommit = new DirectCommit();
+
+        if (existingResourceExists(existingResourceContent)) {
+            directCommit.setPreviousVersionSha1(existingResourceContent.getSha());
+        }
+
+        directCommit.setBranch(onBranch);
+        directCommit.setCommitter(new DirectCommit.Committer(action.getUserRequestingAction().getLogin(), action.getEmail()));
+        directCommit.setCommitMessage(action.getCommitMessage() + " performed on behalf of " + action.getUserRequestingAction().getLogin() + " by CI-droid");
+
+        return directCommit;
     }
 
     private boolean existingResourceExists(ResourceContent existingResourceContent) {
@@ -252,15 +259,7 @@ public class ActionToPerformService {
     private UpdatedResource commitResource(BulkActionToPerform action, String newContent, ResourceToUpdate resourceToUpdate,
             ResourceContent existingResourceContent, String onBranch) throws GitHubAuthorizationException {
 
-        DirectCommit directCommit = new DirectCommit();
-
-        if (existingResourceExists(existingResourceContent)) {
-            directCommit.setPreviousVersionSha1(existingResourceContent.getSha());
-        }
-
-        directCommit.setBranch(onBranch);
-        directCommit.setCommitter(new DirectCommit.Committer(action.getUserRequestingAction().getLogin(), action.getEmail()));
-        directCommit.setCommitMessage(action.getCommitMessage() + " performed on behalf of " + action.getUserRequestingAction().getLogin() + " by CI-droid");
+        DirectCommit directCommit = buildDirectCommit(action,existingResourceContent, onBranch);
 
         directCommit.setBase64EncodedContent(GitHubContentBase64codec.encode(newContent));
 
