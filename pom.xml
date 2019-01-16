@@ -304,7 +304,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <!--<version>${maven-surefire-plugin.version}</version>-->
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <argLine>${surefireArgLine}</argLine>
@@ -314,7 +313,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <!--<version>${maven-failsafe-plugin.version}</version>-->
                 <configuration>
                     <includes>
                         <include>**/*IT.java</include>
