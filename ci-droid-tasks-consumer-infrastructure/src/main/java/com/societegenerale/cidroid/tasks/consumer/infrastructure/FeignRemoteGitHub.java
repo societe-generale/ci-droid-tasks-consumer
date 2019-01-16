@@ -19,7 +19,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Collections;
 import java.util.List;
@@ -96,7 +99,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
     @Override
     ResourceContent fetchContent(@PathVariable("repoFullName") String repoFullName,
                                  @PathVariable("path") String path,
-                                 @RequestParam("branch") String branch);
+                                 @PathVariable("branch") String branch);
 
 
     @Override
