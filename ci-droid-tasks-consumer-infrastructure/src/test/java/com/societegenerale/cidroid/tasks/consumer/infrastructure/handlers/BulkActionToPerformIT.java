@@ -2,11 +2,13 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.handlers;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformCommand;
 import org.junit.Test;
+import org.mockserver.matchers.MatchType;
 import org.mockserver.verify.VerificationTimes;
 
 import java.io.IOException;
 
 import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.JsonBody.json;
 
 public class BulkActionToPerformIT extends ActionToPerformEventHandlerIT {
 
@@ -21,9 +23,14 @@ public class BulkActionToPerformIT extends ActionToPerformEventHandlerIT {
         gitHubMockClient.verify(
                 request()
                         .withMethod("DELETE")
-                        .withPath("/api/v3/repos/myOrg/myRepo/contents/JenkinsFileQuality")
-                        .withBody("{\"message\":\"some commit message\",\"sha\":\"123456\",\"branch\":\"master\"}"),
-                VerificationTimes.once()
+                        .withPath("/api/v3/repos/myOrga/myRepo/contents/JenkinsFileQuality")
+                        .withBody(
+                                json("{\"branch\" : \"master\"," +
+                                     " \"committer\" : {\"name\" : \"octocat\",\"email\" : \"someEmail@someDomain.com\"}," +
+                                     " \"message\" : \"deleting JenkinsQualityFile performed on behalf of octocat by CI-droid\"," +
+                                     " \"sha\" : \"someSHA\"}",
+                                     MatchType.ONLY_MATCHING_FIELDS)),
+                VerificationTimes.exactly(1)
         );
     }
 

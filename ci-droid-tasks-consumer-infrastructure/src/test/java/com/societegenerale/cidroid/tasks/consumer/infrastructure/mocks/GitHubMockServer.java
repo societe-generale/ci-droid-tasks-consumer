@@ -1,8 +1,10 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.mockserver.model.HttpResponse;
@@ -56,15 +58,47 @@ public class GitHubMockServer extends MockServer {
 
         mockServer
                 .when(request()
+                        .withMethod("GET")
+                        .withPath("/api/v3/user"))
+                .respond(getCurrentUser());
+
+        mockServer
+                .when(request()
                         .withMethod("POST")
                         .withPath("/api/v3/repos/baxterthehacker/public-repo/issues/[0-9]+/comment"))
                 .respond(response().withStatusCode(200));
 
         mockServer
                 .when(request()
+                        .withMethod("GET")
+                        .withPath("/api/v3/repos/myOrga/myRepo/contents/JenkinsFileQuality")
+                        .withQueryStringParameter("ref","master"))
+                .respond(returnContent());
+
+        mockServer
+                .when(request()
                         .withMethod("PATCH")
                         .withPath("/api/v3/repos/baxterthehacker/public-repo/pulls/[0-9]+"))
                 .respond(response().withStatusCode(200));
+    }
+
+    private HttpResponse returnContent() {
+
+        ResourceContent existingResourceContent=new ResourceContent();
+        existingResourceContent.setSha("someSHA");
+
+        HttpResponse response= null;
+
+        try {
+            response = response()
+                    .withBody(objectMapper.writeValueAsString(existingResourceContent))
+                    .withHeader("Content-Type", "application/json")
+                    .withStatusCode(200);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("can't build the response - failing the test");
+        }
+
+        return response;
     }
 
     private HttpResponse getOpenPullRequests() {
@@ -101,6 +135,12 @@ public class GitHubMockServer extends MockServer {
                 .withBody(readFromFile("user.json"))
                 .withHeader("Content-Type", "application/json");
     }
+
+    private HttpResponse getCurrentUser() {
+        //reusing the same method - but we may need something specific for current user later
+        return getUser();
+    }
+
 
     private String readFromFile(String fileName) {
         InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(fileName);

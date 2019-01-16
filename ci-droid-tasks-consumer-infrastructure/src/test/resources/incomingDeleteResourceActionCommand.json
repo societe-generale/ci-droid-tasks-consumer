@@ -3,8 +3,10 @@
   "gitHubOauthToken": "somePassword",
   "email": "someEmail@someDomain.com",
 
+  "commitMessage": "deleting JenkinsQualityFile",
+
   "updateAction": {
-    "@class": "com.societegenerale.cidroid.tasks.consumer.services.model.DeleteResourceAction"
+    "@class": "com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAction"
   },
 
   "gitHubInteractionType": {
@@ -12,7 +14,8 @@
   },
   "resourcesToUpdate": [
     {
-      "filePathOnRepo": "someRepo/jenkinsFile",
+      "repoFullName": "myOrga/myRepo",
+      "filePathOnRepo": "JenkinsFileQuality",
       "branchName": "master"
     }
   ]
