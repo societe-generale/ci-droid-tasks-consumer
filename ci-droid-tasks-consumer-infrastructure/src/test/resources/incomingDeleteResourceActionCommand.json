@@ -1,0 +1,19 @@
+{
+  "gitLogin": "someUserName",
+  "gitHubOauthToken": "somePassword",
+  "email": "someEmail@someDomain.com",
+
+  "updateAction": {
+    "@class": "com.societegenerale.cidroid.tasks.consumer.services.model.DeleteResourceAction"
+  },
+
+  "gitHubInteractionType": {
+    "@c": ".DirectPushGitHubInteraction"
+  },
+  "resourcesToUpdate": [
+    {
+      "filePathOnRepo": "someRepo/jenkinsFile",
+      "branchName": "master"
+    }
+  ]
+}
