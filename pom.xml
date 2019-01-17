@@ -402,10 +402,10 @@
                 <version>4.3.0</version>
 
                 <configuration>
-                    <jacocoReports>
-                        <jacocoReport>${project.build.directory}/site/jacoco-it/jacoco.xml</jacocoReport>
-                        <jacocoReport>${project.build.directory}/site/jacoco-ut/jacoco.xml</jacocoReport>
-                    </jacocoReports>
+                    <relativeReportDirs>
+                        <relativeReportDir>/jacoco-it</relativeReportDir>
+                        <relativeReportDir>/jacoco-ut</relativeReportDir>
+                    </relativeReportDirs>
                 </configuration>
             </plugin>
 
