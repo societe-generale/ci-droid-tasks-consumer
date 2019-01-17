@@ -371,6 +371,8 @@ public class ActionToPerformServiceTest {
 
         when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentBeforeUpdate);
 
+        when(mockRemoteGitHub.deleteContent(eq(REPO_FULL_NAME), eq("someFile.txt"),any(DirectCommit.class),eq(SOME_OAUTH_TOKEN))).thenReturn(updatedResource);
+
         actionToPerformService.perform(bulkActionToPerform);
 
         verify(mockRemoteGitHub, times(1)).deleteContent(eq(REPO_FULL_NAME),
@@ -388,6 +390,8 @@ public class ActionToPerformServiceTest {
         verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
                 eq(resourceToUpdate),
                 updatedResourceCaptor.capture());
+
+        assertThat(updatedResourceCaptor.getValue().hasBeenUpdated()).isTrue();
     }
 
     @Test
