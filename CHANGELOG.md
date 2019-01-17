@@ -4,11 +4,12 @@
 
 ### Added
 - Monitoring closing of old PRs now
+- PR #58 - handling deleteResource bulk action now
 
 ### Changed
 
 - [BREAKING] upgrade to Spring Boot 2. Some properties need to be renamed
-- upgraded ci-droid-extensions to 1.0.7
+- upgraded ci-droid-extensions to 1.0.8
 
 ### Deprecated
 
