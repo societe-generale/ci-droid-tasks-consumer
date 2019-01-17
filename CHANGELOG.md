@@ -16,7 +16,7 @@
 ### Removed
 
 ### Fixed
-
+- Code coverage reporting : now taking into account integration tests
 
 ## [1.0.12] - 2019-01-10
 
