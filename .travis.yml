@@ -2,9 +2,9 @@ language: java
 jdk:
   - oraclejdk8
 script:
-  - mvn verify
+  - mvn verify jacoco:report
 after_success:
-  - mvn clean test jacoco:report coveralls:report
+  - mvn coveralls:report
 
 before_deploy:
   - release/createReleaseProperties.sh

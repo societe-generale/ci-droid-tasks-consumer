@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
@@ -286,7 +287,7 @@
                 <version>1.4.1</version>
                 <configuration>
                     <rules>
-                        <dependencyConvergence />
+                        <dependencyConvergence/>
                     </rules>
                     <fail>false</fail>
                 </configuration>
@@ -314,6 +315,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
+                    <argLine>${failsafeArgLine}</argLine>
                     <includes>
                         <include>**/*IT.java</include>
                     </includes>
@@ -341,8 +343,24 @@
                         </goals>
                         <configuration>
                             <propertyName>surefireArgLine</propertyName>
+                            <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Sets the path to the file which contains the execution data. -->
+                            <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+                            <!-- Sets the output directory for the code coverage report. -->
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                        </configuration>
+                    </execution>
+
                     <execution>
                         <id>pre-integration-tests</id>
                         <goals>
@@ -350,8 +368,24 @@
                         </goals>
                         <configuration>
                             <propertyName>failsafeArgLine</propertyName>
+                            <destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>post-integration-test</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Sets the path to the file which contains the execution data. -->
+                            <dataFile>${project.build.directory}/coverage-reports/jacoco-it.exec</dataFile>
+                            <!-- Sets the output directory for the code coverage report. -->
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+                        </configuration>
+                    </execution>
+
                     <execution>
                         <id>report</id>
                         <phase>test</phase>
@@ -366,6 +400,13 @@
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>4.3.0</version>
+
+                <configuration>
+                    <relativeReportDirs>
+                        <relativeReportDir>/jacoco-it</relativeReportDir>
+                        <relativeReportDir>/jacoco-ut</relativeReportDir>
+                    </relativeReportDirs>
+                </configuration>
             </plugin>
 
         </plugins>
