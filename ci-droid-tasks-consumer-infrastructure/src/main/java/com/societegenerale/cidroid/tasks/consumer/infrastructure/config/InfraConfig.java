@@ -67,6 +67,12 @@ public class InfraConfig {
         return new RemoveMavenDependencyOrPluginAction();
     }
 
+    @Bean
+    public ActionToReplicate deleteResourceAction() {
+
+        return new DeleteResourceAction();
+    }
+
 
     @Bean
     public ActionToPerformListener actionToPerformListener(ActionToPerformService actionToPerformService,

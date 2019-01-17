@@ -6,6 +6,7 @@ import com.oneeyedmen.fakir.Faker;
 import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAction;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
@@ -319,6 +320,28 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
+    public void dontDoAnythingIfResourceDoesntExist_whenActionIsDeleteResource()
+            throws BranchAlreadyExistsException, GitHubAuthorizationException {
+
+        BulkActionToPerform bulkActionToPerform = doApullRequestAction();
+        bulkActionToPerform.setActionToReplicate(new DeleteResourceAction());
+
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(null);
+
+        actionToPerformService.perform(bulkActionToPerform);
+
+        verify(mockRemoteGitHub, never()).updateContent(anyString(), anyString(), any(DirectCommit.class), anyString());
+        verify(mockRemoteGitHub, never()).deleteContent(anyString(), anyString(), any(DirectCommit.class), anyString());
+
+        verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
+                eq(resourceToUpdate),
+                updatedResourceCaptor.capture());
+
+        assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_FILE_DOESNT_EXIST);
+
+    }
+
+    @Test
     public void dontDoAnythingIfProblemWhileComputingContent() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
@@ -335,6 +358,40 @@ public class ActionToPerformServiceTest {
 
         assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_KO_CANT_PROVIDE_CONTENT_ISSUE);
 
+    }
+
+    @Test
+    public void deleteResourceWhenRequested() throws GitHubAuthorizationException {
+
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction())
+                                                                            .actionToReplicate(new DeleteResourceAction())
+                                                                            .resourcesToUpdate(Arrays.asList(resourceToUpdate))
+                                                                            .gitHubOauthToken(SOME_OAUTH_TOKEN)
+                                                                            .build();
+
+        when(mockRemoteGitHub.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentBeforeUpdate);
+
+        when(mockRemoteGitHub.deleteContent(eq(REPO_FULL_NAME), eq("someFile.txt"),any(DirectCommit.class),eq(SOME_OAUTH_TOKEN))).thenReturn(updatedResource);
+
+        actionToPerformService.perform(bulkActionToPerform);
+
+        verify(mockRemoteGitHub, times(1)).deleteContent(eq(REPO_FULL_NAME),
+                eq(resourceToUpdate.getFilePathOnRepo()),
+                directCommitCaptor.capture(),
+                eq(SOME_OAUTH_TOKEN));
+
+        DirectCommit actualCommit = directCommitCaptor.getValue();
+
+        assertThat(actualCommit.getBranch()).isEqualTo(MASTER_BRANCH);
+        assertThat(actualCommit.getCommitMessage()).isEqualTo(SOME_COMMIT_MESSAGE + " performed on behalf of someUserName by CI-droid");
+        assertThat(actualCommit.getCommitter().getEmail()).isEqualTo(SOME_EMAIL);
+        assertThat(actualCommit.getCommitter().getName()).isEqualTo(SOME_USER_NAME);
+
+        verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
+                eq(resourceToUpdate),
+                updatedResourceCaptor.capture());
+
+        assertThat(updatedResourceCaptor.getValue().hasBeenUpdated()).isTrue();
     }
 
     @Test

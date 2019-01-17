@@ -30,6 +30,9 @@ public interface RemoteGitHub {
     UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
             throws GitHubAuthorizationException;
 
+    UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
+            throws GitHubAuthorizationException;
+
     PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String oauthToken)
             throws GitHubAuthorizationException;
 

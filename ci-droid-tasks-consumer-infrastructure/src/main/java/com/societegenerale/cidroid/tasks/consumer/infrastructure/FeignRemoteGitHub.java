@@ -19,7 +19,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Collections;
 import java.util.List;
@@ -80,6 +83,15 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
     List<PullRequestComment> fetchPullRequestComments(@PathVariable("repoFullName") String repoFullName,
                                                       @PathVariable("prNumber") int prNumber);
 
+
+    @Override
+    default UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
+            throws GitHubAuthorizationException {
+
+        return buildContentClient(repoFullName, path, oauthToken).deleteResource(directCommit);
+    }
+
+
     @RequestMapping(method = RequestMethod.GET,
                     value = "/repos/{repoFullName}/contents/{path}?ref={branch}",
                     consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -87,13 +99,19 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
     @Override
     ResourceContent fetchContent(@PathVariable("repoFullName") String repoFullName,
                                  @PathVariable("path") String path,
-                                 @RequestParam("branch") String branch);
+                                 @PathVariable("branch") String branch);
+
 
     @Override
     default UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken) throws
             GitHubAuthorizationException {
 
-        ContentClient contentClient = Feign.builder()
+        return buildContentClient(repoFullName, path, oauthToken).updateContent(directCommit);
+
+    }
+
+    static ContentClient buildContentClient(String repoFullName, String path, String oauthToken) {
+        return Feign.builder()
                 .logger(new Slf4jLogger(ContentClient.class))
                 .encoder(new JacksonEncoder())
                 .decoder(new JacksonDecoder())
@@ -101,9 +119,6 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
                 .requestInterceptor(new OAuthInterceptor(oauthToken))
                 .logLevel(Logger.Level.FULL)
                 .target(ContentClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/contents/" + path);
-
-        return contentClient.updateContent(directCommit);
-
     }
 
     @RequestMapping(method = RequestMethod.GET,
@@ -202,6 +217,10 @@ interface ContentClient {
     @RequestLine("PUT")
     @Headers("Content-Type: application/json")
     UpdatedResource updateContent(DirectCommit directCommit) throws GitHubAuthorizationException;
+
+    @RequestLine("DELETE")
+    @Headers("Content-Type: application/json")
+    UpdatedResource deleteResource(DirectCommit directCommit) throws GitHubAuthorizationException;
 }
 
 interface GitReferenceClient {
@@ -244,7 +263,6 @@ class OAuthInterceptor implements RequestInterceptor {
         requestTemplate.header(AUTHORIZATION_HEADER, "token " + oauthToken);
     }
 }
-
 
 @Slf4j
 class BranchCreationErrorDecoder implements ErrorDecoder {
