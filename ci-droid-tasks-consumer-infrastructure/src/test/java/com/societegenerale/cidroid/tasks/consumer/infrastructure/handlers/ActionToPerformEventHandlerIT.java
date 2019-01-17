@@ -2,13 +2,10 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.GithubEventListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.TestConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.YamlFileApplicationContextInitializer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -27,14 +24,14 @@ import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.Gi
 public abstract class ActionToPerformEventHandlerIT {
 
     @Autowired
-    ActionToPerformListener actionToPerformListener;
+    protected ActionToPerformListener actionToPerformListener;
 
     @Autowired
-    GitHubMockServer githubMockServer;
+    private GitHubMockServer githubMockServer;
 
-    MockServerClient gitHubMockClient;
+    protected MockServerClient gitHubMockClient;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    protected ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setUp() throws IOException {
