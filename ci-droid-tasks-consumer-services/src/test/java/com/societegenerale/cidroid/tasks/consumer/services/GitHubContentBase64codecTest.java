@@ -1,13 +1,13 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GitHubContentBase64codecTest {
+class GitHubContentBase64codecTest {
 
     @Test
-    public void shouldDecodeCorrectly() {
+    void shouldDecodeCorrectly() {
 
         String encodedString = "MXN0IGNvbW1pdCBpbiBtYXN0ZXIKCjJuZCBjb21taXQgaW4gbWFzdGVyCgoz\n" +
                 "cmQgY29tbWl0IGluIG1hc3RlcgoKNHRoIGNvbW1pdCBpbiBtYXN0ZXIKCjV0\n" +
@@ -20,7 +20,7 @@ public class GitHubContentBase64codecTest {
     }
 
     @Test
-    public void encodeDecodeShouldBeIdemPotent() {
+    void encodeDecodeShouldBeIdemPotent() {
 
         String originalString = "HelloWorld \n How are you doing ?? --> I am good !!";
 

@@ -4,15 +4,15 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierM
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PullRequestNotificationsIT extends GitHubEventHandlerIT {
+class PullRequestNotificationsIT extends GitHubEventHandlerIT {
 
     private static final String OWNER_LOGIN = "octocat";
     private static final String OWNER_EMAIL = "octocat@github.com";
@@ -21,13 +21,13 @@ public class PullRequestNotificationsIT extends GitHubEventHandlerIT {
     @Autowired
     private NotifierMock notifier;
 
-    @Before
-    public void setUpNotifier() {
+    @BeforeEach
+    void setUpNotifier() {
         notifier.getNotifications().clear();
     }
 
     @Test
-    public void shouldNotifyPullRequestOwnerIfNotMergeable() {
+    void shouldNotifyPullRequestOwnerIfNotMergeable() {
         githubEventListener.onGitHubPushEventOnDefaultBranch(pushEvent);
 
         await().atMost(2, SECONDS)

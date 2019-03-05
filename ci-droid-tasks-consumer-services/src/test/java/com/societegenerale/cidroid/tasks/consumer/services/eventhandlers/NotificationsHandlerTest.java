@@ -7,8 +7,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequ
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class NotificationsHandlerTest {
+class NotificationsHandlerTest {
 
     private static final String SINGLE_PULL_REQUEST_JSON = "/singlePullRequest.json";
 
@@ -38,8 +38,8 @@ public class NotificationsHandlerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeEach
+    void setUp() throws IOException {
 
         String prAsString = readFromInputStream(getClass().getResourceAsStream(SINGLE_PULL_REQUEST_JSON));
         singlePr = objectMapper.readValue(prAsString, PullRequest.class);
@@ -54,7 +54,7 @@ public class NotificationsHandlerTest {
 
 
     @Test
-    public void shouldNotifyPRownerIFNotMergeable() {
+    void shouldNotifyPRownerIFNotMergeable() {
 
         notificationsHandler.handle(pushEvent, singletonList(singlePr));
 
@@ -76,7 +76,7 @@ public class NotificationsHandlerTest {
     }
 
     @Test
-    public void should_not_NotifyPRownerIFMergeable() {
+    void should_not_NotifyPRownerIFMergeable() {
 
         singlePr.setMergeable(true);
 

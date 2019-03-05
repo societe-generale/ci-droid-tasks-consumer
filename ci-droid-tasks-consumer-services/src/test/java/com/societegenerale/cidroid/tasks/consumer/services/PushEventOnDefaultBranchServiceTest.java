@@ -8,8 +8,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergea
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class PushEventOnDefaultBranchServiceTest {
+class PushEventOnDefaultBranchServiceTest {
 
     private static final String FULL_REPO_NAME = "baxterthehacker/public-repo";
 
@@ -49,8 +49,8 @@ public class PushEventOnDefaultBranchServiceTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeEach
+    void setUp() throws IOException {
 
         List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers = new ArrayList<>();
         pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandler);
@@ -75,7 +75,7 @@ public class PushEventOnDefaultBranchServiceTest {
     }
 
     @Test
-    public void runtimeExceptionInHandlerShouldNotPreventOthersToExecute() {
+    void runtimeExceptionInHandlerShouldNotPreventOthersToExecute() {
 
         List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers = new ArrayList<>();
 
@@ -95,7 +95,7 @@ public class PushEventOnDefaultBranchServiceTest {
     }
 
     @Test
-    public void shouldRequestAllOpenPRsWhenPushOnDefaultBranch() {
+    void shouldRequestAllOpenPRsWhenPushOnDefaultBranch() {
 
         pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
 
@@ -103,7 +103,7 @@ public class PushEventOnDefaultBranchServiceTest {
     }
 
     @Test
-    public void shouldNotDoAnythingIfPushEventNotOnDefaultBranch() {
+    void shouldNotDoAnythingIfPushEventNotOnDefaultBranch() {
 
         pushEvent.setRef("someOtherBranch");
 
@@ -113,7 +113,7 @@ public class PushEventOnDefaultBranchServiceTest {
     }
 
     @Test
-    public void shouldRequestOpenPRDetailsWhenPushOnDefaultBranch() {
+    void shouldRequestOpenPRDetailsWhenPushOnDefaultBranch() {
 
         pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
 
@@ -121,7 +121,7 @@ public class PushEventOnDefaultBranchServiceTest {
     }
 
     @Test
-    public void shouldApplyActionHandlersForRepository(){
+    void shouldApplyActionHandlersForRepository(){
 
         pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
 
@@ -131,7 +131,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
 
     @Test
-    public void shouldTrySeveralTimesToGetMergeableStatusIfNotAvailableImmediately() throws Exception {
+    void shouldTrySeveralTimesToGetMergeableStatusIfNotAvailableImmediately() throws Exception {
 
         updatePRmergeabilityStatus(UNKNOWN);
 

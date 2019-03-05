@@ -6,14 +6,14 @@ import com.societegenerale.cidroid.tasks.consumer.services.PushEventOnDefaultBra
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static org.mockito.Mockito.*;
 
-public class GithubEventListenerTest {
+class GithubEventListenerTest {
 
     private PushEventOnDefaultBranchService mockPushOnDefaultBranchService = mock(PushEventOnDefaultBranchService.class);
 
@@ -25,14 +25,14 @@ public class GithubEventListenerTest {
 
     private GithubEventListener listener;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         listener=new GithubEventListener(mockPushOnDefaultBranchService, mockPullRequestEventService);
     }
 
     @Test
-    public void callsExpectedService_pushOnDefaultBranch() throws IOException {
+    void callsExpectedService_pushOnDefaultBranch() throws IOException {
 
         String pushEventPayload = IOUtils.toString(classLoader.getResourceAsStream("pushEvent.json"),"UTF-8");
 
@@ -46,7 +46,7 @@ public class GithubEventListenerTest {
     }
 
     @Test
-    public void callsExpectedService_pullRequestEvent() throws IOException {
+    void callsExpectedService_pullRequestEvent() throws IOException {
 
         String pullRequestEventPayload = IOUtils.toString(classLoader.getResourceAsStream("pullRequestEvent.json"),"UTF-8");
 

@@ -8,19 +8,19 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraCon
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.client.MockServerClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 
 import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer.GITHUB_MOCK_PORT;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { InfraConfig.class, TestConfig.class },
         initializers = YamlFileApplicationContextInitializer.class)
 public abstract class GitHubEventHandlerIT {
@@ -38,7 +38,7 @@ public abstract class GitHubEventHandlerIT {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         githubMockServer.start();
 
@@ -48,7 +48,7 @@ public abstract class GitHubEventHandlerIT {
         pullRequest = (PullRequest) getObjectFromJson("singlePullRequest.json", PullRequest.class);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         githubMockServer.stop();
     }

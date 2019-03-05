@@ -10,8 +10,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequ
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class RebaseHandlerTest {
+class RebaseHandlerTest {
 
     private static final String SINGLE_PULL_REQUEST_JSON = "/singlePullRequest.json";
     private static final int PULL_REQUEST_NUMBER = 1347;
@@ -41,8 +41,8 @@ public class RebaseHandlerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeEach
+    void setUp() throws IOException {
 
         String prAsString = readFromInputStream(getClass().getResourceAsStream(SINGLE_PULL_REQUEST_JSON));
         singlePr = objectMapper.readValue(prAsString, PullRequest.class);
@@ -55,7 +55,7 @@ public class RebaseHandlerTest {
 
 
     @Test
-    public void shouldRebaseAndPostGitHubCommentForMergeablePr() {
+    void shouldRebaseAndPostGitHubCommentForMergeablePr() {
 
         singlePr.setMergeable(true);
 
@@ -81,7 +81,7 @@ public class RebaseHandlerTest {
     }
 
     @Test
-    public void shouldNotRebaseWhenPRisMadeFromFork() {
+    void shouldNotRebaseWhenPRisMadeFromFork() {
 
         singlePr.setMergeable(true);
         singlePr.setMadeFromForkedRepo(true);
@@ -93,7 +93,7 @@ public class RebaseHandlerTest {
     }
 
     @Test
-    public void shouldPostGitHubWarningCommentWhenProblemWhileRebasing() {
+    void shouldPostGitHubWarningCommentWhenProblemWhileRebasing() {
 
         singlePr.setMergeable(true);
 
@@ -121,7 +121,7 @@ public class RebaseHandlerTest {
 
 
     @Test
-    public void shouldNotRebase_whenPrIsNotMergeable() {
+    void shouldNotRebase_whenPrIsNotMergeable() {
 
         rebaseHandler.handle(pushEvent, singletonList(singlePr));
 

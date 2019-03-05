@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-public class PullRequestEventServiceTest {
+class PullRequestEventServiceTest {
 
     PullRequestEventService pullRequestEventService;
 
@@ -21,8 +21,8 @@ public class PullRequestEventServiceTest {
 
     PullRequestEvent pullRequestEvent;
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeEach
+    void setUp() throws IOException {
 
         pullRequestEventService = new PullRequestEventService(Arrays.asList(mockHandler));
 
@@ -34,7 +34,7 @@ public class PullRequestEventServiceTest {
     }
 
     @Test
-    public void shouldProcessPullRequestEventsThatAre_Opened() {
+    void shouldProcessPullRequestEventsThatAre_Opened() {
 
         pullRequestEventService.onGitHubPullRequestEvent(pullRequestEvent);
 
@@ -43,7 +43,7 @@ public class PullRequestEventServiceTest {
     }
 
     @Test
-    public void shouldProcessPullRequestEventsThatAre_Synchronize() {
+    void shouldProcessPullRequestEventsThatAre_Synchronize() {
 
         pullRequestEvent.setAction("synchronize");
 
@@ -54,7 +54,7 @@ public class PullRequestEventServiceTest {
     }
 
     @Test
-    public void should_NOT_ProcessPullRequestEventsThatAre_Assigned() {
+    void should_NOT_ProcessPullRequestEventsThatAre_Assigned() {
 
         pullRequestEvent.setAction("assigned");
 

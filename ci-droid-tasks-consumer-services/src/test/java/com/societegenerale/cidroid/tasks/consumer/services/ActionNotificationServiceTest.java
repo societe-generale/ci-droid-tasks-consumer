@@ -8,8 +8,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedR
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.*;
@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-public class ActionNotificationServiceTest {
+class ActionNotificationServiceTest {
 
     private static final String MODIFIED_CONTENT = "modifiedContent";
 
@@ -48,8 +48,8 @@ public class ActionNotificationServiceTest {
 
     private BulkActionToPerform.BulkActionToPerformBuilder bulkActionToPerformBuilder;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         testActionToPerform.setContentToProvide(MODIFIED_CONTENT);
         testActionToPerform.setContinueIfResourceDoesntExist(true);
 
@@ -69,7 +69,7 @@ public class ActionNotificationServiceTest {
     }
 
     @Test
-    public void when_DIRECT_PUSH_and_update_OK() {
+    void when_DIRECT_PUSH_and_update_OK() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
         updatedResource.setUpdateStatus(UPDATE_OK);
@@ -80,7 +80,7 @@ public class ActionNotificationServiceTest {
     }
 
     @Test
-    public void when_PULL_REQUEST_and_update_OK() {
+    void when_PULL_REQUEST_and_update_OK() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction()).build();
 
@@ -92,7 +92,7 @@ public class ActionNotificationServiceTest {
     }
 
     @Test
-    public void when_DIRECT_PUSH_and_content_is_same() {
+    void when_DIRECT_PUSH_and_content_is_same() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
         updatedResource.setUpdateStatus(UPDATE_KO_FILE_CONTENT_IS_SAME);
@@ -111,7 +111,7 @@ public class ActionNotificationServiceTest {
     }
 
     @Test
-    public void when_PULL_REQUEST_and_content_is_same() {
+    void when_PULL_REQUEST_and_content_is_same() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction()).build();
 
@@ -134,7 +134,7 @@ public class ActionNotificationServiceTest {
     }
 
     @Test
-    public void when_PULL_REQUEST_and_openPR_already_exists() {
+    void when_PULL_REQUEST_and_openPR_already_exists() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction()).build();
 
@@ -147,7 +147,7 @@ public class ActionNotificationServiceTest {
     }
 
     @Test
-    public void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_DIRECT_PUSH() {
+    void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_DIRECT_PUSH() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
         updatedResource.setUpdateStatus(UPDATE_KO_FILE_DOESNT_EXIST);
@@ -165,7 +165,7 @@ public class ActionNotificationServiceTest {
     }
 
     @Test
-    public void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_PULL_REQUEST() {
+    void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_PULL_REQUEST() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction()).build();
 
@@ -187,7 +187,7 @@ public class ActionNotificationServiceTest {
     }
 
     @Test
-    public void sendKOnotification_whenAuthenticationIssue() {
+    void sendKOnotification_whenAuthenticationIssue() {
 
         String expectedSubject = "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
 
@@ -218,7 +218,7 @@ public class ActionNotificationServiceTest {
     }
 
     @Test
-    public void sendKOnotification_whenUnexpectedError() {
+    void sendKOnotification_whenUnexpectedError() {
 
         String expectedSubject = "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
 
@@ -250,7 +250,7 @@ public class ActionNotificationServiceTest {
 
 
     @Test
-    public void sendKOnotification_whenResourceToUpdateIsNull() {
+    void sendKOnotification_whenResourceToUpdateIsNull() {
 
         String expectedSubject = "[KO] unclear status for action " + testActionToPerform.getClass().getName();
 
@@ -268,7 +268,7 @@ public class ActionNotificationServiceTest {
 
 
     @Test
-    public void sendKOnotification_whenRepoDoesntExist() {
+    void sendKOnotification_whenRepoDoesntExist() {
 
         String expectedSubject = "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
 

@@ -10,8 +10,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPer
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class ActionToPerformListenerTest {
+class ActionToPerformListenerTest {
 
     private ActionToReplicate overWriteStaticContentAction = new OverwriteStaticFileAction();
 
@@ -41,8 +41,8 @@ public class ActionToPerformListenerTest {
 
     private ActionToPerformCommand incomingCommand;
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeEach
+    void setUp() throws IOException {
 
         String incomingCommandAsString = IOUtils
                 .toString(ActionToPerformListenerTest.class.getClassLoader().getResourceAsStream("incomingOverWriteStaticContentAction.json"),
@@ -54,7 +54,7 @@ public class ActionToPerformListenerTest {
     }
 
     @Test
-    public void shouldMapCorrectlyIncomingCommand() {
+    void shouldMapCorrectlyIncomingCommand() {
         //postConstruct
         actionToPerformListener.registerActionsToReplicate();
 
@@ -76,7 +76,7 @@ public class ActionToPerformListenerTest {
     }
 
     @Test
-    public void shouldNotifyIfUnexpectedExceptionDuringDeserialization_and_notPerformAnything() {
+    void shouldNotifyIfUnexpectedExceptionDuringDeserialization_and_notPerformAnything() {
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         ArgumentCaptor<String> notificationBodyCaptor = ArgumentCaptor.forClass(String.class);

@@ -7,34 +7,34 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes={ InfraConfig.class,LiveTestConfig.class}, initializers = YamlFileApplicationContextInitializer.class)
 @TestPropertySource("/application-test.yml")
-@Ignore("to launch manually and test in local - you probably need to update config before running")
-public class FeignRemoteGitHubLIVETest {
+@Disabled("to launch manually and test in local - you probably need to update config before running")
+class FeignRemoteGitHubLIVETest {
 
     @Autowired
     private FeignRemoteGitHub feignRemoteGitHub;
 
     @Test
-    public void manualTestForPublishingComment(){
+    void manualTestForPublishingComment(){
 
         feignRemoteGitHub.addCommentOnPR("myOrga/myProject", 2, new Comment("test Vincent"));
 
     }
 
     @Test
-    public void manualTestForFetchingAResource() {
+    void manualTestForFetchingAResource() {
 
         ResourceContent resourceContent = feignRemoteGitHub.fetchContent("myOrga/myProject", "null", "master");
 
@@ -42,7 +42,7 @@ public class FeignRemoteGitHubLIVETest {
     }
 
     @Test
-    public void manualTestForUpdatingAResource() throws GitHubAuthorizationException {
+    void manualTestForUpdatingAResource() throws GitHubAuthorizationException {
 
         DirectCommit directCommit = new DirectCommit();
         directCommit.setBranch("master");

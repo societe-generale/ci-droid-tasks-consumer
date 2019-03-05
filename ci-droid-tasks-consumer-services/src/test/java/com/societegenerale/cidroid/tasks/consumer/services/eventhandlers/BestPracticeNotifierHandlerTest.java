@@ -9,8 +9,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-public class BestPracticeNotifierHandlerTest {
+class BestPracticeNotifierHandlerTest {
 
     private static final String MATCHING_FILENAME = "commons/src/main/resources/db/changelog/changes/004-create-risk-table.yml";
 
@@ -47,8 +47,8 @@ public class BestPracticeNotifierHandlerTest {
 
     private PullRequestEvent pullRequestEvent;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         matchingPullRequestFile.setFilename(MATCHING_FILENAME);
 
@@ -63,7 +63,7 @@ public class BestPracticeNotifierHandlerTest {
     }
 
     @Test
-    public void shouldNotifyWithConfiguredContentIfMatching() {
+    void shouldNotifyWithConfiguredContentIfMatching() {
 
         handler.handle(pullRequestEvent);
 
@@ -73,7 +73,7 @@ public class BestPracticeNotifierHandlerTest {
     }
 
     @Test
-    public void shouldNotNotifyWhenNoMatch() {
+    void shouldNotNotifyWhenNoMatch() {
 
         matchingPullRequestFile.setFilename("commons/src/main/resources/db/chaelog/changes/004-create-risk-table.yml");
 
@@ -83,7 +83,7 @@ public class BestPracticeNotifierHandlerTest {
     }
 
     @Test
-    public void shouldNotifyOnlyOnceWhenSeveralMatches() {
+    void shouldNotifyOnlyOnceWhenSeveralMatches() {
 
         PullRequestFile anotherMatchingPullRequestFile = new PullRequestFile();
         anotherMatchingPullRequestFile.setFilename("myModule/src/main/java/org/myPackage/CoucouDto.java");
@@ -103,7 +103,7 @@ public class BestPracticeNotifierHandlerTest {
     }
 
     @Test
-    public void shouldLogMonitoringEventWhenCantFetchResource() {
+    void shouldLogMonitoringEventWhenCantFetchResource() {
 
         Appender appender = mock(Appender.class);
 
@@ -133,7 +133,7 @@ public class BestPracticeNotifierHandlerTest {
     }
 
     @Test
-    public void shouldNotPostNotificationIfAlreadyThereFromPreviousEvent() {
+    void shouldNotPostNotificationIfAlreadyThereFromPreviousEvent() {
 
         PullRequestComment existingPrComment = new PullRequestComment("some comments about " + MATCHING_FILENAME,
                 new User("someLogin", "firstName.lastName@domain.com"));
@@ -147,7 +147,7 @@ public class BestPracticeNotifierHandlerTest {
     }
 
     @Test
-    public void shouldPostOnlyForFilesOnwhichWeHaventCommentedYet() {
+    void shouldPostOnlyForFilesOnwhichWeHaventCommentedYet() {
 
         String secondMatchingFileNameOnWhichTheresNoCommentYet = "commons/src/main/resources/db/changelog/changes/005-someOtherFile.yml";
 

@@ -6,9 +6,9 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import javax.mail.MessagingException;
@@ -19,7 +19,7 @@ import java.util.*;
 import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class EMailNotifierTest {
+class EMailNotifierTest {
 
     private static final String MAIL_SENT_FROM = "ci-droid@socgen.com";
 
@@ -27,8 +27,8 @@ public class EMailNotifierTest {
 
     private GreenMail mailServer = new GreenMail(ServerSetupTest.SMTP);
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         emailNotifier = buildAndConfigure();
 
@@ -50,13 +50,13 @@ public class EMailNotifierTest {
         return new EMailNotifier(mailSenderImpl, MAIL_SENT_FROM);
     }
 
-    @After
-    public void stopGreenMailServer() {
+    @AfterEach
+    void stopGreenMailServer() {
         mailServer.stop();
     }
 
     @Test
-    public void shouldSendExpectedEmail() throws MessagingException, IOException {
+    void shouldSendExpectedEmail() throws MessagingException, IOException {
 
         String recipientEmail = "test_login@myDomain.com";
         User user = User.builder().login("test_login")

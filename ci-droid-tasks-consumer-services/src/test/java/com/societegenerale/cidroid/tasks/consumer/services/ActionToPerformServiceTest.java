@@ -13,9 +13,9 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPer
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.TestAppender;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class ActionToPerformServiceTest {
+class ActionToPerformServiceTest {
 
     private static final String MODIFIED_CONTENT = "modifiedContent";
 
@@ -90,8 +90,8 @@ public class ActionToPerformServiceTest {
 
     private BulkActionToPerform.BulkActionToPerformBuilder bulkActionToPerformBuilder;
 
-    @Before
-    public void setUp() throws GitHubAuthorizationException {
+    @BeforeEach
+    void setUp() throws GitHubAuthorizationException {
 
         testActionToPerform.setContentToProvide(MODIFIED_CONTENT);
         testActionToPerform.setContinueIfResourceDoesntExist(true);
@@ -120,14 +120,14 @@ public class ActionToPerformServiceTest {
 
     }
 
-    @After
-    public void after() {
+    @AfterEach
+    void after() {
         assertAtLeastOneMonitoringEventOfType(BULK_ACTION_PROCESSED);
         testAppender.events.clear();
     }
 
     @Test
-    public void performActionOfType_DIRECT_PUSH() throws GitHubAuthorizationException {
+    void performActionOfType_DIRECT_PUSH() throws GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -145,7 +145,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void isPassingResourceToUpdateToTheAction_toGenerateItsContent() {
+    void isPassingResourceToUpdateToTheAction_toGenerateItsContent() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -158,7 +158,7 @@ public class ActionToPerformServiceTest {
 
 
     @Test
-    public void dontPushWhenContentIsNotModifiedByAction_andActionIs_DIRECT_PUSH() throws GitHubAuthorizationException {
+    void dontPushWhenContentIsNotModifiedByAction_andActionIs_DIRECT_PUSH() throws GitHubAuthorizationException {
 
         String contentThatWillNotBeModified = "some content that will not change";
         testActionToPerform.setContentToProvide(contentThatWillNotBeModified);
@@ -186,7 +186,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontPushWhenContentIsNotModifiedByAction_andActionIs_PULL_REQUEST()
+    void dontPushWhenContentIsNotModifiedByAction_andActionIs_PULL_REQUEST()
             throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         String contentThatWillNotBeModified = "some content that will not change";
@@ -217,7 +217,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void performActionOfType_PULL_REQUEST() throws BranchAlreadyExistsException, GitHubAuthorizationException {
+    void performActionOfType_PULL_REQUEST() throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -242,7 +242,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void continueIfResourceDoesntExist_whenActionPermitsIt() throws GitHubAuthorizationException {
+    void continueIfResourceDoesntExist_whenActionPermitsIt() throws GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -262,7 +262,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void continueIfExistingResourceIsNull_whenActionPermitsIt() throws GitHubAuthorizationException {
+    void continueIfExistingResourceIsNull_whenActionPermitsIt() throws GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -280,7 +280,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_DIRECT_PUSH() throws GitHubAuthorizationException {
+    void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_DIRECT_PUSH() throws GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -300,7 +300,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_PULL_REQUEST()
+    void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_PULL_REQUEST()
             throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
@@ -321,7 +321,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontDoAnythingIfResourceDoesntExist_whenActionIsDeleteResource()
+    void dontDoAnythingIfResourceDoesntExist_whenActionIsDeleteResource()
             throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
@@ -343,7 +343,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontDoAnythingIfProblemWhileComputingContent() {
+    void dontDoAnythingIfProblemWhileComputingContent() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -362,7 +362,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void deleteResourceWhenRequested() throws GitHubAuthorizationException {
+    void deleteResourceWhenRequested() throws GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction())
                                                                             .actionToReplicate(new DeleteResourceAction())
@@ -396,7 +396,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void reuseBranchIfAlreadyExistWhenDoing_PULL_REQUEST() throws BranchAlreadyExistsException, GitHubAuthorizationException {
+    void reuseBranchIfAlreadyExistWhenDoing_PULL_REQUEST() throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -427,7 +427,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void notifyProperlyWhenIncorrectCredentials_whenCommitting() throws GitHubAuthorizationException {
+    void notifyProperlyWhenIncorrectCredentials_whenCommitting() throws GitHubAuthorizationException {
 
         when(mockRemoteGitHub.updateContent(eq(REPO_FULL_NAME), anyString(), any(DirectCommit.class), anyString()))
                 .thenThrow(new GitHubAuthorizationException("invalid credentials"));
@@ -447,7 +447,7 @@ public class ActionToPerformServiceTest {
 
 
     @Test
-    public void notifyProperlyWhenIncorrectCredentials_whenCreatingBranch() throws GitHubAuthorizationException, BranchAlreadyExistsException {
+    void notifyProperlyWhenIncorrectCredentials_whenCreatingBranch() throws GitHubAuthorizationException, BranchAlreadyExistsException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -464,7 +464,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void notifyProperlyWhenUnexpectedError() throws BranchAlreadyExistsException, GitHubAuthorizationException {
+    void notifyProperlyWhenUnexpectedError() throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -481,7 +481,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void notifyProperlyWhenRepoDoesntExist() throws BranchAlreadyExistsException, GitHubAuthorizationException {
+    void notifyProperlyWhenRepoDoesntExist() throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -500,7 +500,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void shouldCreatePRwithProvidedTitle() throws GitHubAuthorizationException, BranchAlreadyExistsException {
+    void shouldCreatePRwithProvidedTitle() throws GitHubAuthorizationException, BranchAlreadyExistsException {
 
         mockPullRequestSpecificBehavior();
         when(mockRemoteGitHub.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(fakePullRequest);
@@ -517,7 +517,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void shouldCreatePRwithBranchName_whenPRtitleIsNotProvided() throws GitHubAuthorizationException, BranchAlreadyExistsException {
+    void shouldCreatePRwithBranchName_whenPRtitleIsNotProvided() throws GitHubAuthorizationException, BranchAlreadyExistsException {
 
         mockPullRequestSpecificBehavior();
         when(mockRemoteGitHub.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(fakePullRequest);
@@ -535,7 +535,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void shouldCreatePRbranchFromProvidedBranch() throws GitHubAuthorizationException, BranchAlreadyExistsException {
+    void shouldCreatePRbranchFromProvidedBranch() throws GitHubAuthorizationException, BranchAlreadyExistsException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -567,7 +567,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontCreatePR_ifAlreadyAnOpenPRonSameBranch() throws BranchAlreadyExistsException, GitHubAuthorizationException {
+    void dontCreatePR_ifAlreadyAnOpenPRonSameBranch() throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         mockPullRequestSpecificBehavior();
 

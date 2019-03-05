@@ -8,8 +8,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.DateProvider;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.TestAppender;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -22,7 +22,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class PullRequestCleaningHandlerTest {
+class PullRequestCleaningHandlerTest {
 
     private static final int PR_AGE_LIMIT_IN_DAYS = 180;
     private static final int PULL_REQUEST_NUMBER = 7;
@@ -34,8 +34,8 @@ public class PullRequestCleaningHandlerTest {
 
     private TestAppender testAppender=new TestAppender();
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeEach
+    void setUp() throws IOException {
         remoteGitHub = mock(RemoteGitHub.class);
 
         dateProvider = () -> LocalDateTime.of(2018, 12, 23, 16, 0, 0);
@@ -55,7 +55,7 @@ public class PullRequestCleaningHandlerTest {
     }
 
     @Test
-    public void shouldClosePRWhichOutlivedTheLimit() {
+    void shouldClosePRWhichOutlivedTheLimit() {
         LocalDateTime oldDate = dateProvider.now().minusDays(PR_AGE_LIMIT_IN_DAYS + 10);
         PullRequest oldPullRequest = new PullRequest(PULL_REQUEST_NUMBER);
         oldPullRequest.setCreationDate(oldDate);
@@ -72,7 +72,7 @@ public class PullRequestCleaningHandlerTest {
     }
 
     @Test
-    public void shouldNotClosePRWhichAgeIsBelowTheLimit() {
+    void shouldNotClosePRWhichAgeIsBelowTheLimit() {
 
         LocalDateTime recentDate = dateProvider.now().minusDays(1);
         PullRequest recentPullRequest = new PullRequest(PULL_REQUEST_NUMBER);

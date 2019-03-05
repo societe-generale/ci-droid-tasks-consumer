@@ -1,7 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.handlers;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformCommand;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockserver.matchers.MatchType;
 import org.mockserver.verify.VerificationTimes;
 
@@ -10,11 +10,11 @@ import java.io.IOException;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.JsonBody.json;
 
-public class BulkActionToPerformIT extends ActionToPerformEventHandlerIT {
+class BulkActionToPerformIT extends ActionToPerformEventHandlerIT {
 
 
     @Test
-    public void shouldDeleteResource() throws IOException {
+    void shouldDeleteResource() throws IOException {
 
         ActionToPerformCommand deleteResourceAction=(ActionToPerformCommand)getObjectFromJson("incomingDeleteResourceActionCommand.json",ActionToPerformCommand.class);
 

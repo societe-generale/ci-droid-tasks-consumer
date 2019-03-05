@@ -3,16 +3,16 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ActionToPerformCommandTest {
+class ActionToPerformCommandTest {
 
     @Test
-    public void shouldMapPullRequestGitHubInteraction() throws IOException {
+    void shouldMapPullRequestGitHubInteraction() throws IOException {
 
         String incomingCommandAsString = IOUtils
                 .toString(ActionToPerformCommandTest.class.getClassLoader()

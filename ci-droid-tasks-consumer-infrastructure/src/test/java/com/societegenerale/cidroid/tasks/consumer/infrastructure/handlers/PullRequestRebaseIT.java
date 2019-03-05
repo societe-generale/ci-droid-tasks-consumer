@@ -5,7 +5,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockserver.verify.VerificationTimes;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,7 +17,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.request;
 
-public class PullRequestRebaseIT extends GitHubEventHandlerIT {
+class PullRequestRebaseIT extends GitHubEventHandlerIT {
 
     private static final int PULL_REQUEST_ID = 1347;
     private static final String COMMIT_ID = "123456";
@@ -27,7 +27,7 @@ public class PullRequestRebaseIT extends GitHubEventHandlerIT {
     private Rebaser mockRebaser;
 
     @Test
-    public void shouldRebaseMergeablePullRequest() {
+    void shouldRebaseMergeablePullRequest() {
         PullRequest expectedPullRequest = argThat(pr -> pr.getNumber() == PULL_REQUEST_ID);
         when(mockRebaser.rebase(expectedPullRequest)).thenReturn(getRebaseResult());
 

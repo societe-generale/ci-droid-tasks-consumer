@@ -2,8 +2,8 @@ package com.societegenerale.cidroid.tasks.consumer.services.monitoring;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
 import java.util.AbstractMap;
@@ -11,16 +11,16 @@ import java.util.AbstractMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class EventTest {
+class EventTest {
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         MDC.clear();
         TestAppender.events.clear();
     }
 
     @Test
-    public void should_create_a_new_technical_event() {
+    void should_create_a_new_technical_event() {
         //when
         Event event = Event.technical("An event");
 
@@ -32,7 +32,7 @@ public class EventTest {
     }
 
     @Test
-    public void should_create_a_new_custom_event() {
+    void should_create_a_new_custom_event() {
         //when
         Event event = Event.custom("An event", "custom");
 
@@ -44,19 +44,19 @@ public class EventTest {
     }
 
     @Test
-    public void should_throw_exception_if_type_of_custom_event_is_null() {
+    void should_throw_exception_if_type_of_custom_event_is_null() {
         // when
         assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> Event.custom("An event", null));
     }
 
     @Test
-    public void should_throw_exception_if_type_of_custom_event_length_is_zero() {
+    void should_throw_exception_if_type_of_custom_event_length_is_zero() {
         // when
         assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> Event.custom("An event", ""));
     }
 
     @Test
-    public void should_add_an_attribute() {
+    void should_add_an_attribute() {
         //when
         Event event = Event.custom("An event", "custom")
                 .addAttribute("new", "attribute");
@@ -70,7 +70,7 @@ public class EventTest {
     }
 
     @Test
-    public void should_publish_event_through_logging() {
+    void should_publish_event_through_logging() {
         //given
         Event event = Event.custom("An event", "custom")
                 .addAttribute("new", "attribute");
@@ -88,7 +88,7 @@ public class EventTest {
     }
 
     @Test
-    public void should_restore_mdc_after_publish() {
+    void should_restore_mdc_after_publish() {
         //given
         MDC.put("existingKey", "existingValue");
         MDC.put("existingKey2", "existingValue2");
@@ -106,7 +106,7 @@ public class EventTest {
     }
 
     @Test
-    public void should_throw_exception_when_modifying_from_outside() {
+    void should_throw_exception_when_modifying_from_outside() {
 
         Event event = Event.custom("An event", "custom")
                 .addAttribute("existingKey", "newValue");
@@ -118,7 +118,7 @@ public class EventTest {
     }
 
     @Test
-    public void should_clear_MDC_after_publish_if_no_MDC_present_before_publish() {
+    void should_clear_MDC_after_publish_if_no_MDC_present_before_publish() {
         //given
 
         Event event = Event.custom("An event", "custom")
