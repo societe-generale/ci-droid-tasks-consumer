@@ -110,7 +110,7 @@ public class GitHubMockServer extends MockServer {
     private HttpResponse getPullRequest() {
         String pullRequestAsString = getPullRequestWithMergeabilityStatus();
 
-        return HttpResponse.response()
+        return response()
                 .withBody(pullRequestAsString)
                 .withHeader("Content-Type", "application/json");
     }

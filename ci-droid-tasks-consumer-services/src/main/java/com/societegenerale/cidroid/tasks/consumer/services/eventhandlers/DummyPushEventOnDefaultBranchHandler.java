@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.services.actionHandlers;
+package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
 import com.societegenerale.cidroid.tasks.consumer.services.model.GitHubEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;

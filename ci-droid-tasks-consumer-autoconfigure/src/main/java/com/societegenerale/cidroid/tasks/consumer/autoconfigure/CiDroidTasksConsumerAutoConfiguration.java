@@ -10,7 +10,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMail
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.GitHubPullRequestCommentNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.HttpNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
-import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.*;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -83,7 +83,7 @@ public class CiDroidTasksConsumerAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "notifiers", value = "github.prComment.enable", havingValue = "true")
-    public Notifier GitHubCommentOnPRnotifier(RemoteGitHub gitHub) {
+    public Notifier gitHubCommentOnPRnotifier(RemoteGitHub gitHub) {
 
         return new GitHubPullRequestCommentNotifier(gitHub);
     }

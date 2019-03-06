@@ -4,7 +4,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMoc
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
-import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.*;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;

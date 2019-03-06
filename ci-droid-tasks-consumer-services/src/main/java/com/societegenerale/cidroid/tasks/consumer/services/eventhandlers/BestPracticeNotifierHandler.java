@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.services.actionHandlers;
+package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
@@ -27,8 +27,8 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
     private ResourceFetcher resourceFetcher;
 
-    public BestPracticeNotifierHandler(Map configuredPatternToContentMapping,
-            List<Notifier> notifiers, RemoteGitHub remoteGitHub, ResourceFetcher resourceFetcher) {
+    public BestPracticeNotifierHandler(Map<String, String> configuredPatternToContentMapping,
+                                       List<Notifier> notifiers, RemoteGitHub remoteGitHub, ResourceFetcher resourceFetcher) {
 
         this.configuredPatternToContentMapping = configuredPatternToContentMapping;
         this.notifiers = notifiers;

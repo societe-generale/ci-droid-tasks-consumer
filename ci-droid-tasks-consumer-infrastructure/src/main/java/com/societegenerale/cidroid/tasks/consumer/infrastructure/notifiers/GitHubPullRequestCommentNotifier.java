@@ -32,9 +32,4 @@ public class GitHubPullRequestCommentNotifier implements Notifier {
     }
 
 
-    @Override
-    public String getNotificationMode() {
-        return "GithubPrComment";
-    }
-
 }

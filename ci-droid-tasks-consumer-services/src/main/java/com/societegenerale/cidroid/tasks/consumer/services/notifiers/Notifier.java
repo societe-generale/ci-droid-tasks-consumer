@@ -12,5 +12,4 @@ public interface Notifier {
     //TODO put user in the additionalInfos Map
     void notify(User user, Message message, Map<String,Object> additionalInfos);
 
-    String getNotificationMode();
 }

@@ -2,7 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PushEventOnDefaultBranchHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventOnDefaultBranchHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.model.GitHubEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
@@ -36,21 +36,21 @@ public class PushEventOnDefaultBranchServiceTest {
 
     private static final String SINGLE_PULL_REQUEST_JSON = "/singlePullRequest.json";
 
-    RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
+    private final RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
 
-    PushEventOnDefaultBranchHandler mockPushEventOnDefaultBranchHandler = mock(PushEventOnDefaultBranchHandler.class);
+    private final PushEventOnDefaultBranchHandler mockPushEventOnDefaultBranchHandler = mock(PushEventOnDefaultBranchHandler.class);
 
-    PushEventOnDefaultBranchService pushOnDefaultBranchService;
+    private PushEventOnDefaultBranchService pushOnDefaultBranchService;
 
-    PushEvent pushEvent;
+    private PushEvent pushEvent;
 
-    PullRequest singlePr;
+    private PullRequest singlePr;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 
     @Before
-    public void setup() throws IOException {
+    public void setUp() throws IOException {
 
         List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers = new ArrayList<>();
         pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandler);
@@ -62,7 +62,8 @@ public class PushEventOnDefaultBranchServiceTest {
 
 
         String openPrsOnRepoAsString = readFromInputStream(getClass().getResourceAsStream("/pullRequests.json"));
-        List openPrsOnRepo = objectMapper.readValue(openPrsOnRepoAsString, new TypeReference<List<PullRequest>>() {});
+        List<PullRequest> openPrsOnRepo = objectMapper.readValue(openPrsOnRepoAsString, new TypeReference<List<PullRequest>>() {
+        });
         when(mockRemoteGitHub.fetchOpenPullRequests(FULL_REPO_NAME)).thenReturn(openPrsOnRepo);
 
         String prAsString = readFromInputStream(getClass().getResourceAsStream(SINGLE_PULL_REQUEST_JSON));
@@ -141,9 +142,7 @@ public class PushEventOnDefaultBranchServiceTest {
                 TimeUnit.MILLISECONDS.sleep(700);
                 System.out.println("done sleeping !");
                 updatePRmergeabilityStatus(NOT_MERGEABLE);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
         });
@@ -151,7 +150,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
         pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
 
-        ArgumentCaptor<List> prListCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<PullRequest>> prListCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<GitHubEvent> gitHubEventCaptor = ArgumentCaptor.forClass(GitHubEvent.class);
 
         await().atMost(3, SECONDS)
