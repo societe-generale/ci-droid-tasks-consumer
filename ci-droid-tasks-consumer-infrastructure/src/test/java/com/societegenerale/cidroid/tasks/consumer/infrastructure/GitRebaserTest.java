@@ -12,69 +12,65 @@ import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-public class GitRebaserTest {
+class GitRebaserTest {
 
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
+    @TempDir
+    private File tmpFolder;
 
-    GitWrapper mockGitWrapper=mock(GitWrapper.class);
+    private GitWrapper mockGitWrapper = mock(GitWrapper.class);
 
-    Git mockGit=mock(Git.class);
+    private Git mockGit = mock(Git.class);
 
-    Rebaser rebaser = new GitRebaser("gitLogin","gitPassword",mockGitWrapper);
+    private Rebaser rebaser = new GitRebaser("gitLogin", "gitPassword", mockGitWrapper);
 
-    PullRequest pr;
+    private PullRequest pr;
 
-    File localRepoDirectory;
+    private File localRepoDirectory;
 
-    Repository mockRepo = mock(Repository.class);
+    private Repository mockRepo = mock(Repository.class);
 
-    Status mockStatus = mock(Status.class);
+    private Status mockStatus = mock(Status.class);
 
-    ResetCommand mockResetCommand = mock(ResetCommand.class);
+    private ResetCommand mockResetCommand = mock(ResetCommand.class);
 
-    CheckoutCommand mockCheckoutCommand = mock(CheckoutCommand.class);
+    private CheckoutCommand mockCheckoutCommand = mock(CheckoutCommand.class);
 
-    @Before
-    public void setUp() throws IOException, GitAPIException {
+    @BeforeEach
+    void setUp() throws IOException, GitAPIException {
 
         File tmpDirectory = createWorkingDirIfRequired();
 
-        String prAsString = IOUtils
-                .toString(GitRebaserTest.class.getClassLoader().getResourceAsStream("mergeablePullRequest.json"), "UTF-8");
+        String prAsString = IOUtils.toString(
+                getClass().getClassLoader().getResourceAsStream("mergeablePullRequest.json"), "UTF-8");
 
         pr = new ObjectMapper().readValue(prAsString, PullRequest.class);
 
         when(mockRepo.getRepositoryState()).thenReturn(RepositoryState.SAFE);
 
-        when(mockGitWrapper.createRepository(anyString(),any(File.class))).thenReturn(mockGit);
+        when(mockGitWrapper.createRepository(anyString(), any(File.class))).thenReturn(mockGit);
         when(mockGitWrapper.openRepository(any(File.class))).thenReturn(mockGit);
         when(mockGitWrapper.cleanDirectories(mockGit)).thenReturn(emptySet());
         when(mockGitWrapper.refDoesntExist(eq(mockGit), anyString())).thenReturn(true);
-
 
         Ref mockRef = mock(Ref.class);
         ObjectId mockObjectId = mock(ObjectId.class);
@@ -98,13 +94,13 @@ public class GitRebaserTest {
         when(mockPullResult.isSuccessful()).thenReturn(true);
         when(mockGitWrapper.pull(mockGit)).thenReturn(mockPullResult);
 
-        StatusCommand mockStatusCommand=mock(StatusCommand.class);
+        StatusCommand mockStatusCommand = mock(StatusCommand.class);
         when(mockGit.status()).thenReturn(mockStatusCommand);
 
 
         when(mockStatusCommand.call()).thenReturn(mockStatus);
 
-        ListBranchCommand mockListBranchCommand=mock(ListBranchCommand.class);
+        ListBranchCommand mockListBranchCommand = mock(ListBranchCommand.class);
         when(mockGit.branchList()).thenReturn(mockListBranchCommand);
         when(mockListBranchCommand.setListMode(ListBranchCommand.ListMode.ALL)).thenReturn(mockListBranchCommand);
 
@@ -125,9 +121,8 @@ public class GitRebaserTest {
 
     }
 
-    @After
-    public void assertGitIsClosed() throws GitAPIException {
-
+    @AfterEach
+    void assertGitIsClosed() {
         verify(mockGit, times(1)).close();
     }
 
@@ -152,9 +147,8 @@ public class GitRebaserTest {
     }
 
 
-
     @Test
-    public void shouldCloneRepoIfDoesntExist_thenSwitchToBranch() throws GitAPIException {
+    void shouldCloneRepoIfDoesntExist_thenSwitchToBranch() throws GitAPIException {
 
         rebaser.rebase(pr);
 
@@ -165,13 +159,13 @@ public class GitRebaserTest {
     }
 
     @Test
-    public void shouldPullForUpdatesIfMismatchBetweenLocalAndRemoteBranch() throws GitAPIException, IOException {
+    void shouldPullForUpdatesIfMismatchBetweenLocalAndRemoteBranch() throws GitAPIException, IOException {
 
-        RevCommit commitInBothBranches=buildRevCommit("testFile1.txt", "in both branches");
-        RevCommit commitInRemoteBranchOnly=buildRevCommit("testFile2.txt", "in remote only");
+        RevCommit commitInBothBranches = buildRevCommit("testFile1.txt", "in both branches");
+        RevCommit commitInRemoteBranchOnly = buildRevCommit("testFile2.txt", "in remote only");
 
-        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"master","remotes/origin/testBestPractices")).thenReturn(asList(commitInBothBranches,commitInRemoteBranchOnly));
-        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"master","testBestPractices")).thenReturn(asList(commitInBothBranches));
+        when(mockGitWrapper.getCommitsInBranchOnly(mockGit, "master", "remotes/origin/testBestPractices")).thenReturn(asList(commitInBothBranches, commitInRemoteBranchOnly));
+        when(mockGitWrapper.getCommitsInBranchOnly(mockGit, "master", "testBestPractices")).thenReturn(asList(commitInBothBranches));
 
         when(mockGitWrapper.pull(mockGit)).thenReturn(Faker.fakeA(PullResult.class));
 
@@ -182,13 +176,13 @@ public class GitRebaserTest {
     }
 
     @Test
-    public void shouldNotPullForUpdatesIfBranchContentIsSame() throws GitAPIException, IOException {
+    void shouldNotPullForUpdatesIfBranchContentIsSame() throws GitAPIException, IOException {
 
-        RevCommit commit1InBothBranches=buildRevCommit("testFile1.txt", "in both branches 1");
-        RevCommit commit2InRBothBranches=buildRevCommit("testFile2.txt", "in both branches 2");
+        RevCommit commit1InBothBranches = buildRevCommit("testFile1.txt", "in both branches 1");
+        RevCommit commit2InBothBranches = buildRevCommit("testFile2.txt", "in both branches 2");
 
-        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"master","remotes/origin/testBestPractices")).thenReturn(asList(commit1InBothBranches,commit2InRBothBranches));
-        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"master","testBestPractices")).thenReturn(asList(commit1InBothBranches,commit2InRBothBranches));
+        when(mockGitWrapper.getCommitsInBranchOnly(mockGit, "master", "remotes/origin/testBestPractices")).thenReturn(asList(commit1InBothBranches, commit2InBothBranches));
+        when(mockGitWrapper.getCommitsInBranchOnly(mockGit, "master", "testBestPractices")).thenReturn(asList(commit1InBothBranches, commit2InBothBranches));
 
         rebaser.rebase(pr);
 
@@ -204,7 +198,7 @@ public class GitRebaserTest {
     }
 
     @Test
-    public void shouldUpdateDefaultBranchIfRepoExists_thenSwitchToBranch() throws IOException, GitAPIException {
+    void shouldUpdateDefaultBranchIfRepoExists_thenSwitchToBranch() throws IOException, GitAPIException {
         mimickExistingRepo();
 
         rebaser.rebase(pr);
@@ -219,7 +213,7 @@ public class GitRebaserTest {
     }
 
     @Test
-    public void shouldNotCreateBranchBeforeSwitchingIFitAlreadyExistsLocally() throws IOException, GitAPIException {
+    void shouldNotCreateBranchBeforeSwitchingIFitAlreadyExistsLocally() throws IOException, GitAPIException {
         mimickExistingRepo();
 
         when(mockGitWrapper.refDoesntExist(mockGit, "refs/heads/testBestPractices")).thenReturn(false);
@@ -238,7 +232,7 @@ public class GitRebaserTest {
 
 
     @Test
-    public void shouldAbortPreviousRebaseIfInitialRepoStateIsRebasing() throws GitAPIException, IOException {
+    void shouldAbortPreviousRebaseIfInitialRepoStateIsRebasing() throws GitAPIException, IOException {
 
         mimickExistingRepo();
 
@@ -251,11 +245,11 @@ public class GitRebaserTest {
     }
 
     @Test
-    public void shouldCleanLocalRepoIfDirty_withModifiedFIle() throws GitAPIException, IOException {
+    void shouldCleanLocalRepoIfDirty_withModifiedFIle() throws GitAPIException, IOException {
 
         mimickExistingRepo();
 
-        when(mockStatus.getModified()).thenReturn(new HashSet<>(asList("aModifiedFile.txt")));
+        when(mockStatus.getModified()).thenReturn(singleton("aModifiedFile.txt"));
 
         rebaser.rebase(pr);
 
@@ -270,12 +264,12 @@ public class GitRebaserTest {
     }
 
     @Test
-    public void shouldCleanLocalRepoIfDirty_withAddedAndConflicted() throws GitAPIException, IOException {
+    void shouldCleanLocalRepoIfDirty_withAddedAndConflicted() throws GitAPIException, IOException {
 
         mimickExistingRepo();
 
-        when(mockStatus.getConflicting()).thenReturn(new HashSet<>(asList("aConflictingFile.txt")));
-        when(mockStatus.getAdded()).thenReturn(new HashSet<>(asList("anAddedFile.txt")));
+        when(mockStatus.getConflicting()).thenReturn(singleton("aConflictingFile.txt"));
+        when(mockStatus.getAdded()).thenReturn(singleton("anAddedFile.txt"));
 
         rebaser.rebase(pr);
 
@@ -291,21 +285,9 @@ public class GitRebaserTest {
     }
 
     @Test
-    public void shouldNotRebaseIfConflictsInBranch() throws GitAPIException, IOException {
+    void shouldNotRebaseIfConflictsInBranch() throws GitAPIException {
 
-        when(mockStatus.getConflicting()).thenReturn(new HashSet<>(asList("aConflictingFile.txt")));
-
-        val rebaseResult = rebaser.rebase(pr);
-
-        assertThat(rebaseResult.getLeft()).isEqualTo(pr);
-        assertThat(rebaseResult.getRight()).isEmpty();
-
-        verify(mockGitWrapper, never()).rebaseFrom(any(Git.class), anyString());
-
-    }
-
-    @Test
-    public void shouldNotRebaseIfNoCommitsToRebase() throws GitAPIException, IOException {
+        when(mockStatus.getConflicting()).thenReturn(singleton("aConflictingFile.txt"));
 
         val rebaseResult = rebaser.rebase(pr);
 
@@ -317,10 +299,23 @@ public class GitRebaserTest {
     }
 
     @Test
-    public void shouldRebaseIfThereAreCommitsToRebase() throws GitAPIException, IOException {
+    void shouldNotRebaseIfNoCommitsToRebase() throws GitAPIException {
+
+        val rebaseResult = rebaser.rebase(pr);
+
+        assertThat(rebaseResult.getLeft()).isEqualTo(pr);
+        assertThat(rebaseResult.getRight()).isEmpty();
+
+        verify(mockGitWrapper, never()).rebaseFrom(any(Git.class), anyString());
+
+    }
+
+    @Test
+    void shouldRebaseIfThereAreCommitsToRebase() throws GitAPIException, IOException {
 
         RevCommit dummyRevCommit = buildRevCommit("testFile1.txt", "dummy content");
-        when(mockGitWrapper.getCommitsOnWhichBranchIsLateComparedToBaseBranch(mockGit, pr)).thenReturn(asList(dummyRevCommit));
+        when(mockGitWrapper.getCommitsOnWhichBranchIsLateComparedToBaseBranch(mockGit, pr))
+                .thenReturn(singletonList(dummyRevCommit));
 
         RebaseResult mockRebaseResult = mock(RebaseResult.class);
         when(mockGitWrapper.rebaseFrom(mockGit, "master")).thenReturn(mockRebaseResult);
@@ -339,7 +334,7 @@ public class GitRebaserTest {
      */
     private RevCommit buildRevCommit(String fileName, String content) throws GitAPIException, IOException {
 
-        Git git = Git.init().setDirectory(tmpFolder.getRoot()).call();
+        Git git = Git.init().setDirectory(tmpFolder).call();
 
         File file = new File(git.getRepository().getWorkTree(), fileName);
         try (FileOutputStream os = new FileOutputStream(file)) {
