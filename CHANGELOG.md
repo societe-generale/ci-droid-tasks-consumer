@@ -8,7 +8,7 @@
 
 ### Changed
 
-- [BREAKING] upgrade to Spring Boot 2. Some properties need to be renamed
+- [BREAKING] upgrade to Spring Boot 2.1.3 / Spring Cloud Greenwich SR1. Some properties need to be renamed
 - upgraded ci-droid-extensions to 1.0.8
 
 ### Deprecated
