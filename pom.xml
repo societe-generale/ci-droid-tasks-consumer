@@ -64,7 +64,6 @@
         <janino.version>3.0.6</janino.version>
         <jgit.version>5.2.0.201812061821-r</jgit.version>
         <commons-lang3.version>3.7</commons-lang3.version>
-        <jackson.version>2.9.8</jackson.version>
 
         <mockserver.version>5.5.1</mockserver.version>
         <awaitility.version>1.7.0</awaitility.version>
