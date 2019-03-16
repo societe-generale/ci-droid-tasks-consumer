@@ -3,20 +3,31 @@
 ## [Unreleased]
 
 ### Added
-- Monitoring closing of old PRs now
-- PR #58 - handling deleteResource bulk action now
+- PR # 63 - added Spring web and actuator to provide an HTTP healthcheck
 
 ### Changed
-
-- [BREAKING] upgrade to Spring Boot 2.1.3 / Spring Cloud Greenwich SR1. Some properties need to be renamed
-- upgraded ci-droid-extensions to 1.0.8
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
-- Code coverage reporting : now taking into account integration tests
+
+
+## [1.1.0] - 2019-03-13
+
+### Added
+- Monitoring closing of old PRs now
+- PR #58 - handling deleteResource bulk action now
+
+### Changed
+- [BREAKING] upgrade to Spring Boot 2.1.3 / Spring Cloud Greenwich SR1. Some properties need to be renamed
+- upgraded ci-droid-extensions to 1.0.9
+
+### Fixed
+- PR #59 - Code coverage reporting : now taking into account integration tests
+- PR #60 - some Codacy violations
+
 
 ## [1.0.12] - 2019-01-10
 
