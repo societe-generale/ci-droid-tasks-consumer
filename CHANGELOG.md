@@ -4,6 +4,7 @@
 
 ### Added
 - PR # 63 - added Spring web and actuator to provide an HTTP healthcheck
+- warn log statements when exception during BulkActionToPerform processing
 
 ### Changed
 

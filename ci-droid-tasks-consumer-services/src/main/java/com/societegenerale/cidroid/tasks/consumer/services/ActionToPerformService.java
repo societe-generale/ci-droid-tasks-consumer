@@ -104,9 +104,11 @@ public class ActionToPerformService {
             }
 
         } catch (GitHubAuthorizationException e) {
+            log.warn("Github authorization problem while processing "+action,e);
             actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_AUTHENTICATION_ISSUE));
         }
         catch (Exception e) {
+            log.warn("problem while processing "+action,e);
             actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING));
         }
         finally {
