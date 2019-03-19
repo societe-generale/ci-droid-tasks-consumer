@@ -271,7 +271,7 @@ class BranchCreationErrorDecoder implements ErrorDecoder {
     public Exception decode(String methodKey, Response response) {
 
         if (response.status() == 422) {
-            return new BranchAlreadyExistsException("Branch seems to already exist : " + response.reason());
+            return new BranchAlreadyExistsException("Branch or PR seems to already exist : " + response.reason());
         }
 
         if (response.status() == 401) {
