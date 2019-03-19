@@ -76,7 +76,7 @@ public class ActionToPerformService {
                             action.getGitHubOauthToken());
                 } catch (BranchAlreadyExistsException e) {
 
-                    log.warn("branch " + branchNameForPR + " already exists");
+                    log.warn("branch " + branchNameForPR + " already exists, reusing it");
 
                     //TODO maybe we should add field in Reference to identify when it hasn't been created as expected
                     branchToUseForPr = remoteGitHub.fetchHeadReferenceFrom(repoFullName, branchNameForPR);
@@ -332,6 +332,10 @@ public class ActionToPerformService {
         }
         catch(GitHubAuthorizationException e){
             log.warn("issue while creating the PR",e);
+            return Optional.empty();
+        }
+        catch(Exception e){
+            log.warn("unknown issue while creating PR",e);
             return Optional.empty();
         }
     }
