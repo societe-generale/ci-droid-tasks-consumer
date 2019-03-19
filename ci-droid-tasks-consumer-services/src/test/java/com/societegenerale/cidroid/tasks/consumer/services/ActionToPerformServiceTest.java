@@ -589,6 +589,26 @@ public class ActionToPerformServiceTest {
         assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_OK_WITH_PR_ALREADY_EXISTING);
     }
 
+
+    @Test
+    public void notifyProperlyWhenIssueWithPRcreation() throws BranchAlreadyExistsException, GitHubAuthorizationException {
+
+        mockPullRequestSpecificBehavior();
+
+        //assuming there's an unexpected exception while trying to create the PR..
+        when(mockRemoteGitHub.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class),anyString())).thenThrow(new RuntimeException("some unexpected exception... "));
+
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR, null)).build();
+
+        actionToPerformService.perform(bulkActionToPerform);
+
+        verify(mockActionNotificationService, times(1)).handleNotificationsFor(eq(bulkActionToPerform),
+                eq(resourceToUpdate),
+                updatedResourceCaptor.capture());
+
+        assertThat(updatedResourceCaptor.getValue().getUpdateStatus()).isEqualTo(UPDATE_OK_BUT_PR_CREATION_KO);
+    }
+
     private BulkActionToPerform doApullRequestAction() throws BranchAlreadyExistsException, GitHubAuthorizationException {
 
         mockPullRequestSpecificBehavior();

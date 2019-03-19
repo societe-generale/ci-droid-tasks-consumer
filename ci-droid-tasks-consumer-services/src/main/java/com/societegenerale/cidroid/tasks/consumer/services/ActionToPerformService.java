@@ -334,6 +334,10 @@ public class ActionToPerformService {
             log.warn("issue while creating the PR",e);
             return Optional.empty();
         }
+        catch(Exception e){
+            log.warn("unknown issue while creating PR",e);
+            return Optional.empty();
+        }
     }
 
 }
