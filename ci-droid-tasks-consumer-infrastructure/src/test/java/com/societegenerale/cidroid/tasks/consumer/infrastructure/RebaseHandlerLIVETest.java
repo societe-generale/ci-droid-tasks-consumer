@@ -8,22 +8,22 @@ import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.RebaseH
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { InfraConfig.class, LiveTestConfig.class }, initializers = YamlFileApplicationContextInitializer.class)
 @TestPropertySource("/application-test.yml")
-@Ignore("to launch manually and test in local")
+@Disabled("to launch manually and test in local")
 public class RebaseHandlerLIVETest {
 
     @Autowired
@@ -38,7 +38,7 @@ public class RebaseHandlerLIVETest {
 
     RebaseHandler rebaseHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();

@@ -10,8 +10,9 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPer
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class ActionToPerformListenerTest {
 
     private ActionToPerformCommand incomingCommand;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
 
         String incomingCommandAsString = IOUtils

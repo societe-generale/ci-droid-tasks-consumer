@@ -3,9 +3,9 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.TargetHttpBackendForNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.TargetHttpBackendForNotifier.TARGET_HTTP_BACKEND_MOCK_PORT;
 import static java.util.Collections.emptyMap;
@@ -17,7 +17,7 @@ public class HttpNotifierTest {
 
     private TargetHttpBackendForNotifier httpBackendServer;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         String notifierUrl = "http://localhost:" + TARGET_HTTP_BACKEND_MOCK_PORT + "/notify";
         httpNotifier = new HttpNotifier(notifierUrl);
@@ -26,7 +26,7 @@ public class HttpNotifierTest {
         httpBackendServer.start();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         httpBackendServer.stop();
     }

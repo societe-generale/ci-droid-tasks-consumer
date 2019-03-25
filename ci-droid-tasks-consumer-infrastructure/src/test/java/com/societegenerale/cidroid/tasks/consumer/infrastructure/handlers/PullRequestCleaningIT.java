@@ -1,6 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.handlers;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.mockserver.verify.VerificationTimes;
 
 import static org.mockserver.model.HttpRequest.request;

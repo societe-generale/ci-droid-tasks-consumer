@@ -6,8 +6,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.PushEventOnDefaultBra
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -25,7 +25,7 @@ public class GithubEventListenerTest {
 
     private GithubEventListener listener;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         listener=new GithubEventListener(mockPushOnDefaultBranchService, mockPullRequestEventService);

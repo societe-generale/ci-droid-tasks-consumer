@@ -1,7 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.handlers;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformCommand;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockserver.matchers.MatchType;
 import org.mockserver.verify.VerificationTimes;
 

@@ -4,12 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-@Ignore("to launch manually and test in local on 'real' pullRequest documents")
+@Disabled("to launch manually and test in local on 'real' pullRequest documents")
 public class RebaserLIVETest {
 
     Rebaser rebaser = new GitRebaser("userOne", "yourPassword", new GitWrapper());
