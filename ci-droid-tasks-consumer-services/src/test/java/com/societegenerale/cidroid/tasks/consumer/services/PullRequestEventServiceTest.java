@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ public class PullRequestEventServiceTest {
 
     PullRequestEvent pullRequestEvent;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
 
         pullRequestEventService = new PullRequestEventService(Arrays.asList(mockHandler));

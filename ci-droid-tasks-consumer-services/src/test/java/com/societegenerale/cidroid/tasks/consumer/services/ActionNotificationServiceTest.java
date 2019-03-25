@@ -8,8 +8,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedR
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.*;
@@ -48,7 +48,7 @@ public class ActionNotificationServiceTest {
 
     private BulkActionToPerform.BulkActionToPerformBuilder bulkActionToPerformBuilder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         testActionToPerform.setContentToProvide(MODIFIED_CONTENT);
         testActionToPerform.setContinueIfResourceDoesntExist(true);

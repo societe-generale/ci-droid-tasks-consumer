@@ -8,8 +8,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergea
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
@@ -49,7 +49,7 @@ public class PushEventOnDefaultBranchServiceTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
 
         List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers = new ArrayList<>();

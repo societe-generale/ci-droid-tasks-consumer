@@ -10,8 +10,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequ
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class RebaseHandlerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
 
         String prAsString = readFromInputStream(getClass().getResourceAsStream(SINGLE_PULL_REQUEST_JSON));

@@ -9,8 +9,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class BestPracticeNotifierHandlerTest {
 
     private PullRequestEvent pullRequestEvent;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         matchingPullRequestFile.setFilename(MATCHING_FILENAME);
