@@ -21,8 +21,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.HashSet;
+import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
@@ -36,8 +36,6 @@ import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class GitRebaserTest {
-
-    private static String tmpFolderName="."+File.separator+"target"+File.separator+"GitRebaserTest-tmpDir-"+ Instant.now().toEpochMilli() ;
 
     GitWrapper mockGitWrapper=mock(GitWrapper.class);
 
@@ -337,6 +335,8 @@ public class GitRebaserTest {
      * Impossible to mock RevCommit with Mockito (some methods are final), so no choice but build a tmp Git repo to build RevCommit instances
      */
     private RevCommit buildRevCommit(String fileName, String content) throws GitAPIException, IOException {
+
+        String tmpFolderName="."+File.separator+"target"+File.separator+"GitRebaserTest-tmpDir-"+ UUID.randomUUID() ;
 
         File tmpFolder=new File(tmpFolderName);
 
