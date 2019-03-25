@@ -29,6 +29,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -36,7 +37,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class GitRebaserTest {
 
-    static String tmpFolderName="."+File.separator+"target"+File.separator+"GitRebaserTest-tmpDir-"+ Instant.now().toEpochMilli() ;
+    private static String tmpFolderName="."+File.separator+"target"+File.separator+"GitRebaserTest-tmpDir-"+ Instant.now().toEpochMilli() ;
 
     GitWrapper mockGitWrapper=mock(GitWrapper.class);
 
@@ -340,7 +341,7 @@ public class GitRebaserTest {
         File tmpFolder=new File(tmpFolderName);
 
         if(!tmpFolder.exists() && !tmpFolder.mkdirs()){
-            throw new RuntimeException("couldn't create tmp dir");
+           fail("couldn't create tmp dir");
         }
 
         Git git = Git.init().setDirectory(tmpFolder).call();
