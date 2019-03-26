@@ -6,9 +6,10 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import javax.mail.MessagingException;
@@ -27,7 +28,7 @@ public class EMailNotifierTest {
 
     private GreenMail mailServer = new GreenMail(ServerSetupTest.SMTP);
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         emailNotifier = buildAndConfigure();
@@ -50,7 +51,7 @@ public class EMailNotifierTest {
         return new EMailNotifier(mailSenderImpl, MAIL_SENT_FROM);
     }
 
-    @After
+    @AfterEach
     public void stopGreenMailServer() {
         mailServer.stop();
     }

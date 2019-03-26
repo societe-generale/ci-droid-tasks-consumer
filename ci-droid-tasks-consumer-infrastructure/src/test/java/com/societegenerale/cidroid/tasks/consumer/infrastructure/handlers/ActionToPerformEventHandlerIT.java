@@ -6,19 +6,19 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.TestConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.YamlFileApplicationContextInitializer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.client.MockServerClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 
 import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer.GITHUB_MOCK_PORT;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { InfraConfig.class, TestConfig.class },
         initializers = YamlFileApplicationContextInitializer.class)
 public abstract class ActionToPerformEventHandlerIT {
@@ -33,15 +33,15 @@ public abstract class ActionToPerformEventHandlerIT {
 
     protected ObjectMapper objectMapper = new ObjectMapper();
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeEach
+    public void setUp(){
         githubMockServer.start();
 
         gitHubMockClient = new MockServerClient("localhost", GITHUB_MOCK_PORT);
 
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         githubMockServer.stop();
     }

@@ -27,15 +27,8 @@
 
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>android-json</artifactId>
-                    <groupId>com.vaadin.external.google</groupId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
         </dependency>
 
 
@@ -53,14 +46,12 @@
         <dependency>
             <groupId>com.jayway.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.oneeyedmen</groupId>
             <artifactId>fakir</artifactId>
-            <scope>test</scope>
-        </dependency>
+         </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>

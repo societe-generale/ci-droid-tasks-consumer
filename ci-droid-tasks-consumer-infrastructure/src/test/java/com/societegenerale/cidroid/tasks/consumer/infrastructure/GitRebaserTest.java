@@ -12,11 +12,9 @@ import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,21 +22,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class GitRebaserTest {
-
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     GitWrapper mockGitWrapper=mock(GitWrapper.class);
 
@@ -58,7 +55,7 @@ public class GitRebaserTest {
 
     CheckoutCommand mockCheckoutCommand = mock(CheckoutCommand.class);
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException, GitAPIException {
 
         File tmpDirectory = createWorkingDirIfRequired();
@@ -125,7 +122,7 @@ public class GitRebaserTest {
 
     }
 
-    @After
+    @AfterEach
     public void assertGitIsClosed() throws GitAPIException {
 
         verify(mockGit, times(1)).close();
@@ -335,11 +332,19 @@ public class GitRebaserTest {
     }
 
     /**
-     * Impossible to mock RevCommit with Mockito (some methods are final), so non choice but build a tmp Git repo to build RevCommit instances
+     * Impossible to mock RevCommit with Mockito (some methods are final), so no choice but build a tmp Git repo to build RevCommit instances
      */
     private RevCommit buildRevCommit(String fileName, String content) throws GitAPIException, IOException {
 
-        Git git = Git.init().setDirectory(tmpFolder.getRoot()).call();
+        String tmpFolderName="."+File.separator+"target"+File.separator+"GitRebaserTest-tmpDir-"+ UUID.randomUUID() ;
+
+        File tmpFolder=new File(tmpFolderName);
+
+        if(!tmpFolder.exists() && !tmpFolder.mkdirs()){
+           fail("couldn't create tmp dir");
+        }
+
+        Git git = Git.init().setDirectory(tmpFolder).call();
 
         File file = new File(git.getRepository().getWorkTree(), fileName);
         try (FileOutputStream os = new FileOutputStream(file)) {

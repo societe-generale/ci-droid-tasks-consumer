@@ -8,8 +8,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.DateProvider;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.TestAppender;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class PullRequestCleaningHandlerTest {
 
     private TestAppender testAppender=new TestAppender();
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         remoteGitHub = mock(RemoteGitHub.class);
 

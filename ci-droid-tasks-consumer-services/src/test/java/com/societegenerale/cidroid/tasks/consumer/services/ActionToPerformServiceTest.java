@@ -13,9 +13,10 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPer
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.TestAppender;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +91,7 @@ public class ActionToPerformServiceTest {
 
     private BulkActionToPerform.BulkActionToPerformBuilder bulkActionToPerformBuilder;
 
-    @Before
+    @BeforeEach
     public void setUp() throws GitHubAuthorizationException {
 
         testActionToPerform.setContentToProvide(MODIFIED_CONTENT);
@@ -120,7 +121,7 @@ public class ActionToPerformServiceTest {
 
     }
 
-    @After
+    @AfterEach
     public void after() {
         assertAtLeastOneMonitoringEventOfType(BULK_ACTION_PROCESSED);
         testAppender.events.clear();

@@ -5,6 +5,7 @@
 ### Added
 
 ### Changed
+- PR #65 - all tests now running with Junit 5. Junit 4.x totally excluded now.
 
 ### Deprecated
 

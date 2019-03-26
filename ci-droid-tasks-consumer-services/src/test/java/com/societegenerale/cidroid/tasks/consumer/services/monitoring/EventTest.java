@@ -2,8 +2,8 @@ package com.societegenerale.cidroid.tasks.consumer.services.monitoring;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
 import java.util.AbstractMap;
@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class EventTest {
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MDC.clear();
         TestAppender.events.clear();
