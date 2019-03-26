@@ -42,6 +42,12 @@
             <groupId>com.icegreen</groupId>
             <artifactId>greenmail</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -106,6 +112,12 @@
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-netty</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
 
