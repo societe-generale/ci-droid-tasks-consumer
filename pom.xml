@@ -30,13 +30,18 @@
     </licenses>
 
     <repositories>
-
         <repository>
             <id>Spring milestones</id>
             <url>https://repo.spring.io/milestone/</url>
         </repository>
-
     </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>Spring milestones</id>
+            <url>https://repo.spring.io/milestone/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <issueManagement>
         <url>https://github.com/societe-generale/ci-droid-tasks-consumer/issues</url>
