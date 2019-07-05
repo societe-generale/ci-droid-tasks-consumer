@@ -52,6 +52,13 @@ public class GitHubMockServer extends MockServer {
 
         mockServer
                 .when(request()
+                        .withMethod("POST")
+                        .withPath("/api/v3/repos/baxterthehacker/public-repo/pulls"))
+                .respond(response().withStatusCode(200));
+
+
+        mockServer
+                .when(request()
                         .withMethod("GET")
                         .withPath("/api/v3/users/baxterthehacker"))
                 .respond(getUser());
