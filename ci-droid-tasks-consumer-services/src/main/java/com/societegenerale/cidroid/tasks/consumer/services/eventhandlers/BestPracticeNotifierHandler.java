@@ -54,10 +54,10 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
         StringBuilder bestPracticesViolationsInFilesComments = validateBestPracticesInPullRequestFiles(event, filesInPr, existingPrComments);
 
-        if (warningExists(moreThanMaxFilesInPRComment) || warningExists(bestPracticesViolationsInFilesComments)) {
+        if (commetExists(moreThanMaxFilesInPRComment) || commetExists(bestPracticesViolationsInFilesComments)) {
             StringBuilder bestPracticesViolationWarnings = new StringBuilder("Reminder of best practices : \n")
                     .append(moreThanMaxFilesInPRComment).append(bestPracticesViolationsInFilesComments);
-            notifyWarnings(event, bestPracticesViolationWarnings);
+            notifyComments(event, bestPracticesViolationWarnings);
         }
 
     }
@@ -163,7 +163,7 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
     }
 
-    private void notifyWarnings(PullRequestEvent event, StringBuilder bestPracticesWarnings) {
+    private void notifyComments(PullRequestEvent event, StringBuilder bestPracticesWarnings) {
         PullRequest pr = remoteGitHub.fetchPullRequestDetails(event.getRepository().getFullName(), event.getPrNumber());
         Map<String, Object> additionalInfosForNotification = new HashMap();
         additionalInfosForNotification.put(PULL_REQUEST, pr);
@@ -171,7 +171,7 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
         notifiers.stream().forEach(n -> n.notify(new User(), new Message(bestPracticesWarnings.toString()), additionalInfosForNotification));
     }
 
-    private boolean warningExists(StringBuilder warnings) {
+    private boolean commetExists(StringBuilder warnings) {
         return 0 != warnings.length();
     }
 }

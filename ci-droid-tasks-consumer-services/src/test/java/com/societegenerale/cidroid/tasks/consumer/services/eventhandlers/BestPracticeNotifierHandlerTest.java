@@ -198,8 +198,8 @@ public class BestPracticeNotifierHandlerTest {
 
     }
 
-    private void returnExistingComment(String s) {
-        PullRequestComment existingPrComment = new PullRequestComment(s,
+    private void returnExistingComment(String content) {
+        PullRequestComment existingPrComment = new PullRequestComment(content,
                 new User("someLogin", "firstName.lastName@domain.com"));
 
         List<PullRequestComment> existingPRcomments = singletonList(existingPrComment);
