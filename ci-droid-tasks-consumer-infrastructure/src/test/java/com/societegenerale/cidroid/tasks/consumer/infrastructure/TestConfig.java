@@ -6,6 +6,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.mockito.Mockito.mock;
 
 @Configuration
@@ -57,7 +59,8 @@ public class TestConfig {
     @Bean
     public PullRequestEventHandler bestPracticeNotifierHandler(List<Notifier> notifiers, RemoteGitHub remoteGitHub) {
 
-        return new BestPracticeNotifierHandler(Collections.emptyMap(), notifiers, remoteGitHub, new RestTemplateResourceFetcher());
+        return new BestPracticeNotifierHandler(Collections.emptyMap(), notifiers, remoteGitHub, new RestTemplateResourceFetcher()
+                , Integer.MAX_VALUE, EMPTY);
 
     }
 

@@ -69,7 +69,7 @@ public class CiDroidTasksConsumerAutoConfiguration {
                                                                RemoteGitHub remoteGitHub) {
 
         return new BestPracticeNotifierHandler(ciDroidBehavior.getPatternToResourceMapping(), notifiers, remoteGitHub,
-                new RestTemplateResourceFetcher());
+                new RestTemplateResourceFetcher(), ciDroidBehavior.getMaxFilesInPr(), ciDroidBehavior.getMaxFilesInPRExceededWarningMessage());
 
     }
 

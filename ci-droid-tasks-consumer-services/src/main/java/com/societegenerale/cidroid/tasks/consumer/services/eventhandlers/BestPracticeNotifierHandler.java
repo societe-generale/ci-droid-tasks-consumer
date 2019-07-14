@@ -8,6 +8,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import io.github.azagniotov.matcher.AntPathMatcher;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,64 +28,100 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
     private ResourceFetcher resourceFetcher;
 
+    private int maxFilesInPr;
+
+    private String maxFilesWarningMessage;
+
     public BestPracticeNotifierHandler(Map<String, String> configuredPatternToContentMapping,
-                                       List<Notifier> notifiers, RemoteGitHub remoteGitHub, ResourceFetcher resourceFetcher) {
+                                       List<Notifier> notifiers, RemoteGitHub remoteGitHub, ResourceFetcher resourceFetcher,
+                                       int maxFilesInPr, String maxFilesWarningMessage) {
 
         this.configuredPatternToContentMapping = configuredPatternToContentMapping;
         this.notifiers = notifiers;
         this.remoteGitHub = remoteGitHub;
         this.resourceFetcher = resourceFetcher;
+        this.maxFilesInPr = maxFilesInPr;
+        this.maxFilesWarningMessage = maxFilesWarningMessage;
     }
 
     @Override
     public void handle(PullRequestEvent event) {
 
         List<PullRequestFile> filesInPr = remoteGitHub.fetchPullRequestFiles(event.getRepository().getFullName(), event.getPrNumber());
+        List<PullRequestComment> existingPrComments = remoteGitHub.fetchPullRequestComments(event.getRepository().getFullName(), event.getPrNumber());
+
+        StringBuilder moreThanMaxFilesInPRComment = validateNumberOfFilesInPR(filesInPr.size(), existingPrComments);
+
+        StringBuilder bestPracticesViolationsInFilesComments = validateBestPracticesInPullRequestFiles(event, filesInPr, existingPrComments);
+
+        if (warningExists(moreThanMaxFilesInPRComment) || warningExists(bestPracticesViolationsInFilesComments)) {
+            StringBuilder bestPracticesViolationWarnings = new StringBuilder("Reminder of best practices : \n")
+                    .append(moreThanMaxFilesInPRComment).append(bestPracticesViolationsInFilesComments);
+            notifyWarnings(event, bestPracticesViolationWarnings);
+        }
+
+    }
+
+    private StringBuilder validateNumberOfFilesInPR(int numberOfFiles, List<PullRequestComment> existingPrComments) {
+        StringBuilder comment = new StringBuilder();
+
+        if (numberOfFiles > maxFilesInPr) {
+            comment.append(createMoreThanMaxFilesInPRCommentIfAlreadyNotCommented(existingPrComments));
+        }
+
+        return comment;
+    }
+
+    private StringBuilder createMoreThanMaxFilesInPRCommentIfAlreadyNotCommented(List<PullRequestComment> existingPrComments) {
+        StringBuilder comment = new StringBuilder();
+
+        String moreThanMaxFilesInPRComment = MessageFormat.format(maxFilesWarningMessage, maxFilesInPr);
+
+        boolean alreadyCommented = existingPrComments.stream().anyMatch(existingComment -> existingComment.getComment().equals(moreThanMaxFilesInPRComment));
+        if (!alreadyCommented) {
+            comment.append("\n").append(moreThanMaxFilesInPRComment).append("\n");
+        }
+
+        return comment;
+    }
+
+    private StringBuilder validateBestPracticesInPullRequestFiles(PullRequestEvent event, List<PullRequestFile> filesInPr,
+                                                                  List<PullRequestComment> existingPrComments) {
+
+        StringBuilder comments = new StringBuilder();
 
         Map<PullRequestFile, Map<String, String>> matchingPatternsByPullRequestFile = findConfiguredPatternsThatMatch(filesInPr);
 
         //TODO  refactor below nested loops
         if (!matchingPatternsByPullRequestFile.isEmpty()) {
 
-            List<PullRequestComment> existingPrComments = remoteGitHub
-                    .fetchPullRequestComments(event.getRepository().getFullName(), event.getPrNumber());
-
             Map<PullRequestFile, Map<String, String>> matchingPatternsByPullRequestFileOnWhichWeHaventCommentedYet = findConfiguredPatternsOnWhichWehaventCommentedYet(
                     matchingPatternsByPullRequestFile, existingPrComments);
 
             if (!matchingPatternsByPullRequestFileOnWhichWeHaventCommentedYet.isEmpty()) {
 
-                StringBuilder sb = new StringBuilder("Reminder of best practices for files that have matched : \n");
 
                 for (Map.Entry matchedPrFile : matchingPatternsByPullRequestFileOnWhichWeHaventCommentedYet.entrySet()) {
 
                     PullRequestFile prFile = (PullRequestFile) matchedPrFile.getKey();
                     Map<String, String> matchedBestPractices = (Map) matchedPrFile.getValue();
 
-                    sb.append("- ").append(prFile.getFilename()).append(" : \n");
+                    comments.append("- ").append(prFile.getFilename()).append(" : \n");
 
                     for (Map.Entry resourceToGetByPattern : matchedBestPractices.entrySet()) {
 
                         Optional<String> bestPracticeContent = resourceFetcher.fetch((String) resourceToGetByPattern.getValue());
 
                         if (bestPracticeContent.isPresent()) {
-                            sb.append("\t -").append(bestPracticeContent.get()).append("\n");
+                            comments.append("\t -").append(bestPracticeContent.get()).append("\n");
                         } else {
                             log.warn("best practice located at {} doesn't seem to exist..", resourceToGetByPattern.getValue());
                         }
                     }
                 }
-
-                PullRequest pr = remoteGitHub.fetchPullRequestDetails(event.getRepository().getFullName(), event.getPrNumber());
-
-                Map<String, Object> additionalInfosForNotification = new HashMap();
-                additionalInfosForNotification.put(PULL_REQUEST, pr);
-
-                notifiers.stream().forEach(n -> n.notify(new User(), new Message(sb.toString()), additionalInfosForNotification));
-
             }
         }
-
+        return comments;
     }
 
     private Map<PullRequestFile, Map<String, String>> findConfiguredPatternsOnWhichWehaventCommentedYet(
@@ -92,12 +129,12 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
         return patternsByPullRequestFileToFilter.entrySet()
                 .stream()
-                .filter(prFile -> hasntReceivedAnyCommentYet(prFile.getKey().getFilename(), existingPrComments))
+                .filter(prFile -> hasntReceivedAnyCommentOnFileYet(prFile.getKey().getFilename(), existingPrComments))
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 
     }
 
-    private boolean hasntReceivedAnyCommentYet(String fileName, List<PullRequestComment> existingPrComments) {
+    private boolean hasntReceivedAnyCommentOnFileYet(String fileName, List<PullRequestComment> existingPrComments) {
 
         return existingPrComments.stream().map(prComment -> prComment.getComment())
                 .noneMatch(comment -> comment.contains(fileName));
@@ -124,5 +161,17 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
         return matchingPatternsByPullRequestFile;
 
+    }
+
+    private void notifyWarnings(PullRequestEvent event, StringBuilder bestPracticesWarnings) {
+        PullRequest pr = remoteGitHub.fetchPullRequestDetails(event.getRepository().getFullName(), event.getPrNumber());
+        Map<String, Object> additionalInfosForNotification = new HashMap();
+        additionalInfosForNotification.put(PULL_REQUEST, pr);
+
+        notifiers.stream().forEach(n -> n.notify(new User(), new Message(bestPracticesWarnings.toString()), additionalInfosForNotification));
+    }
+
+    private boolean warningExists(StringBuilder warnings) {
+        return 0 != warnings.length();
     }
 }
