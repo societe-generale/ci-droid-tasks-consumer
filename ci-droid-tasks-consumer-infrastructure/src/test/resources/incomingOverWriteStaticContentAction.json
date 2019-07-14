@@ -1,6 +1,5 @@
 {
-  "gitLogin": "someUserName",
-  "gitHubOauthToken": "somePassword",
+  "gitHubOauthToken": "someToken",
   "email": "someEmail@someDomain.com",
   "updateAction": {
     "@class": "com.societegenerale.cidroid.extensions.actionToReplicate.OverwriteStaticFileAction",

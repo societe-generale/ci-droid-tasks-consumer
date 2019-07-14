@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.services.actionHandlers;
+package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -9,13 +9,14 @@ import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -23,36 +24,36 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class BestPracticeNotifierHandlerTest {
 
-    public static final String MATCHING_FILENAME = "commons/src/main/resources/db/changelog/changes/004-create-risk-table.yml";
+    private static final String MATCHING_FILENAME = "commons/src/main/resources/db/changelog/changes/004-create-risk-table.yml";
 
     private final String REPO_FULL_NAME = "someOrg/someRepo";
 
-    ResourceFetcher mockResourceFetcher = mock(ResourceFetcher.class);
+    private final ResourceFetcher mockResourceFetcher = mock(ResourceFetcher.class);
 
-    Notifier mockNotifier = mock(Notifier.class);
+    private final Notifier mockNotifier = mock(Notifier.class);
 
-    RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
+    private final RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
 
-    Map patternToContentMapping = new HashMap<>();
+    private final Map<String, String> patternToContentMapping = new HashMap<>();
 
-    BestPracticeNotifierHandler handler = new BestPracticeNotifierHandler(patternToContentMapping, Arrays.asList(mockNotifier), mockRemoteGitHub,
-            mockResourceFetcher);
+    private final BestPracticeNotifierHandler handler = new BestPracticeNotifierHandler(
+            patternToContentMapping, singletonList(mockNotifier), mockRemoteGitHub, mockResourceFetcher);
 
-    ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
+    private final ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
 
-    Repository repository = new Repository();
+    private final Repository repository = new Repository();
 
-    PullRequestFile matchingPullRequestFile = new PullRequestFile();
+    private final PullRequestFile matchingPullRequestFile = new PullRequestFile();
 
-    PullRequestEvent pullRequestEvent;
+    private PullRequestEvent pullRequestEvent;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    public void setUp() {
 
         matchingPullRequestFile.setFilename(MATCHING_FILENAME);
 
         when(mockResourceFetcher.fetch("http://someUrl/liquibaseBestPractices.md")).thenReturn(Optional.of("careful with Liquibase changes !"));
-        when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123)).thenReturn(Arrays.asList(matchingPullRequestFile));
+        when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123)).thenReturn(singletonList(matchingPullRequestFile));
 
         patternToContentMapping.put("**/db/changelog/**/*.yml", "http://someUrl/liquibaseBestPractices.md");
 
@@ -137,7 +138,7 @@ public class BestPracticeNotifierHandlerTest {
         PullRequestComment existingPrComment = new PullRequestComment("some comments about " + MATCHING_FILENAME,
                 new User("someLogin", "firstName.lastName@domain.com"));
 
-        List<PullRequestComment> existingPRcomments = Arrays.asList(existingPrComment);
+        List<PullRequestComment> existingPRcomments = singletonList(existingPrComment);
         when(mockRemoteGitHub.fetchPullRequestComments(REPO_FULL_NAME, 123)).thenReturn(existingPRcomments);
 
         handler.handle(pullRequestEvent);
@@ -159,7 +160,7 @@ public class BestPracticeNotifierHandlerTest {
         PullRequestComment existingPrComment = new PullRequestComment("some comments about " + MATCHING_FILENAME,
                 new User("someLogin", "firstName.lastName@domain.com"));
 
-        List<PullRequestComment> existingPRcomments = Arrays.asList(existingPrComment);
+        List<PullRequestComment> existingPRcomments = singletonList(existingPrComment);
         when(mockRemoteGitHub.fetchPullRequestComments(REPO_FULL_NAME, 123)).thenReturn(existingPRcomments);
 
         handler.handle(pullRequestEvent);

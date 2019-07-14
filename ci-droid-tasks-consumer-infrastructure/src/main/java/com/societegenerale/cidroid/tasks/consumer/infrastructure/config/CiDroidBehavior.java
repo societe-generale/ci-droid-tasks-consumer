@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Component
 @Data
-@ConfigurationProperties(prefix = "ciDroidBehavior")
+@ConfigurationProperties(prefix = "cidroid-behavior")
 public class CiDroidBehavior {
 
     private Map<String, String> patternToResourceMapping;

@@ -5,13 +5,20 @@ import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAction;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
+import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
 
+import java.util.List;
 import java.util.Optional;
+
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.*;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.*;
 
 @Slf4j
 public class ActionToPerformService {
@@ -26,6 +33,8 @@ public class ActionToPerformService {
     }
 
     public void perform(BulkActionToPerform action) {
+
+        StopWatch stopWatchForMonitoring = StopWatch.createStarted();
 
         //we're supposed to have only one element in list, but this may change in the future : we'll loop over them.
         ResourceToUpdate resourceToUpdate = action.getResourcesToUpdate().get(0);
@@ -44,7 +53,16 @@ public class ActionToPerformService {
 
                 PullRequestGitHubInteraction pullRequestAction = (PullRequestGitHubInteraction) action.getGitHubInteraction();
 
-                Repository impactedRepo = remoteGitHub.fetchRepository(repoFullName);
+                Optional<Repository> optionalImpactedRepo = remoteGitHub.fetchRepository(repoFullName);
+
+                //if repo doesn't exist, notify
+                if(!optionalImpactedRepo.isPresent()){
+                    actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_REPO_DOESNT_EXIST));
+                    return;
+                }
+
+                Repository impactedRepo=optionalImpactedRepo.get();
+
                 String branchNameForPR = pullRequestAction.getBranchNameToCreate();
 
                 String branchFromWhichToCreatePrBranch= resourceToUpdate.getBranchName() == null ? impactedRepo.getDefaultBranch() : resourceToUpdate.getBranchName();
@@ -58,7 +76,7 @@ public class ActionToPerformService {
                             action.getGitHubOauthToken());
                 } catch (BranchAlreadyExistsException e) {
 
-                    log.warn("branch " + branchNameForPR + " already exists");
+                    log.warn("branch " + branchNameForPR + " already exists, reusing it");
 
                     //TODO maybe we should add field in Reference to identify when it hasn't been created as expected
                     branchToUseForPr = remoteGitHub.fetchHeadReferenceFrom(repoFullName, branchNameForPR);
@@ -86,21 +104,50 @@ public class ActionToPerformService {
             }
 
         } catch (GitHubAuthorizationException e) {
+            log.warn("Github authorization problem while processing "+action,e);
             actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_AUTHENTICATION_ISSUE));
+        }
+        catch (Exception e) {
+            log.warn("problem while processing "+action,e);
+            actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING));
+        }
+        finally {
+            publishMonitoringEventForBulkActionProcessed(action, stopWatchForMonitoring, repoFullName);
         }
 
     }
 
     private void createPullRequest(BulkActionToPerform action, Repository impactedRepo, Reference prBranch, String targetBranchForPR, UpdatedResource updatedResource) {
-        Optional<PullRequest> createdPr = createPrOnBranch(impactedRepo, prBranch, targetBranchForPR, action);
 
-        if (createdPr.isPresent()) {
-            updatedResource.getContent().setHtmlUrl(createdPr.get().getHtmlUrl());
-            updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_CREATED);
-        } else {
-            //TODO test this scenario
-            updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_BUT_PR_CREATION_KO);
+        Optional<PullRequest> existingOpenPRforBranch=findExistingOpenPRforBranch(impactedRepo,prBranch);
+
+        if(existingOpenPRforBranch.isPresent()){
+            updatedResource.getContent().setHtmlUrl(existingOpenPRforBranch.get().getHtmlUrl());
+            updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_ALREADY_EXISTING);
         }
+        else{
+            Optional<PullRequest> createdPr = createPrOnBranch(impactedRepo, prBranch, targetBranchForPR, action);
+
+            if (createdPr.isPresent()) {
+                updatedResource.getContent().setHtmlUrl(createdPr.get().getHtmlUrl());
+                updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_CREATED);
+
+                publishMonitoringEventForPRcreated(impactedRepo, targetBranchForPR, createdPr);
+
+            } else {
+                //TODO test this scenario
+                updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK_BUT_PR_CREATION_KO);
+            }
+        }
+
+    }
+
+    private Optional<PullRequest> findExistingOpenPRforBranch(Repository repo, Reference prBranch) {
+
+        List<PullRequest> openPRs=remoteGitHub.fetchOpenPullRequests(repo.getFullName());
+
+        return openPRs.stream().filter(pr -> pr.doneOnBranch(prBranch.getBranchName())).findAny();
+
     }
 
     private UpdatedResource updateRemoteResource(String repoFullName, ResourceToUpdate resourceToUpdate, BulkActionToPerform action,
@@ -108,6 +155,17 @@ public class ActionToPerformService {
 
         ResourceContent existingResourceContent = remoteGitHub
                 .fetchContent(repoFullName, resourceToUpdate.getFilePathOnRepo(), onBranch);
+
+        if(action.getActionToReplicate() instanceof DeleteResourceAction){
+            if (existingResourceExists(existingResourceContent)){
+                UpdatedResource deletedResource = deleteResource(action, resourceToUpdate, existingResourceContent, onBranch);
+
+                log.info("{} deleted on repo {}, on branch {}. SHA1: {}", resourceToUpdate.getFilePathOnRepo(), repoFullName, onBranch,
+                        deletedResource.getCommit().getSha());
+
+                return deletedResource;
+            }
+        }
 
         String decodedOriginalContent = null;
         String newContent = null;
@@ -117,7 +175,7 @@ public class ActionToPerformService {
         try {
             if (existingResourceExists(existingResourceContent)) {
                 decodedOriginalContent = GitHubContentBase64codec.decode(existingResourceContent.getBase64EncodedContent());
-                newContent = actionToReplicate.provideContent(decodedOriginalContent);
+                newContent = actionToReplicate.provideContent(decodedOriginalContent,resourceToUpdate);
             }
             else if (actionToReplicate.canContinueIfResourceDoesntExist()) {
                 newContent = actionToReplicate.provideContent(null);
@@ -153,6 +211,36 @@ public class ActionToPerformService {
 
     }
 
+    private UpdatedResource deleteResource(BulkActionToPerform action, ResourceToUpdate resourceToDelete, ResourceContent existingResourceContent, String onBranch) throws GitHubAuthorizationException {
+
+        DirectCommit directCommit = buildDirectCommit(action,existingResourceContent, onBranch);
+
+        UpdatedResource updatedResource = remoteGitHub
+                .deleteContent(resourceToDelete.getRepoFullName(), resourceToDelete.getFilePathOnRepo(), directCommit,
+                        action.getGitHubOauthToken());
+
+        publishMonitoringEventForCommitPerformed(resourceToDelete, updatedResource);
+
+        updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK);
+
+        return updatedResource;
+    }
+
+    private DirectCommit buildDirectCommit(BulkActionToPerform action, ResourceContent existingResourceContent, String onBranch) {
+
+        DirectCommit directCommit = new DirectCommit();
+
+        if (existingResourceExists(existingResourceContent)) {
+            directCommit.setPreviousVersionSha1(existingResourceContent.getSha());
+        }
+
+        directCommit.setBranch(onBranch);
+        directCommit.setCommitter(new DirectCommit.Committer(action.getUserRequestingAction().getLogin(), action.getEmail()));
+        directCommit.setCommitMessage(action.getCommitMessage() + " performed on behalf of " + action.getUserRequestingAction().getLogin() + " by CI-droid");
+
+        return directCommit;
+    }
+
     private boolean existingResourceExists(ResourceContent existingResourceContent) {
         return existingResourceContent != null && existingResourceContent.getSha() != null;
     }
@@ -173,15 +261,7 @@ public class ActionToPerformService {
     private UpdatedResource commitResource(BulkActionToPerform action, String newContent, ResourceToUpdate resourceToUpdate,
             ResourceContent existingResourceContent, String onBranch) throws GitHubAuthorizationException {
 
-        DirectCommit directCommit = new DirectCommit();
-
-        if (existingResourceExists(existingResourceContent)) {
-            directCommit.setPreviousVersionSha1(existingResourceContent.getSha());
-        }
-
-        directCommit.setBranch(onBranch);
-        directCommit.setCommitter(new DirectCommit.Committer(action.getGitLogin(), action.getEmail()));
-        directCommit.setCommitMessage(action.getCommitMessage() + " performed on behalf of " + action.getGitLogin() + " by CI-droid");
+        DirectCommit directCommit = buildDirectCommit(action,existingResourceContent, onBranch);
 
         directCommit.setBase64EncodedContent(GitHubContentBase64codec.encode(newContent));
 
@@ -189,9 +269,40 @@ public class ActionToPerformService {
                 .updateContent(resourceToUpdate.getRepoFullName(), resourceToUpdate.getFilePathOnRepo(), directCommit,
                         action.getGitHubOauthToken());
 
+        publishMonitoringEventForCommitPerformed(resourceToUpdate, updatedResource);
+
         updatedResource.setUpdateStatus(UpdatedResource.UpdateStatus.UPDATE_OK);
 
         return updatedResource;
+    }
+
+    private void publishMonitoringEventForCommitPerformed(ResourceToUpdate resourceToUpdate, UpdatedResource updatedResource) {
+        Event techEvent = Event.technical(BULK_ACTION_COMMIT_PERFORMED);
+        techEvent.addAttribute(REPO, resourceToUpdate.getRepoFullName());
+        techEvent.addAttribute("resourceName", resourceToUpdate.getFilePathOnRepo());
+        techEvent.addAttribute("branchName", resourceToUpdate.getBranchName());
+        techEvent.addAttribute("newCommitSha", updatedResource.getCommit().getSha());
+        techEvent.publish();
+    }
+
+    private void publishMonitoringEventForPRcreated(Repository impactedRepo, String targetBranchForPR, Optional<PullRequest> createdPr) {
+        Event techEvent = Event.technical(BULK_ACTION_PR_CREATED);
+        techEvent.addAttribute(REPO, impactedRepo.getFullName());
+        techEvent.addAttribute("targetBranchForPR", targetBranchForPR);
+        techEvent.addAttribute(PR_NUMBER, String.valueOf(createdPr.get().getNumber()));
+        techEvent.publish();
+    }
+
+    public void publishMonitoringEventForBulkActionProcessed(BulkActionToPerform action, StopWatch stopWatchForMonitoring, String repoFullName) {
+
+        stopWatchForMonitoring.stop();
+
+        Event techEvent = Event.technical(BULK_ACTION_PROCESSED);
+        techEvent.addAttribute(REPO, repoFullName);
+        techEvent.addAttribute("bulkActionReceived", action.toString());
+        techEvent.addAttribute("bulkActionType", action.getActionType());
+        techEvent.addAttribute(DURATION, String.valueOf(stopWatchForMonitoring.getTime()));
+        techEvent.publish();
     }
 
     private boolean resourceWasNotExisting(String decodedOriginalContent) {
@@ -214,13 +325,17 @@ public class ActionToPerformService {
         String providedPrTitle=pullRequestGitHubInteraction.getPullRequestTitle();
 
         newPr.setTitle(providedPrTitle!=null ? providedPrTitle : prBranch.getBranchName());
-        newPr.setBody("performed on behalf of " + action.getGitLogin() + " by CI-droid\n\n" + action.getCommitMessage());
+        newPr.setBody("performed on behalf of " + action.getUserRequestingAction().getLogin() + " by CI-droid\n\n" + action.getCommitMessage());
 
         try{
             return Optional.of(remoteGitHub.createPullRequest(impactedRepo.getFullName(), newPr, action.getGitHubOauthToken()));
         }
         catch(GitHubAuthorizationException e){
             log.warn("issue while creating the PR",e);
+            return Optional.empty();
+        }
+        catch(Exception e){
+            log.warn("unknown issue while creating PR",e);
             return Optional.empty();
         }
     }

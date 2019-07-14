@@ -46,26 +46,33 @@ spring:
 hystrix.command.default.execution.timeout.enabled: false
 feign.hystrix.enabled: false
 
+
 gitHub:
   api.url: "https://api.github.com"
+  oauthToken: ${SERVICE_ACCOUNT_GITHUB_OAUTH_TOKEN}
 #below credentials should be a service account credentials - they will be used to rebase PRs automatically using Git commands.
   login: ${SERVICE_ACCOUNT_USERNAME}
   password: ${SERVICE_ACCOUNT_PASSWORD}
+
 
 notifiers:
   github.prComment.enable: true
 #  email.enable: true
 #  http.targetUrl: "http://localhost:9901/notify"
 
-ciDroidBehavior:
+cidroid-behavior:
 #  whenPushOnDefaultBranch:
   tryToRebaseOpenPrs.enabled: true
   notifyOwnerForNonMergeablePr.enabled: true
+  closeOldPullRequests:
+    enabled: true
+    limitInDays: 180
 #  whenPullRequestEvent:
   bestPracticeNotifier.enabled: true
   patternToResourceMapping:
 # example of associating a document with a file pattern
     "**/*Dto.java": "https://some_link_to_some_best_practices_repo/noDtoClass.md"
+
 
 
 logging:

@@ -1,22 +1,24 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMock;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
-import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.*;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
 
-import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
 
 @Configuration
+@EnableAutoConfiguration
 public class TestConfig {
 
     @Bean
@@ -30,12 +32,12 @@ public class TestConfig {
     }
 
     @Bean
-    public GitHubMock mockGitHub() {
-        return new GitHubMock();
+    public GitHubMockServer gitHubMockServer() {
+        return new GitHubMockServer();
     }
 
     @Bean
-    public PushEventOnDefaultBranchHandler rebaseHandler(Rebaser rebaser,RemoteGitHub remoteGitHub){
+    public PushEventOnDefaultBranchHandler rebaseHandler(Rebaser rebaser, RemoteGitHub remoteGitHub){
 
         return new RebaseHandler(rebaser, remoteGitHub);
     }
@@ -43,7 +45,13 @@ public class TestConfig {
     @Bean
     public PushEventOnDefaultBranchHandler notificationsHandler(RemoteGitHub remoteGitHub, NotifierMock notifierMock) {
 
-        return new NotificationsHandler(remoteGitHub, Arrays.asList(notifierMock));
+        return new NotificationsHandler(remoteGitHub, Collections.singletonList(notifierMock));
+    }
+
+    @Bean
+    public PushEventOnDefaultBranchHandler pullRequestCleaningHandler(RemoteGitHub remoteGitHub) {
+
+        return new PullRequestCleaningHandler(remoteGitHub, LocalDateTime::now, 180);
     }
 
     @Bean

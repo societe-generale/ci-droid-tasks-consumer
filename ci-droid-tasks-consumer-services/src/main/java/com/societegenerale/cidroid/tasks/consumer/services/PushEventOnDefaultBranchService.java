@@ -1,6 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PushEventOnDefaultBranchHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventOnDefaultBranchHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
@@ -11,7 +11,8 @@ import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.List;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.MonitoringEvents.PUSH_EVENT_TO_PROCESS;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PUSH_EVENT_TO_PROCESS;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
@@ -22,11 +23,9 @@ public class PushEventOnDefaultBranchService {
     private List<PushEventOnDefaultBranchHandler> actionHandlers;
 
     @Setter
-    //@Value("${action.mergeable.retry.sleep:300}")
     private long sleepDurationBeforeTryingAgainToFetchMergeableStatus = 300;
 
     @Setter
-    //@Value("${action.mergeable.retry.max:10}")
     private int maxRetriesForMergeableStatus = 10;
 
     public PushEventOnDefaultBranchService(RemoteGitHub gitHub, List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers) {
@@ -42,7 +41,7 @@ public class PushEventOnDefaultBranchService {
         }
 
         Event techEvent = Event.technical(PUSH_EVENT_TO_PROCESS);
-        techEvent.addAttribute("repo", pushEvent.getRepository().getFullName());
+        techEvent.addAttribute(REPO, pushEvent.getRepository().getFullName());
 
         StopWatch stopWatch = StopWatch.createStarted();
 
@@ -50,10 +49,17 @@ public class PushEventOnDefaultBranchService {
 
         List<PullRequest> openPRsWithDefinedMergeabilityStatus = figureOutMergeableStatusFor(openPRs, 0);
 
-        logPrMergeabilityStatus(openPRsWithDefinedMergeabilityStatus);
+        if (log.isInfoEnabled()) {
+            logPrMergeabilityStatus(openPRsWithDefinedMergeabilityStatus);
+        }
 
         for (PushEventOnDefaultBranchHandler pushEventOnDefaultBranchHandler : actionHandlers) {
-            pushEventOnDefaultBranchHandler.handle(pushEvent, openPRsWithDefinedMergeabilityStatus);
+
+            try {
+                pushEventOnDefaultBranchHandler.handle(pushEvent, openPRsWithDefinedMergeabilityStatus);
+            } catch (RuntimeException e) {
+                log.warn("exception thrown during event handling by " + pushEventOnDefaultBranchHandler.getClass(), e);
+            }
         }
 
         stopWatch.stop();
@@ -73,7 +79,7 @@ public class PushEventOnDefaultBranchService {
     }
 
     private void logPrMergeabilityStatus(List<PullRequest> openPRsWithDefinedMergeabilityStatus) {
-        if (log.isInfoEnabled()) {
+        if (openPRsWithDefinedMergeabilityStatus.size() > 0) {
 
             StringBuilder sb = new StringBuilder("PR status :\n");
 
@@ -101,7 +107,8 @@ public class PushEventOnDefaultBranchService {
 
                 StringBuilder sb = new StringBuilder("these PRs don't have a mergeable status yet :\n");
 
-                pullRequestsWithUnknownMergeabilityStatus.stream().forEach(pr -> sb.append("\t - ").append(pr.getNumber()).append("\n"));
+                pullRequestsWithUnknownMergeabilityStatus
+                        .forEach(pr -> sb.append("\t - ").append(pr.getNumber()).append("\n"));
 
                 sb.append("waiting for ")
                         .append(sleepDurationBeforeTryingAgainToFetchMergeableStatus)
@@ -115,7 +122,7 @@ public class PushEventOnDefaultBranchService {
             try {
                 Thread.sleep(sleepDurationBeforeTryingAgainToFetchMergeableStatus);
             } catch (InterruptedException e) {
-                log.error("interrupted while sleeping to get PR status",e);
+                log.error("interrupted while sleeping to get PR status", e);
             }
 
             List<PullRequest> prsWithUpdatedStatus = pullRequestsWithUnknownMergeabilityStatus.stream()
@@ -126,7 +133,8 @@ public class PushEventOnDefaultBranchService {
         } else if (nbRetry >= maxRetriesForMergeableStatus) {
 
             log.warn("not able to retrieve merge status for below PRs after several tries.. giving up");
-            pullRequestsWithUnknownMergeabilityStatus.stream().forEach(pr -> log.info("\t - {}", pr.getNumber()));
+            pullRequestsWithUnknownMergeabilityStatus
+                    .forEach(pr -> log.info("\t - {}", pr.getNumber()));
         }
 
         return pullRequestsWithDefinedMergeabilityStatus;
@@ -142,7 +150,6 @@ public class PushEventOnDefaultBranchService {
                 .map(pr -> gitHub.fetchPullRequestDetails(repoFullName, pr.getNumber()))
                 .collect(toList());
     }
-
 
 
 }

@@ -8,13 +8,12 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedR
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.util.Arrays;
-
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.*;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -25,16 +24,15 @@ public class ActionNotificationServiceTest {
 
     private static final String REPO_FULL_NAME = "repoFullName";
 
-    private final String SOME_USER_NAME = "someUserName";
+    private static final String SOME_USER_NAME = "someUserName";
 
-    private final String SOME_OAUTH_TOKEN = "123456789abcdef";
+    private static final String SOME_OAUTH_TOKEN = "123456789abcdef";
 
-    private final String SOME_EMAIL = "someEmail@someDomain.com";
+    private static final String SOME_EMAIL = "someEmail@someDomain.com";
 
-    private final String SOME_COMMIT_MESSAGE = "this is the original commit message by the user";
+    private static final String SOME_COMMIT_MESSAGE = "this is the original commit message by the user";
 
     private ArgumentCaptor<String> notificationContentCaptor = ArgumentCaptor.forClass(String.class);
-
 
     private TestActionToPerform testActionToPerform = new TestActionToPerform();
 
@@ -50,16 +48,17 @@ public class ActionNotificationServiceTest {
 
     private BulkActionToPerform.BulkActionToPerformBuilder bulkActionToPerformBuilder;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    public void setUp() {
         testActionToPerform.setContentToProvide(MODIFIED_CONTENT);
         testActionToPerform.setContinueIfResourceDoesntExist(true);
 
-        bulkActionToPerformBuilder = BulkActionToPerform.builder().gitLogin(SOME_USER_NAME)
+        bulkActionToPerformBuilder = BulkActionToPerform.builder()
+                .userRequestingAction(new User(SOME_USER_NAME, "someEmail)"))
                 .gitHubOauthToken(SOME_OAUTH_TOKEN)
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)
-                .resourcesToUpdate(Arrays.asList(resourceToUpdate))
+                .resourcesToUpdate(singletonList(resourceToUpdate))
                 .actionToReplicate(testActionToPerform);
 
         UpdatedResource.Content content = new UpdatedResource.Content();
@@ -135,6 +134,19 @@ public class ActionNotificationServiceTest {
     }
 
     @Test
+    public void when_PULL_REQUEST_and_openPR_already_exists() {
+
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction()).build();
+
+        updatedResource.setUpdateStatus(UPDATE_OK_WITH_PR_ALREADY_EXISTING);
+
+        actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
+
+        assertNotificationContent("CI-droid updated an existing PR on your behalf", "you can double check its content here : http:");
+
+    }
+
+    @Test
     public void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_DIRECT_PUSH() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
@@ -188,6 +200,10 @@ public class ActionNotificationServiceTest {
 
         actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
 
+        verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
+        assertThat(notificationContentCaptor.getValue())
+                .isEqualTo(expectedContent);
+
         //for pull request
         reset(mockNotifier);
         bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction()).build();
@@ -200,6 +216,75 @@ public class ActionNotificationServiceTest {
                 .isEqualTo(expectedContent);
 
     }
+
+    @Test
+    public void sendKOnotification_whenUnexpectedError() {
+
+        String expectedSubject = "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
+
+        String expectedContent =
+                "Unexpected issue happened during processing - please check the logs for more details";
+
+        //for direct push
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
+        updatedResource.setUpdateStatus(UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING);
+
+        actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
+
+        verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
+        assertThat(notificationContentCaptor.getValue())
+                .isEqualTo(expectedContent);
+
+        //for pull request
+        reset(mockNotifier);
+        bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction()).build();
+        updatedResource.setUpdateStatus(UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING);
+
+        actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
+
+        verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
+        assertThat(notificationContentCaptor.getValue())
+                .isEqualTo(expectedContent);
+
+    }
+
+
+    @Test
+    public void sendKOnotification_whenResourceToUpdateIsNull() {
+
+        String expectedSubject = "[KO] unclear status for action " + testActionToPerform.getClass().getName();
+
+        String expectedContent = "resourceToUpdate is null, so unable to perform any action";
+
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
+
+        actionNotificationService.handleNotificationsFor(bulkActionToPerform, null, updatedResource);
+
+        verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
+        assertThat(notificationContentCaptor.getValue())
+                .isEqualTo(expectedContent);
+
+    }
+
+
+    @Test
+    public void sendKOnotification_whenRepoDoesntExist() {
+
+        String expectedSubject = "[KO] Action '" + testActionToPerform.getClass().getName() + "' for someFile.txt on repoFullName on branch master";
+
+        String expectedContent = "repository " + resourceToUpdate.getRepoFullName() + " doesn't exist - make sure you provide its full name, ie 'org/repo' ";
+
+        BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
+        updatedResource.setUpdateStatus(UPDATE_KO_REPO_DOESNT_EXIST);
+
+        actionNotificationService.handleNotificationsFor(bulkActionToPerform, resourceToUpdate, updatedResource);
+
+        verify(mockNotifier, times(1)).notify(eq(expectedUser), eq(expectedSubject), notificationContentCaptor.capture());
+        assertThat(notificationContentCaptor.getValue())
+                .isEqualTo(expectedContent);
+
+    }
+
 
     private void assertNotificationWhenDirectPush() {
         assertNotificationContent("CI-droid has updated the resource on your behalf", "Link to the version we committed : http://");

@@ -2,14 +2,14 @@ package com.societegenerale.cidroid.tasks.consumer.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.actionHandlers.PushEventOnDefaultBranchHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventOnDefaultBranchHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.model.GitHubEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class PushOnDefaultBranchServiceTest {
+public class PushEventOnDefaultBranchServiceTest {
 
     private static final String FULL_REPO_NAME = "baxterthehacker/public-repo";
 
@@ -36,21 +36,21 @@ public class PushOnDefaultBranchServiceTest {
 
     private static final String SINGLE_PULL_REQUEST_JSON = "/singlePullRequest.json";
 
-    RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
+    private final RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
 
-    PushEventOnDefaultBranchHandler mockPushEventOnDefaultBranchHandler = mock(PushEventOnDefaultBranchHandler.class);
+    private final PushEventOnDefaultBranchHandler mockPushEventOnDefaultBranchHandler = mock(PushEventOnDefaultBranchHandler.class);
 
-    PushEventOnDefaultBranchService pushOnDefaultBranchService;
+    private PushEventOnDefaultBranchService pushOnDefaultBranchService;
 
-    PushEvent pushEvent;
+    private PushEvent pushEvent;
 
-    PullRequest singlePr;
+    private PullRequest singlePr;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 
-    @Before
-    public void setup() throws IOException {
+    @BeforeEach
+    public void setUp() throws IOException {
 
         List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers = new ArrayList<>();
         pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandler);
@@ -62,7 +62,8 @@ public class PushOnDefaultBranchServiceTest {
 
 
         String openPrsOnRepoAsString = readFromInputStream(getClass().getResourceAsStream("/pullRequests.json"));
-        List openPrsOnRepo = objectMapper.readValue(openPrsOnRepoAsString, new TypeReference<List<PullRequest>>() {});
+        List<PullRequest> openPrsOnRepo = objectMapper.readValue(openPrsOnRepoAsString, new TypeReference<List<PullRequest>>() {
+        });
         when(mockRemoteGitHub.fetchOpenPullRequests(FULL_REPO_NAME)).thenReturn(openPrsOnRepo);
 
         String prAsString = readFromInputStream(getClass().getResourceAsStream(SINGLE_PULL_REQUEST_JSON));
@@ -70,6 +71,26 @@ public class PushOnDefaultBranchServiceTest {
         when(mockRemoteGitHub.fetchPullRequestDetails(FULL_REPO_NAME, PULL_REQUEST_ID)).thenReturn(singlePr);
 
         when(mockRemoteGitHub.fetchUser("octocat")).thenReturn(new User("octocat", "octocat@github.com"));
+
+    }
+
+    @Test
+    public void runtimeExceptionInHandlerShouldNotPreventOthersToExecute() {
+
+        List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers = new ArrayList<>();
+
+        PushEventOnDefaultBranchHandler mockPushEventOnDefaultBranchHandlerThrowingException = mock(PushEventOnDefaultBranchHandler.class);
+        doThrow(RuntimeException.class).when(mockPushEventOnDefaultBranchHandlerThrowingException).handle(any(GitHubEvent.class),anyList());
+
+
+        pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandlerThrowingException);
+        pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandler);
+
+        pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteGitHub, pushEventOnDefaultBranchHandlers);
+
+        pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
+
+        verify(mockPushEventOnDefaultBranchHandler,times(1)).handle(any(GitHubEvent.class),anyList());
 
     }
 
@@ -121,9 +142,7 @@ public class PushOnDefaultBranchServiceTest {
                 TimeUnit.MILLISECONDS.sleep(700);
                 System.out.println("done sleeping !");
                 updatePRmergeabilityStatus(NOT_MERGEABLE);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
         });
@@ -131,7 +150,7 @@ public class PushOnDefaultBranchServiceTest {
 
         pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
 
-        ArgumentCaptor<List> prListCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<PullRequest>> prListCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<GitHubEvent> gitHubEventCaptor = ArgumentCaptor.forClass(GitHubEvent.class);
 
         await().atMost(3, SECONDS)

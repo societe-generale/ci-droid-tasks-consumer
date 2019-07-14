@@ -4,11 +4,11 @@
     <parent>
         <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
         <artifactId>ci-droid-tasks-consumer-parent</artifactId>
-        <version>1.0.8-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>ci-droid-tasks-consumer-services</artifactId>
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.1.2-SNAPSHOT</version>
     <description>ci-droid-tasks-consumer services</description>
 
     <dependencies>
@@ -27,6 +27,12 @@
 
 
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
@@ -38,31 +44,14 @@
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.jayway.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.oneeyedmen</groupId>
             <artifactId>fakir</artifactId>
-            <scope>test</scope>
-        </dependency>
+         </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>
@@ -79,6 +68,16 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
 
     </dependencies>
 </project>

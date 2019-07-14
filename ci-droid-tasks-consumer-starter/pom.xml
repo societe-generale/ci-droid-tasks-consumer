@@ -2,9 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
     <artifactId>ci-droid-tasks-consumer-starter</artifactId>
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>CI droid starter</name>
@@ -12,13 +11,23 @@
     <parent>
         <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
         <artifactId>ci-droid-tasks-consumer-parent</artifactId>
-        <version>1.0.8-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
 
 
     <description>CI-droid tasks consumer starter</description>
 
     <dependencies>
+
+        <!--
+        see https://stackoverflow.com/questions/55175790/maven-getting-different-versions-when-using-jar-as-a-dependency-confusing
+        for why we need to define the version here
+        -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>

@@ -3,7 +3,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 

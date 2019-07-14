@@ -37,11 +37,6 @@ public class HttpNotifier implements Notifier {
     }
 
 
-    @Override
-    public String getNotificationMode() {
-        return "HTTP";
-    }
-
     @Data
     private class NotificationBody{
 

@@ -1,11 +1,13 @@
-package com.societegenerale.cidroid.tasks.consumer.services.actionHandlers;
+package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class DummyPullRequestEventHandler implements PullRequestEventHandler {
 
     @Override
     public void handle(PullRequestEvent event) {
-        //do nothing
+      log.info("event handled by dummy handler : {}",event);
     }
 }

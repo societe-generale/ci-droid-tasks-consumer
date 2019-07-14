@@ -6,10 +6,10 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import javax.mail.MessagingException;
@@ -22,26 +22,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class EMailNotifierTest {
 
-    public static final String MAIL_SENT_FROM = "ci-droid@socgen.com";
+    private static final String MAIL_SENT_FROM = "ci-droid@socgen.com";
 
-    EMailNotifier emailNotifier;
+    private EMailNotifier emailNotifier;
 
     private GreenMail mailServer = new GreenMail(ServerSetupTest.SMTP);
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    public void setUp() {
 
-        emailNotifier=buildAndConfigure();
+        emailNotifier = buildAndConfigure();
 
         mailServer.start();
     }
 
     private EMailNotifier buildAndConfigure() {
 
-        JavaMailSenderImpl mailSenderImpl=new JavaMailSenderImpl();
-        Properties properties=new Properties();
-        properties.put("mail.smtp.auth","false");
-        properties.put("mail.smtp.starttls.enable","false");
+        JavaMailSenderImpl mailSenderImpl = new JavaMailSenderImpl();
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "false");
+        properties.put("mail.smtp.starttls.enable", "false");
 
         mailSenderImpl.setJavaMailProperties(properties);
         mailSenderImpl.setHost("localhost");
@@ -51,8 +51,8 @@ public class EMailNotifierTest {
         return new EMailNotifier(mailSenderImpl, MAIL_SENT_FROM);
     }
 
-    @After
-    public void stopGreenMailServer(){
+    @AfterEach
+    public void stopGreenMailServer() {
         mailServer.stop();
     }
 
@@ -60,27 +60,28 @@ public class EMailNotifierTest {
     public void shouldSendExpectedEmail() throws MessagingException, IOException {
 
         String recipientEmail = "test_login@myDomain.com";
-        User user= User.builder().login("test_login")
-                                .email(recipientEmail)
-                                .build();
+        User user = User.builder().login("test_login")
+                .email(recipientEmail)
+                .build();
 
         String messageContent = "PR is not mergeable anymore";
 
-        Message msg=new Message(messageContent);
+        Message msg = new Message(messageContent);
 
-        String prAsString = IOUtils.toString(EMailNotifierTest.class.getClassLoader().getResourceAsStream("singlePullRequest.json"), "UTF-8");
-        PullRequest pr=new ObjectMapper().readValue(prAsString,PullRequest.class);
+        PullRequest pr = new ObjectMapper().readValue(
+                getClass().getClassLoader().getResourceAsStream("singlePullRequest.json"),
+                PullRequest.class);
 
-        Map additionalInfos=new HashMap<>();
-        additionalInfos.put(PULL_REQUEST,pr);
+        Map<String, Object> additionalInfos = new HashMap<>();
+        additionalInfos.put(PULL_REQUEST, pr);
 
-        emailNotifier.notify(user,msg, additionalInfos);
+        emailNotifier.notify(user, msg, additionalInfos);
 
-        List<MimeMessage> actualSentEmailsFromServer= Arrays.asList(mailServer.getReceivedMessages());
+        List<MimeMessage> actualSentEmailsFromServer = Arrays.asList(mailServer.getReceivedMessages());
 
         assertThat(actualSentEmailsFromServer).hasSize(1);
 
-        MimeMessage actualEmail=actualSentEmailsFromServer.get(0);
+        MimeMessage actualEmail = actualSentEmailsFromServer.get(0);
 
         assertThat(actualEmail.getFrom()[0].toString()).isEqualTo(MAIL_SENT_FROM);
 

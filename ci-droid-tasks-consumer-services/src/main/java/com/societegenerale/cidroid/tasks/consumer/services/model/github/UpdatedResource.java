@@ -63,6 +63,7 @@ public class UpdatedResource {
 
         UPDATE_OK(true),
         UPDATE_OK_WITH_PR_CREATED(true),
+        UPDATE_OK_WITH_PR_ALREADY_EXISTING(true),
         UPDATE_OK_BUT_PR_CREATION_KO(true),
 
         UPDATE_KO_FILE_DOESNT_EXIST(false),
@@ -70,7 +71,9 @@ public class UpdatedResource {
         UPDATE_KO_BRANCH_CREATION_ISSUE(false),
         UPDATE_KO_CANT_PROVIDE_CONTENT_ISSUE(false),
         UPDATE_KO_NO_REASON(false),
-        UPDATE_KO_AUTHENTICATION_ISSUE(false);
+        UPDATE_KO_AUTHENTICATION_ISSUE(false),
+        UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING(false),
+        UPDATE_KO_REPO_DOESNT_EXIST(false);
 
         private final boolean hasBeenUpdated;
 

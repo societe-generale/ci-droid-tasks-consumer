@@ -39,5 +39,4 @@ It is a :
 
 <!--- If you're reporting a bug, include as many relevant details about the environment you experienced the bug in -->
 * Version used:
-* OS and version:
-* Version of libs used:
+

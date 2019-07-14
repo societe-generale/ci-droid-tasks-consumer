@@ -21,7 +21,7 @@ public class PullRequestEvent implements GitHubEvent {
     private Repository repository;
 
     @Override
-    public String getRepositoryUrl() {
-        return getRepository().getUrl();
+    public Repository getRepository() {
+        return repository;
     }
 }
