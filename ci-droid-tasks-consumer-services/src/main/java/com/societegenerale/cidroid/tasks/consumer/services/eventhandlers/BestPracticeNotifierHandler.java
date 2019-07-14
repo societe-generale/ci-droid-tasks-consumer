@@ -52,7 +52,7 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
         StringBuilder moreThanMaxFilesInPRComment = validateNumberOfFilesInPR(filesInPr.size(), existingPrComments);
 
-        StringBuilder bestPracticesViolationsInFilesComments = validateBestPracticesInPullRequestFiles(event, filesInPr, existingPrComments);
+        StringBuilder bestPracticesViolationsInFilesComments = validateBestPracticesInPullRequestFiles(filesInPr, existingPrComments);
 
         if (commetExists(moreThanMaxFilesInPRComment) || commetExists(bestPracticesViolationsInFilesComments)) {
             StringBuilder bestPracticesViolationWarnings = new StringBuilder("Reminder of best practices : \n")
@@ -85,8 +85,7 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
         return comment;
     }
 
-    private StringBuilder validateBestPracticesInPullRequestFiles(PullRequestEvent event, List<PullRequestFile> filesInPr,
-                                                                  List<PullRequestComment> existingPrComments) {
+    private StringBuilder validateBestPracticesInPullRequestFiles(List<PullRequestFile> filesInPr, List<PullRequestComment> existingPrComments) {
 
         StringBuilder comments = new StringBuilder();
 

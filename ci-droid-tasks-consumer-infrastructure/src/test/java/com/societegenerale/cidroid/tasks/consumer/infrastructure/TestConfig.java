@@ -6,7 +6,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +38,7 @@ public class TestConfig {
     }
 
     @Bean
-    public PushEventOnDefaultBranchHandler rebaseHandler(Rebaser rebaser, RemoteGitHub remoteGitHub){
+    public PushEventOnDefaultBranchHandler rebaseHandler(Rebaser rebaser, RemoteGitHub remoteGitHub) {
 
         return new RebaseHandler(rebaser, remoteGitHub);
     }
