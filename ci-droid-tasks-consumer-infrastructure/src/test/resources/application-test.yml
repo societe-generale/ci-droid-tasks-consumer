@@ -23,6 +23,7 @@ cidroid-behavior:
     limitInDays: 180
 # whenPullRequestEvent:
   bestPracticeNotifier.enabled: true
+  maxFilesInPRNotifier.enabled: true
   patternToResourceMapping:
     "**/*Dto.java": "https://someLinkToSomeResource/ci-droid-best-practices/noDtoClass.md"
     maxFilesInPr: 10

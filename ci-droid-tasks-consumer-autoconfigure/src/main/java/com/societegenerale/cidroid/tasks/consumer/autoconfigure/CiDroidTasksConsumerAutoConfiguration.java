@@ -57,7 +57,7 @@ public class CiDroidTasksConsumerAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(PushEventOnDefaultBranchHandler.class)
     @AutoConfigureOrder(500)
-    public PushEventOnDefaultBranchHandler dummyPushEventOnDefaultBranchHandler(){
+    public PushEventOnDefaultBranchHandler dummyPushEventOnDefaultBranchHandler() {
 
         return new DummyPushEventOnDefaultBranchHandler();
     }
@@ -69,14 +69,25 @@ public class CiDroidTasksConsumerAutoConfiguration {
                                                                RemoteGitHub remoteGitHub) {
 
         return new BestPracticeNotifierHandler(ciDroidBehavior.getPatternToResourceMapping(), notifiers, remoteGitHub,
-                new RestTemplateResourceFetcher(), ciDroidBehavior.getMaxFilesInPr(), ciDroidBehavior.getMaxFilesInPRExceededWarningMessage());
+                new RestTemplateResourceFetcher());
+
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "cidroid-behavior.maxFilesInPRNotifier.enabled", havingValue = "true")
+    @AutoConfigureOrder(2)
+    public PullRequestEventHandler pullRequestSizeCheckHandler(CiDroidBehavior ciDroidBehavior,
+                                                               List<Notifier> notifiers, RemoteGitHub remoteGitHub) {
+
+        return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, new RestTemplateResourceFetcher(),
+                ciDroidBehavior.getMaxFilesInPr(), ciDroidBehavior.getMaxFilesInPRExceededWarningMessage());
 
     }
 
     @Bean
     @ConditionalOnMissingBean(PullRequestEventHandler.class)
     @AutoConfigureOrder(500)
-    public PullRequestEventHandler dummyPullRequestEventHandler(){
+    public PullRequestEventHandler dummyPullRequestEventHandler() {
 
         return new DummyPullRequestEventHandler();
     }

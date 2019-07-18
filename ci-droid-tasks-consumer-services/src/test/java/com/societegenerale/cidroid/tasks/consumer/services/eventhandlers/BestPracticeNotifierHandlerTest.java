@@ -14,7 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -42,8 +45,7 @@ public class BestPracticeNotifierHandlerTest {
     private final String maxFilesInPRExceededWarningMessage = "The PR should not have more than {0} files";
 
     private final BestPracticeNotifierHandler handler = new BestPracticeNotifierHandler(
-            patternToContentMapping, singletonList(mockNotifier), mockRemoteGitHub, mockResourceFetcher,
-            maxFilesInPR , maxFilesInPRExceededWarningMessage);
+            patternToContentMapping, singletonList(mockNotifier), mockRemoteGitHub, mockResourceFetcher);
 
     private final ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
 
@@ -175,29 +177,6 @@ public class BestPracticeNotifierHandlerTest {
 
     }
 
-
-    @Test
-    public void shouldNotifyWithConfiguredContentWhenTheNumberOfFilesInPRExceedsConfiguredValue() {
-        returnMoreThanConfigureMaxFilesInPRFilesWhenFetchPullRequestFiles();
-
-        handler.handle(pullRequestEvent);
-
-        verify(mockNotifier, times(1)).notify(any(User.class), messageCaptor.capture(), any(Map.class));
-        assertThat(messageCaptor.getValue().getContent()).contains("The PR should not have more than 5 files");
-
-    }
-
-    @Test
-    public void shouldNotCreateTheMaxFileInPRCommentIfAlreadyCommented() {
-        returnMoreThanConfigureMaxFilesInPRFilesWhenFetchPullRequestFiles();
-        returnExistingComment("The PR should not have more than 5 files");
-
-        handler.handle(pullRequestEvent);
-
-        verify(mockNotifier, never()).notify(any(User.class), messageCaptor.capture(), any(Map.class));
-
-    }
-
     private void returnExistingComment(String content) {
         PullRequestComment existingPrComment = new PullRequestComment(content,
                 new User("someLogin", "firstName.lastName@domain.com"));
@@ -209,19 +188,6 @@ public class BestPracticeNotifierHandlerTest {
 
     private void returnMatchingPullRequestFileWhenFetchPullRequestFiles() {
         when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123)).thenReturn(singletonList(matchingPullRequestFile));
-    }
-
-    private void returnMoreThanConfigureMaxFilesInPRFilesWhenFetchPullRequestFiles() {
-        when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123)).thenReturn(
-                asList(createPullRequestFile("MyClass1.java"), createPullRequestFile("MyClass2.java")
-                        , createPullRequestFile("MyClass3.java"), createPullRequestFile("MyClass4.java")
-                        , createPullRequestFile("MyClass5.java"), createPullRequestFile("MyClass6.java")));
-    }
-
-    private PullRequestFile createPullRequestFile(String fileName) {
-        PullRequestFile pullRequestFile = new PullRequestFile();
-        pullRequestFile.setFilename(fileName);
-        return pullRequestFile;
     }
 
 }

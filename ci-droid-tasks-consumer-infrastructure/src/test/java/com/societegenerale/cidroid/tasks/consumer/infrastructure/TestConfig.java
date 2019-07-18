@@ -1,5 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidBehavior;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
@@ -15,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.mockito.Mockito.mock;
 
 @Configuration
@@ -58,10 +58,18 @@ public class TestConfig {
     @Bean
     public PullRequestEventHandler bestPracticeNotifierHandler(List<Notifier> notifiers, RemoteGitHub remoteGitHub) {
 
-        return new BestPracticeNotifierHandler(Collections.emptyMap(), notifiers, remoteGitHub, new RestTemplateResourceFetcher()
-                , Integer.MAX_VALUE, EMPTY);
+        return new BestPracticeNotifierHandler(Collections.emptyMap(), notifiers, remoteGitHub, new RestTemplateResourceFetcher());
 
     }
+
+    @Bean
+    public PullRequestEventHandler pullRequestSizeCheckHandler(CiDroidBehavior ciDroidBehavior,
+                                                               List<Notifier> notifiers, RemoteGitHub remoteGitHub) {
+        return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, new RestTemplateResourceFetcher(),
+                10, "The PR should not have more than {0} files.");
+
+    }
+
 
     @Bean
     public MailSender mockMailSender() {

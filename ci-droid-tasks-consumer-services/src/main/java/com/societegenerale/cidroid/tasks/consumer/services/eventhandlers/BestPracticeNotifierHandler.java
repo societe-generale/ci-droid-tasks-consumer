@@ -2,19 +2,19 @@ package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
-import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestFile;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import io.github.azagniotov.matcher.AntPathMatcher;
 import lombok.extern.slf4j.Slf4j;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
 import static java.util.stream.Collectors.toMap;
 
 @Slf4j
@@ -28,20 +28,14 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
     private ResourceFetcher resourceFetcher;
 
-    private int maxFilesInPr;
-
-    private String maxFilesWarningMessage;
 
     public BestPracticeNotifierHandler(Map<String, String> configuredPatternToContentMapping,
-                                       List<Notifier> notifiers, RemoteGitHub remoteGitHub, ResourceFetcher resourceFetcher,
-                                       int maxFilesInPr, String maxFilesWarningMessage) {
+                                       List<Notifier> notifiers, RemoteGitHub remoteGitHub, ResourceFetcher resourceFetcher) {
 
         this.configuredPatternToContentMapping = configuredPatternToContentMapping;
         this.notifiers = notifiers;
         this.remoteGitHub = remoteGitHub;
         this.resourceFetcher = resourceFetcher;
-        this.maxFilesInPr = maxFilesInPr;
-        this.maxFilesWarningMessage = maxFilesWarningMessage;
     }
 
     @Override
@@ -50,39 +44,11 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
         List<PullRequestFile> filesInPr = remoteGitHub.fetchPullRequestFiles(event.getRepository().getFullName(), event.getPrNumber());
         List<PullRequestComment> existingPrComments = remoteGitHub.fetchPullRequestComments(event.getRepository().getFullName(), event.getPrNumber());
 
-        StringBuilder moreThanMaxFilesInPRComment = validateNumberOfFilesInPR(filesInPr.size(), existingPrComments);
+        StringBuilder bestPracticesViolationsWarnings = validateBestPracticesInPullRequestFiles(filesInPr, existingPrComments);
 
-        StringBuilder bestPracticesViolationsInFilesComments = validateBestPracticesInPullRequestFiles(filesInPr, existingPrComments);
+        PullRequest pullRequest = remoteGitHub.fetchPullRequestDetails(event.getRepository().getFullName(), event.getPrNumber());
+        notifyWarnings(pullRequest, bestPracticesViolationsWarnings, notifiers);
 
-        if (commetExists(moreThanMaxFilesInPRComment) || commetExists(bestPracticesViolationsInFilesComments)) {
-            StringBuilder bestPracticesViolationWarnings = new StringBuilder("Reminder of best practices : \n")
-                    .append(moreThanMaxFilesInPRComment).append(bestPracticesViolationsInFilesComments);
-            notifyComments(event, bestPracticesViolationWarnings);
-        }
-
-    }
-
-    private StringBuilder validateNumberOfFilesInPR(int numberOfFiles, List<PullRequestComment> existingPrComments) {
-        StringBuilder comment = new StringBuilder();
-
-        if (numberOfFiles > maxFilesInPr) {
-            comment.append(createMoreThanMaxFilesInPRCommentIfAlreadyNotCommented(existingPrComments));
-        }
-
-        return comment;
-    }
-
-    private StringBuilder createMoreThanMaxFilesInPRCommentIfAlreadyNotCommented(List<PullRequestComment> existingPrComments) {
-        StringBuilder comment = new StringBuilder();
-
-        String moreThanMaxFilesInPRComment = MessageFormat.format(maxFilesWarningMessage, maxFilesInPr);
-
-        boolean alreadyCommented = existingPrComments.stream().anyMatch(existingComment -> existingComment.getComment().equals(moreThanMaxFilesInPRComment));
-        if (!alreadyCommented) {
-            comment.append("\n").append(moreThanMaxFilesInPRComment).append("\n");
-        }
-
-        return comment;
     }
 
     private StringBuilder validateBestPracticesInPullRequestFiles(List<PullRequestFile> filesInPr, List<PullRequestComment> existingPrComments) {
@@ -162,15 +128,4 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
     }
 
-    private void notifyComments(PullRequestEvent event, StringBuilder bestPracticesWarnings) {
-        PullRequest pr = remoteGitHub.fetchPullRequestDetails(event.getRepository().getFullName(), event.getPrNumber());
-        Map<String, Object> additionalInfosForNotification = new HashMap();
-        additionalInfosForNotification.put(PULL_REQUEST, pr);
-
-        notifiers.stream().forEach(n -> n.notify(new User(), new Message(bestPracticesWarnings.toString()), additionalInfosForNotification));
-    }
-
-    private boolean commetExists(StringBuilder warnings) {
-        return 0 != warnings.length();
-    }
 }
