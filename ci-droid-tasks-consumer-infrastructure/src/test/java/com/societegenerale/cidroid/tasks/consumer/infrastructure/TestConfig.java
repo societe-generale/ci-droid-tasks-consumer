@@ -65,8 +65,8 @@ public class TestConfig {
     @Bean
     public PullRequestEventHandler pullRequestSizeCheckHandler(CiDroidBehavior ciDroidBehavior,
                                                                List<Notifier> notifiers, RemoteGitHub remoteGitHub) {
-        return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, new RestTemplateResourceFetcher(),
-                10, "The PR should not have more than {0} files.");
+        return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, 10
+                , "The PR should not have more than {0} files.");
 
     }
 

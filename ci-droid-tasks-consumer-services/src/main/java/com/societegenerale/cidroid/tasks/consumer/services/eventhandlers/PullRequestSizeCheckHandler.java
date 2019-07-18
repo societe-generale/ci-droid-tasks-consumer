@@ -1,7 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
-import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
@@ -23,8 +22,7 @@ public class PullRequestSizeCheckHandler implements PullRequestEventHandler {
 
     private String maxFilesWarningMessage;
 
-    public PullRequestSizeCheckHandler(List<Notifier> notifiers, RemoteGitHub remoteGitHub, ResourceFetcher resourceFetcher,
-                                       int maxFilesInPr, String maxFilesWarningMessage) {
+    public PullRequestSizeCheckHandler(List<Notifier> notifiers, RemoteGitHub remoteGitHub, int maxFilesInPr, String maxFilesWarningMessage) {
         this.notifiers = notifiers;
         this.remoteGitHub = remoteGitHub;
         this.maxFilesInPr = maxFilesInPr;

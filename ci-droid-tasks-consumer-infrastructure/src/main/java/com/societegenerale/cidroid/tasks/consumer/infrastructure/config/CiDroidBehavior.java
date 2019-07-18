@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-
 @Component
 @Data
 @ConfigurationProperties(prefix = "cidroid-behavior")

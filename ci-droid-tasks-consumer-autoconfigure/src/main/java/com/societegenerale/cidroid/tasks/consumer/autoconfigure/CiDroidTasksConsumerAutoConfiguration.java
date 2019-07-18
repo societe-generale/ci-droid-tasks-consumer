@@ -79,8 +79,8 @@ public class CiDroidTasksConsumerAutoConfiguration {
     public PullRequestEventHandler pullRequestSizeCheckHandler(CiDroidBehavior ciDroidBehavior,
                                                                List<Notifier> notifiers, RemoteGitHub remoteGitHub) {
 
-        return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, new RestTemplateResourceFetcher(),
-                ciDroidBehavior.getMaxFilesInPr(), ciDroidBehavior.getMaxFilesInPRExceededWarningMessage());
+        return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, ciDroidBehavior.getMaxFilesInPr()
+                , ciDroidBehavior.getMaxFilesInPRExceededWarningMessage());
 
     }
 

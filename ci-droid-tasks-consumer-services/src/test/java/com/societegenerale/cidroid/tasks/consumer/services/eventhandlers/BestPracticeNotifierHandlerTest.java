@@ -40,10 +40,6 @@ public class BestPracticeNotifierHandlerTest {
 
     private final Map<String, String> patternToContentMapping = new HashMap<>();
 
-    private final int maxFilesInPR = 5;
-
-    private final String maxFilesInPRExceededWarningMessage = "The PR should not have more than {0} files";
-
     private final BestPracticeNotifierHandler handler = new BestPracticeNotifierHandler(
             patternToContentMapping, singletonList(mockNotifier), mockRemoteGitHub, mockResourceFetcher);
 

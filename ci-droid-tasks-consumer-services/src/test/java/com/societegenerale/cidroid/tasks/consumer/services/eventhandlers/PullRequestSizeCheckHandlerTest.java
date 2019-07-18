@@ -1,7 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
-import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
@@ -12,7 +11,6 @@ import org.mockito.ArgumentCaptor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -25,20 +23,16 @@ public class PullRequestSizeCheckHandlerTest {
 
     private final String REPO_FULL_NAME = "someOrg/someRepo";
 
-    private final ResourceFetcher mockResourceFetcher = mock(ResourceFetcher.class);
-
     private final Notifier mockNotifier = mock(Notifier.class);
 
     private final RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
-
-    private final Map<String, String> patternToContentMapping = new HashMap<>();
 
     private final int maxFilesInPR = 5;
 
     private final String maxFilesInPRExceededWarningMessage = "The PR should not have more than {0} files";
 
     private final PullRequestSizeCheckHandler handler = new PullRequestSizeCheckHandler(singletonList(mockNotifier),
-            mockRemoteGitHub, mockResourceFetcher, maxFilesInPR, maxFilesInPRExceededWarningMessage);
+            mockRemoteGitHub, maxFilesInPR, maxFilesInPRExceededWarningMessage);
 
     private final ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
 
@@ -49,7 +43,6 @@ public class PullRequestSizeCheckHandlerTest {
     @BeforeEach
     public void setUp() {
 
-        when(mockResourceFetcher.fetch("http://someUrl/liquibaseBestPractices.md")).thenReturn(Optional.of("careful with Liquibase changes !"));
         repository.setFullName(REPO_FULL_NAME);
         pullRequestEvent = new PullRequestEvent("created", 123, repository);
 
