@@ -12,9 +12,5 @@ import java.util.Map;
 public class CiDroidBehavior {
 
     private Map<String, String> patternToResourceMapping;
-
-    private int maxFilesInPr = 10;
-
-    private String maxFilesInPRExceededWarningMessage = "The PR should not have more than {0} files";
-
+    
 }

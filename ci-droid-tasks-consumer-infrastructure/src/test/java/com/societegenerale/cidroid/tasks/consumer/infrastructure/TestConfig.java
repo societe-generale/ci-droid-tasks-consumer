@@ -3,10 +3,12 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidBehavior;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierMock;
+import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,9 +66,10 @@ public class TestConfig {
 
     @Bean
     public PullRequestEventHandler pullRequestSizeCheckHandler(CiDroidBehavior ciDroidBehavior,
-                                                               List<Notifier> notifiers, RemoteGitHub remoteGitHub) {
-        return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, 10
-                , "The PR should not have more than {0} files.");
+                                                               List<Notifier> notifiers, RemoteGitHub remoteGitHub,
+                                                               @Value("${cidroid-behavior.maxFilesInPRNotifier.maxFiles}") int maxFiles,
+                                                               @Value("${cidroid-behavior.maxFilesInPRNotifier.warningMessage}") String warningMessage) {
+        return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, maxFiles, warningMessage);
 
     }
 

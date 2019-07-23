@@ -77,10 +77,11 @@ public class CiDroidTasksConsumerAutoConfiguration {
     @ConditionalOnProperty(value = "cidroid-behavior.maxFilesInPRNotifier.enabled", havingValue = "true")
     @AutoConfigureOrder(2)
     public PullRequestEventHandler pullRequestSizeCheckHandler(CiDroidBehavior ciDroidBehavior,
-                                                               List<Notifier> notifiers, RemoteGitHub remoteGitHub) {
+                                                               List<Notifier> notifiers, RemoteGitHub remoteGitHub,
+                                                               @Value("${cidroid-behavior.maxFilesInPRNotifier.maxFiles}") int maxFiles,
+                                                               @Value("${cidroid-behavior.maxFilesInPRNotifier.warningMessage}") String warningMessage) {
 
-        return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, ciDroidBehavior.getMaxFilesInPr()
-                , ciDroidBehavior.getMaxFilesInPRExceededWarningMessage());
+        return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, maxFiles, warningMessage);
 
     }
 
