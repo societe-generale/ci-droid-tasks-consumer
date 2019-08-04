@@ -24,24 +24,21 @@ public class ConfigurationIT {
     private PullRequestSizeCheckHandler pullRequestSizeCheckHandlers;
 
     @Value("${cidroid-behavior.maxFilesInPRNotifier.warningMessage}")
-    private String maxFielesWarningMessageConfigured;
+    private String maxFieldsWarningMessageConfigured;
 
     @Value("${cidroid-behavior.maxFilesInPRNotifier.maxFiles}")
     private int maxFilesConfigured;
 
     @Test
-    public void shouldCreatePullRequestEventHandlerWithConfiguredValues() {
-        assertBeanConfigurations(pullRequestSizeCheckHandlers);
-    }
+    public void shouldCreatePullRequestSizeCheckHandlersWithConfiguredValues() {
 
-    private void assertBeanConfigurations(PullRequestSizeCheckHandler pullRequestSizeCheckHandlers) {
         assertThat(pullRequestSizeCheckHandlers).isNotNull();
 
         Object maxFilesInPr = getPrivateFieldValue(pullRequestSizeCheckHandlers, "maxFilesInPr");
         assertThat(maxFilesInPr).isEqualTo(maxFilesConfigured);
 
         Object maxFilesWarningMessage = getPrivateFieldValue(pullRequestSizeCheckHandlers, "maxFilesWarningMessage");
-        assertThat(maxFilesWarningMessage).isEqualTo(maxFielesWarningMessageConfigured);
+        assertThat(maxFilesWarningMessage).isEqualTo(maxFieldsWarningMessageConfigured);
     }
 
     private Object getPrivateFieldValue(PullRequestSizeCheckHandler pullRequestSizeCheckHandlers, String fieldName) {
