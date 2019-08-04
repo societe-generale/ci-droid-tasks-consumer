@@ -5,13 +5,23 @@
 ### Added
 
 ### Changed
-- PR #65 - all tests now running with Junit 5. Junit 4.x totally excluded now.
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+## [1.2.0] - 2019-08-04
+
+### Added
+- PR #68 - new PullRequest action available : PullRequestSizeCheckHandler - Thanks [@https://github.com/santhoshkkk](https://github.com/santhoshkkk) !!
+- added [ArchUnit Maven plugin](https://github.com/societe-generale/arch-unit-maven-plugin) to catch potential issues during build
+
+
+### Changed
+- PR #65 - all tests now running with Junit 5. Junit 4.x totally excluded now.
+- PR #67, #69 - upgraded to Spring Boot 2.2.0.M4 - Thanks [@juliette-derancourt](https://github.com/juliette-derancourt) !!
 
 ## [1.1.1] - 2019-03-19
 
