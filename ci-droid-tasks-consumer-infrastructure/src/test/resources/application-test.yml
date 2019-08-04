@@ -25,3 +25,8 @@ cidroid-behavior:
   bestPracticeNotifier.enabled: true
   patternToResourceMapping:
     "**/*Dto.java": "https://someLinkToSomeResource/ci-droid-best-practices/noDtoClass.md"
+
+  maxFilesInPRNotifier:
+    enabled: true
+    maxFiles: 5
+    warningMessage: "Oops! The your PR has more than {0} files. It's going to be tough for the reviewer :( . Limit the number of files in your PR."

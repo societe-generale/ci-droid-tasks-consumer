@@ -14,8 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,7 +57,6 @@ public class BestPracticeNotifierHandlerTest {
         matchingPullRequestFile.setFilename(MATCHING_FILENAME);
 
         when(mockResourceFetcher.fetch("http://someUrl/liquibaseBestPractices.md")).thenReturn(Optional.of("careful with Liquibase changes !"));
-        when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123)).thenReturn(singletonList(matchingPullRequestFile));
 
         patternToContentMapping.put("**/db/changelog/**/*.yml", "http://someUrl/liquibaseBestPractices.md");
 
@@ -64,6 +67,8 @@ public class BestPracticeNotifierHandlerTest {
 
     @Test
     public void shouldNotifyWithConfiguredContentIfMatching() {
+
+        returnMatchingPullRequestFileWhenFetchPullRequestFiles();
 
         handler.handle(pullRequestEvent);
 
@@ -89,7 +94,7 @@ public class BestPracticeNotifierHandlerTest {
         anotherMatchingPullRequestFile.setFilename("myModule/src/main/java/org/myPackage/CoucouDto.java");
 
         when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123))
-                .thenReturn(Arrays.asList(matchingPullRequestFile, anotherMatchingPullRequestFile));
+                .thenReturn(asList(matchingPullRequestFile, anotherMatchingPullRequestFile));
         when(mockResourceFetcher.fetch("http://someUrl/noDtoBestPractice.md")).thenReturn(Optional.of("Don't name java object with DTO suffix"));
 
         patternToContentMapping.put("**/*Dto.java", "http://someUrl/noDtoBestPractice.md");
@@ -104,6 +109,8 @@ public class BestPracticeNotifierHandlerTest {
 
     @Test
     public void shouldLogMonitoringEventWhenCantFetchResource() {
+
+        returnMatchingPullRequestFileWhenFetchPullRequestFiles();
 
         Appender appender = mock(Appender.class);
 
@@ -135,11 +142,7 @@ public class BestPracticeNotifierHandlerTest {
     @Test
     public void shouldNotPostNotificationIfAlreadyThereFromPreviousEvent() {
 
-        PullRequestComment existingPrComment = new PullRequestComment("some comments about " + MATCHING_FILENAME,
-                new User("someLogin", "firstName.lastName@domain.com"));
-
-        List<PullRequestComment> existingPRcomments = singletonList(existingPrComment);
-        when(mockRemoteGitHub.fetchPullRequestComments(REPO_FULL_NAME, 123)).thenReturn(existingPRcomments);
+        returnExistingComment("some comments about " + MATCHING_FILENAME);
 
         handler.handle(pullRequestEvent);
 
@@ -155,13 +158,9 @@ public class BestPracticeNotifierHandlerTest {
         secondMatchingPullRequestFile.setFilename(secondMatchingFileNameOnWhichTheresNoCommentYet);
 
         when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123))
-                .thenReturn(Arrays.asList(matchingPullRequestFile, secondMatchingPullRequestFile));
+                .thenReturn(asList(matchingPullRequestFile, secondMatchingPullRequestFile));
 
-        PullRequestComment existingPrComment = new PullRequestComment("some comments about " + MATCHING_FILENAME,
-                new User("someLogin", "firstName.lastName@domain.com"));
-
-        List<PullRequestComment> existingPRcomments = singletonList(existingPrComment);
-        when(mockRemoteGitHub.fetchPullRequestComments(REPO_FULL_NAME, 123)).thenReturn(existingPRcomments);
+        returnExistingComment("some comments about " + MATCHING_FILENAME);
 
         handler.handle(pullRequestEvent);
 
@@ -172,6 +171,19 @@ public class BestPracticeNotifierHandlerTest {
         assertThat(commentPublished).contains(secondMatchingFileNameOnWhichTheresNoCommentYet);
         assertThat(commentPublished).doesNotContain(MATCHING_FILENAME);
 
+    }
+
+    private void returnExistingComment(String content) {
+        PullRequestComment existingPrComment = new PullRequestComment(content,
+                new User("someLogin", "firstName.lastName@domain.com"));
+
+        List<PullRequestComment> existingPRcomments = singletonList(existingPrComment);
+        when(mockRemoteGitHub.fetchPullRequestComments(REPO_FULL_NAME, 123)).thenReturn(existingPRcomments);
+    }
+
+
+    private void returnMatchingPullRequestFileWhenFetchPullRequestFiles() {
+        when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123)).thenReturn(singletonList(matchingPullRequestFile));
     }
 
 }

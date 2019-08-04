@@ -12,6 +12,5 @@ import java.util.Map;
 public class CiDroidBehavior {
 
     private Map<String, String> patternToResourceMapping;
-
-
+    
 }
