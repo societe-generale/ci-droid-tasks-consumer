@@ -2,6 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.extensions.actionToReplicate.*;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformCommand;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.GithubEventListener;
@@ -9,6 +10,8 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMail
 import com.societegenerale.cidroid.tasks.consumer.services.*;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventOnDefaultBranchHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -19,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @Configuration
 @EnableFeignClients(clients = { FeignRemoteGitHub.class})
@@ -124,6 +128,26 @@ public class InfraConfig {
             @Value("${spring.mail.sender}") String mailSender) {
 
         return new EMailActionNotifier(javaMailSender, mailSender);
+    }
+
+    @Bean(name = "actions-to-perform")
+    public Consumer<ActionToPerformCommand> msgConsumer(ActionToPerformListener actionToPerformListener) {
+
+        return  action -> {actionToPerformListener.onActionToPerform(action);};
+    }
+
+
+    @Bean(name = "push-on-default-branch")
+    public Consumer<PushEvent> msgConsumerPush(GithubEventListener actionToPerformListener) {
+
+        return  action -> {actionToPerformListener.onGitHubPushEventOnDefaultBranch(action);};
+    }
+
+
+    @Bean(name = "pull-request-event")
+    public Consumer<PullRequestEvent> msgConsumerPREvent(GithubEventListener actionToPerformListener) {
+
+        return  action -> {actionToPerformListener.onGitHubPullRequestEvent(action);};
     }
 
 }
