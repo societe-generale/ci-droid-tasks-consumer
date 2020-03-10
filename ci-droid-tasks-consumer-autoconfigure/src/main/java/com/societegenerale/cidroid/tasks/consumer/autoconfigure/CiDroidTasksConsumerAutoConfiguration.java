@@ -112,6 +112,4 @@ public class CiDroidTasksConsumerAutoConfiguration {
         return new HttpNotifier(targetUrl);
     }
 
-
-
 }
