@@ -5,7 +5,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.PushEventOnDefaultBra
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.stream.annotation.StreamListener;
 
 @Slf4j
 public class GithubEventListener {

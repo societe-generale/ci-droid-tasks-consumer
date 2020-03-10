@@ -9,7 +9,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotif
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.cloud.stream.annotation.StreamListener;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
