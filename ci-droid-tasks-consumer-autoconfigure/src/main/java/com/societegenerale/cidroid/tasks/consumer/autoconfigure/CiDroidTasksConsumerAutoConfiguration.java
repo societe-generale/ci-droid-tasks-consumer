@@ -2,7 +2,6 @@ package com.societegenerale.cidroid.tasks.consumer.autoconfigure;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.GitRebaser;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.GitWrapper;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.IncomingGitHubEvent;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.RestTemplateResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidBehavior;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
@@ -26,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Configuration
-@EnableBinding(IncomingGitHubEvent.class)
 @Import({InfraConfig.class})
 public class CiDroidTasksConsumerAutoConfiguration {
 

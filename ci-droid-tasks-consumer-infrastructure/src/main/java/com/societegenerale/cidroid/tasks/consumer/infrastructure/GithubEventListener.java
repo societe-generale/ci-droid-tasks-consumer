@@ -5,7 +5,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.PushEventOnDefaultBra
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.stream.annotation.StreamListener;
 
 @Slf4j
 public class GithubEventListener {
@@ -20,7 +19,6 @@ public class GithubEventListener {
 
     }
 
-    @StreamListener("push-on-default-branch")
     public void onGitHubPushEventOnDefaultBranch(PushEvent pushEvent) {
 
         try {
@@ -32,7 +30,6 @@ public class GithubEventListener {
         }
     }
 
-    @StreamListener("pull-request-event")
     public void onGitHubPullRequestEvent(PullRequestEvent pullRequestEvent) {
 
         log.info("received pullRequest event of type {} for repo {}",pullRequestEvent.getAction(),pullRequestEvent.getRepository().getFullName());
