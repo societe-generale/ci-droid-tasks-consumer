@@ -46,7 +46,6 @@ public class ActionToPerformListener {
     }
 
 
-    @StreamListener("actions-to-perform")
     public void onActionToPerform(ActionToPerformCommand actionToPerformCommand) {
 
         log.info("received an action to perform {}", actionToPerformCommand);

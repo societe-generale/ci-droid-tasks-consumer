@@ -20,7 +20,6 @@ public class GithubEventListener {
 
     }
 
-    @StreamListener("push-on-default-branch")
     public void onGitHubPushEventOnDefaultBranch(PushEvent pushEvent) {
 
         try {
@@ -32,7 +31,6 @@ public class GithubEventListener {
         }
     }
 
-    @StreamListener("pull-request-event")
     public void onGitHubPullRequestEvent(PullRequestEvent pullRequestEvent) {
 
         log.info("received pullRequest event of type {} for repo {}",pullRequestEvent.getAction(),pullRequestEvent.getRepository().getFullName());
