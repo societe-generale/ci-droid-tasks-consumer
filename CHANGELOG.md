@@ -5,6 +5,7 @@
 ### Added
 
 ### Changed
+- upgrading to Spring Boot 2.2.x and Spring Cloud Hoxton SR3
 
 ### Deprecated
 
