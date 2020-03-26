@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GlobalProperties;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ import java.util.Optional;
 
 import static feign.FeignException.errorStatus;
 
+@Profile("!gitLab")
 @FeignClient(name = "github", url = "${gitHub.api.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
 public interface FeignRemoteGitHub extends RemoteGitHub {
 
