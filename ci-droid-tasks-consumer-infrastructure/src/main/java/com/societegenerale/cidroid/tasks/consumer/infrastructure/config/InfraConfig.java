@@ -136,18 +136,4 @@ public class InfraConfig {
         return  action -> {actionToPerformListener.onActionToPerform(action);};
     }
 
-
-    @Bean(name = "push-on-default-branch")
-    public Consumer<PushEvent> msgConsumerPush(GithubEventListener actionToPerformListener) {
-
-        return  action -> {actionToPerformListener.onGitHubPushEventOnDefaultBranch(action);};
-    }
-
-
-    @Bean(name = "pull-request-event")
-    public Consumer<PullRequestEvent> msgConsumerPREvent(GithubEventListener actionToPerformListener) {
-
-        return  action -> {actionToPerformListener.onGitHubPullRequestEvent(action);};
-    }
-
 }

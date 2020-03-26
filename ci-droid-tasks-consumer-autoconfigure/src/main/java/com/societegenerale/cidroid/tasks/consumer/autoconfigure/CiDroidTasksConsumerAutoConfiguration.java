@@ -4,6 +4,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.GitRebaser;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.GitWrapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.RestTemplateResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidBehavior;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GitHubConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.GitHubPullRequestCommentNotifier;
@@ -25,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Configuration
-@Import({InfraConfig.class})
+@Import({InfraConfig.class, GitHubConfig.class})
 public class CiDroidTasksConsumerAutoConfiguration {
 
     @Bean
@@ -81,6 +82,14 @@ public class CiDroidTasksConsumerAutoConfiguration {
 
         return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, maxFiles, warningMessage);
 
+    }
+
+    @Bean
+    @ConditionalOnProperty(value = "cidroid-behavior.devStatistics.enabled", havingValue = "true")
+    @AutoConfigureOrder(3)
+    public PullRequestEventHandler devStatistics() {
+
+        return new DevActivityPullRequestEventHandler();
     }
 
     @Bean
