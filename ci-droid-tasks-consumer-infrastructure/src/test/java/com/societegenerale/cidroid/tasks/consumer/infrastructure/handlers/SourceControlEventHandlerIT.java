@@ -1,7 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.GithubEventListener;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.TestConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.YamlFileApplicationContextInitializer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
@@ -27,7 +27,7 @@ import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.Gi
 public abstract class SourceControlEventHandlerIT {
 
     @Autowired
-    protected GithubEventListener githubEventListener;
+    protected SourceControlEventListener sourceControlEventListener;
 
     @Autowired
     protected GitHubMockServer githubMockServer;

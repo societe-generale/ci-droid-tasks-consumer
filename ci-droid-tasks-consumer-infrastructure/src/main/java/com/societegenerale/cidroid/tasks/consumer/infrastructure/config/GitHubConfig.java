@@ -1,6 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.GithubEventListener;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventListener;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 import org.springframework.context.annotation.Bean;
@@ -14,14 +14,14 @@ import java.util.function.Consumer;
 public class GitHubConfig {
 
     @Bean(name = "push-on-default-branch")
-    public Consumer<GitHubPushEvent> msgConsumerPush(GithubEventListener actionToPerformListener) {
+    public Consumer<GitHubPushEvent> msgConsumerPush(SourceControlEventListener actionToPerformListener) {
 
         return  event -> {actionToPerformListener.onGitHubPushEventOnDefaultBranch(event);};
     }
 
 
     @Bean(name = "pull-request-event")
-    public Consumer<PullRequestEvent> msgConsumerPREvent(GithubEventListener actionToPerformListener) {
+    public Consumer<PullRequestEvent> msgConsumerPREvent(SourceControlEventListener actionToPerformListener) {
 
         return  event -> {actionToPerformListener.onGitHubPullRequestEvent(event);};
     }

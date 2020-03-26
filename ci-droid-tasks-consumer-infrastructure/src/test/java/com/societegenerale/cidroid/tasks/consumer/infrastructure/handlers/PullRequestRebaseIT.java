@@ -33,7 +33,7 @@ public class PullRequestRebaseIT extends SourceControlEventHandlerIT {
 
         githubMockServer.updatePullRequestMergeabilityStatus(MERGEABLE);
 
-        githubEventListener.onGitHubPushEventOnDefaultBranch(pushEvent);
+        sourceControlEventListener.onGitHubPushEventOnDefaultBranch(pushEvent);
 
         String expectedComment = "CI-droid has rebased below 1 commit(s):\\n" +
                 "- " + COMMIT_ID + " / " + COMMIT_MESSAGE + "\\n";

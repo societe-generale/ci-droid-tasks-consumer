@@ -25,12 +25,12 @@ public class GithubEventListenerTest {
 
     private ClassLoader classLoader = GithubEventListenerTest.class.getClassLoader();
 
-    private GithubEventListener listener;
+    private SourceControlEventListener listener;
 
     @BeforeEach
     public void setUp() {
 
-        listener=new GithubEventListener(mockPushOnDefaultBranchService, mockPullRequestEventService);
+        listener=new SourceControlEventListener(mockPushOnDefaultBranchService, mockPullRequestEventService);
     }
 
     @Test

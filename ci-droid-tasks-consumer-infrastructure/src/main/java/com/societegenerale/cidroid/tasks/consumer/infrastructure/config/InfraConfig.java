@@ -4,7 +4,7 @@ import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.extensions.actionToReplicate.*;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformCommand;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.GithubEventListener;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.*;
@@ -84,10 +84,10 @@ public class InfraConfig {
     }
 
     @Bean
-    public GithubEventListener pushOnMasterListener(PushEventOnDefaultBranchService pushOnDefaultBranchService,
-            PullRequestEventService pullRequestEventService) {
+    public SourceControlEventListener pushOnMasterListener(PushEventOnDefaultBranchService pushOnDefaultBranchService,
+                                                           PullRequestEventService pullRequestEventService) {
 
-        return new GithubEventListener(pushOnDefaultBranchService, pullRequestEventService);
+        return new SourceControlEventListener(pushOnDefaultBranchService, pullRequestEventService);
     }
 
     @Bean

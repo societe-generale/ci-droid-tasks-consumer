@@ -7,13 +7,13 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class GithubEventListener {
+public class SourceControlEventListener {
 
     private PushEventOnDefaultBranchService pushOnDefaultBranchService;
 
     private PullRequestEventService pullRequestEventService;
 
-    public GithubEventListener(PushEventOnDefaultBranchService pushOnDefaultBranchService, PullRequestEventService pullRequestEventService) {
+    public SourceControlEventListener(PushEventOnDefaultBranchService pushOnDefaultBranchService, PullRequestEventService pullRequestEventService) {
         this.pushOnDefaultBranchService = pushOnDefaultBranchService;
         this.pullRequestEventService = pullRequestEventService;
 

@@ -19,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public class GithubEventListenerLIVETest {
 
     @Autowired
-    GithubEventListener githubEventListener;
+    SourceControlEventListener sourceControlEventListener;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -31,7 +31,7 @@ public class GithubEventListenerLIVETest {
 
         PushEvent pushEvent = objectMapper.readValue(pushEventPayload, PushEvent.class);
 
-        githubEventListener.onGitHubPushEventOnDefaultBranch(pushEvent);
+        sourceControlEventListener.onGitHubPushEventOnDefaultBranch(pushEvent);
 
     }
 
