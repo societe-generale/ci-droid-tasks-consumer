@@ -1,9 +1,9 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GlobalProperties;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
-import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import feign.*;
 import feign.codec.ErrorDecoder;
@@ -34,7 +34,7 @@ import static feign.FeignException.errorStatus;
 
 @Profile("!gitLab")
 @FeignClient(name = "github", url = "${gitHub.api.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
-public interface FeignRemoteGitHub extends RemoteGitHub {
+public interface FeignRemoteGitHub extends RemoteSourceControl {
 
     Map<String, String> bodyToClosePR = Collections.singletonMap("state", "closed");
 
@@ -88,7 +88,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
 
     @Override
     default UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
-            throws GitHubAuthorizationException {
+            throws RemoteSourceControlAuthorizationException {
 
         return buildContentClient(repoFullName, path, oauthToken).deleteResource(directCommit);
     }
@@ -106,7 +106,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
 
     @Override
     default UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken) throws
-            GitHubAuthorizationException {
+            RemoteSourceControlAuthorizationException {
 
         return buildContentClient(repoFullName, path, oauthToken).updateContent(directCommit);
 
@@ -139,7 +139,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
 
     @Override
     default Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String oauthToken)
-            throws BranchAlreadyExistsException, GitHubAuthorizationException {
+            throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(oauthToken)
                 .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/git/refs");
@@ -159,7 +159,7 @@ public interface FeignRemoteGitHub extends RemoteGitHub {
 
     @Override
     default PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String oauthToken)
-            throws GitHubAuthorizationException {
+            throws RemoteSourceControlAuthorizationException {
 
         GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(oauthToken)
                 .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/pulls");
@@ -218,22 +218,22 @@ interface ContentClient {
 
     @RequestLine("PUT")
     @Headers("Content-Type: application/json")
-    UpdatedResource updateContent(DirectCommit directCommit) throws GitHubAuthorizationException;
+    UpdatedResource updateContent(DirectCommit directCommit) throws RemoteSourceControlAuthorizationException;
 
     @RequestLine("DELETE")
     @Headers("Content-Type: application/json")
-    UpdatedResource deleteResource(DirectCommit directCommit) throws GitHubAuthorizationException;
+    UpdatedResource deleteResource(DirectCommit directCommit) throws RemoteSourceControlAuthorizationException;
 }
 
 interface GitReferenceClient {
 
     @RequestLine("POST")
     @Headers("Content-Type: application/json")
-    Reference createBranch(FeignRemoteGitHub.InputRef inputRef) throws BranchAlreadyExistsException, GitHubAuthorizationException;
+    Reference createBranch(FeignRemoteGitHub.InputRef inputRef) throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException;
 
     @RequestLine("POST")
     @Headers("Content-Type: application/json")
-    PullRequest createPullRequest(PullRequestToCreate newPr) throws GitHubAuthorizationException;
+    PullRequest createPullRequest(PullRequestToCreate newPr) throws RemoteSourceControlAuthorizationException;
 
     @RequestLine("GET")
     @Headers("Content-Type: application/json")
@@ -277,7 +277,7 @@ class BranchCreationErrorDecoder implements ErrorDecoder {
         }
 
         if (response.status() == 401) {
-            return new GitHubAuthorizationException("Issue with credentials provided : " + response.reason());
+            return new RemoteSourceControlAuthorizationException("Issue with credentials provided : " + response.reason());
         }
 
         return errorStatus(methodKey, response);
@@ -291,7 +291,7 @@ class UpdateContentErrorDecoder implements ErrorDecoder {
     public Exception decode(String methodKey, Response response) {
 
         if (response.status() == 401) {
-            return new GitHubAuthorizationException("Issue with credentials provided : " + response.reason());
+            return new RemoteSourceControlAuthorizationException("Issue with credentials provided : " + response.reason());
         }
 
         return errorStatus(methodKey, response);

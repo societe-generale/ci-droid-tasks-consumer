@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class PushEventOnDefaultBranchService {
 
-    private RemoteGitHub gitHub;
+    private RemoteSourceControl gitHub;
 
     private List<PushEventOnDefaultBranchHandler> actionHandlers;
 
@@ -28,7 +28,7 @@ public class PushEventOnDefaultBranchService {
     @Setter
     private int maxRetriesForMergeableStatus = 10;
 
-    public PushEventOnDefaultBranchService(RemoteGitHub gitHub, List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers) {
+    public PushEventOnDefaultBranchService(RemoteSourceControl gitHub, List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers) {
 
         this.gitHub = gitHub;
         this.actionHandlers = pushEventOnDefaultBranchHandlers;

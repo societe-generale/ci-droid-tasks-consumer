@@ -1,6 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.model.DateProvider;
 import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
@@ -17,15 +17,15 @@ import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.Mon
 @Slf4j
 public class PullRequestCleaningHandler implements PushEventOnDefaultBranchHandler {
 
-    private RemoteGitHub remoteGitHub;
+    private RemoteSourceControl remoteSourceControl;
     private DateProvider dateProvider;
 
     private int prAgeLimitInDays;
 
-    public PullRequestCleaningHandler(RemoteGitHub remoteGitHub,
+    public PullRequestCleaningHandler(RemoteSourceControl remoteSourceControl,
                                       DateProvider dateProvider,
                                       int prAgeLimitInDays) {
-        this.remoteGitHub = remoteGitHub;
+        this.remoteSourceControl = remoteSourceControl;
         this.dateProvider = dateProvider;
         this.prAgeLimitInDays = prAgeLimitInDays;
     }
@@ -46,7 +46,7 @@ public class PullRequestCleaningHandler implements PushEventOnDefaultBranchHandl
     }
 
     private void closePullRequest(String repoFullName, PullRequest pullRequest) {
-        remoteGitHub.closePullRequest(repoFullName, pullRequest.getNumber());
+        remoteSourceControl.closePullRequest(repoFullName, pullRequest.getNumber());
 
         Event techEvent = Event.technical(OLD_PR_CLOSED);
         techEvent.addAttribute(REPO, repoFullName);

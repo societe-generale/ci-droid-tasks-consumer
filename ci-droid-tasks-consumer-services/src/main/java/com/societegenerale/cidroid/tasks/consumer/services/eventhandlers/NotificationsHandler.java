@@ -1,6 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
@@ -22,11 +22,11 @@ import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Noti
 @Slf4j
 public class NotificationsHandler implements PushEventOnDefaultBranchHandler {
 
-    private RemoteGitHub gitHub;
+    private RemoteSourceControl gitHub;
 
     private List<Notifier> notifiers;
 
-    public NotificationsHandler(RemoteGitHub gitHub, List<Notifier> notifiers) {
+    public NotificationsHandler(RemoteSourceControl gitHub, List<Notifier> notifiers) {
 
         this.gitHub = gitHub;
         this.notifiers = notifiers;

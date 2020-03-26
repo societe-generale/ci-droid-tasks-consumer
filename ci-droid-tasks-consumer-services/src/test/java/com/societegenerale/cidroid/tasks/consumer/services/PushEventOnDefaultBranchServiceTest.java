@@ -37,7 +37,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
     private static final String SINGLE_PULL_REQUEST_JSON = "/singlePullRequest.json";
 
-    private final RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
+    private final RemoteSourceControl mockRemoteSourceControl = mock(RemoteSourceControl.class);
 
     private final PushEventOnDefaultBranchHandler mockPushEventOnDefaultBranchHandler = mock(PushEventOnDefaultBranchHandler.class);
 
@@ -56,7 +56,7 @@ public class PushEventOnDefaultBranchServiceTest {
         List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers = new ArrayList<>();
         pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandler);
 
-        pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteGitHub, pushEventOnDefaultBranchHandlers);
+        pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteSourceControl, pushEventOnDefaultBranchHandlers);
 
         String pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
         pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
@@ -65,13 +65,13 @@ public class PushEventOnDefaultBranchServiceTest {
         String openPrsOnRepoAsString = readFromInputStream(getClass().getResourceAsStream("/pullRequests.json"));
         List<PullRequest> openPrsOnRepo = objectMapper.readValue(openPrsOnRepoAsString, new TypeReference<List<PullRequest>>() {
         });
-        when(mockRemoteGitHub.fetchOpenPullRequests(FULL_REPO_NAME)).thenReturn(openPrsOnRepo);
+        when(mockRemoteSourceControl.fetchOpenPullRequests(FULL_REPO_NAME)).thenReturn(openPrsOnRepo);
 
         String prAsString = readFromInputStream(getClass().getResourceAsStream(SINGLE_PULL_REQUEST_JSON));
         singlePr = objectMapper.readValue(prAsString, PullRequest.class);
-        when(mockRemoteGitHub.fetchPullRequestDetails(FULL_REPO_NAME, PULL_REQUEST_ID)).thenReturn(singlePr);
+        when(mockRemoteSourceControl.fetchPullRequestDetails(FULL_REPO_NAME, PULL_REQUEST_ID)).thenReturn(singlePr);
 
-        when(mockRemoteGitHub.fetchUser("octocat")).thenReturn(new User("octocat", "octocat@github.com"));
+        when(mockRemoteSourceControl.fetchUser("octocat")).thenReturn(new User("octocat", "octocat@github.com"));
 
     }
 
@@ -87,7 +87,7 @@ public class PushEventOnDefaultBranchServiceTest {
         pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandlerThrowingException);
         pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandler);
 
-        pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteGitHub, pushEventOnDefaultBranchHandlers);
+        pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteSourceControl, pushEventOnDefaultBranchHandlers);
 
         pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
 
@@ -100,7 +100,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
         pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
 
-        verify(mockRemoteGitHub, times(1)).fetchOpenPullRequests(FULL_REPO_NAME);
+        verify(mockRemoteSourceControl, times(1)).fetchOpenPullRequests(FULL_REPO_NAME);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
         pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
 
-        verify(mockRemoteGitHub, never()).fetchOpenPullRequests(any(String.class));
+        verify(mockRemoteSourceControl, never()).fetchOpenPullRequests(any(String.class));
     }
 
     @Test
@@ -118,7 +118,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
         pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
 
-        verify(mockRemoteGitHub, times(1)).fetchPullRequestDetails("baxterthehacker/public-repo", PULL_REQUEST_ID);
+        verify(mockRemoteSourceControl, times(1)).fetchPullRequestDetails("baxterthehacker/public-repo", PULL_REQUEST_ID);
     }
 
     @Test
@@ -160,7 +160,7 @@ public class PushEventOnDefaultBranchServiceTest {
         assertThat(prListCaptor.getValue()).containsExactly(singlePr);
         assertThat(gitHubEventCaptor.getValue()).isEqualTo(pushEvent);
 
-        verify(mockRemoteGitHub, atLeast(2)).fetchPullRequestDetails("baxterthehacker/public-repo", PULL_REQUEST_ID);
+        verify(mockRemoteSourceControl, atLeast(2)).fetchPullRequestDetails("baxterthehacker/public-repo", PULL_REQUEST_ID);
 
         executor.shutdownNow();
     }
@@ -170,7 +170,7 @@ public class PushEventOnDefaultBranchServiceTest {
         PullRequest pullRequest = objectMapper.readValue(readFromInputStream(getClass().getResourceAsStream(SINGLE_PULL_REQUEST_JSON)), PullRequest.class);
         pullRequest.setMergeable(pRmergeableStatus.getValue());
 
-        when(mockRemoteGitHub.fetchPullRequestDetails(FULL_REPO_NAME, PULL_REQUEST_ID)).thenReturn(pullRequest);
+        when(mockRemoteSourceControl.fetchPullRequestDetails(FULL_REPO_NAME, PULL_REQUEST_ID)).thenReturn(pullRequest);
     }
 
 }

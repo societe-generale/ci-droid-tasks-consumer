@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
-import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +29,7 @@ import static org.mockserver.model.JsonBody.json;
  * We're not supposed to have too much business logic in the class under test, but this can be useful to verify the payload received on remote github server side,
  * and/or how the feign client behaves depending on various response codes
  */
-public class FeignRemoteGitHubTest {
+public class FeignRemoteSourceControlTest {
 
     @Autowired
     private FeignRemoteGitHub feignRemoteGitHub;
@@ -57,7 +57,7 @@ public class FeignRemoteGitHubTest {
     }
 
     @Test
-    public void PRtitleShouldBeReceivedAsSent() throws GitHubAuthorizationException, JsonProcessingException {
+    public void PRtitleShouldBeReceivedAsSent() throws RemoteSourceControlAuthorizationException, JsonProcessingException {
 
         PullRequestToCreate prToCreate= new PullRequestToCreate();
         prToCreate.setBase("master");

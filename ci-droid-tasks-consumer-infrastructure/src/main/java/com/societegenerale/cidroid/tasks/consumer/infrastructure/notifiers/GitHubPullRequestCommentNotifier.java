@@ -1,6 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
@@ -15,10 +15,10 @@ import java.util.Map;
 @Component
 public class GitHubPullRequestCommentNotifier implements Notifier {
 
-    private RemoteGitHub remoteGitHub;
+    private RemoteSourceControl remoteSourceControl;
 
-    public GitHubPullRequestCommentNotifier(RemoteGitHub remoteGitHub) {
-        this.remoteGitHub = remoteGitHub;
+    public GitHubPullRequestCommentNotifier(RemoteSourceControl remoteSourceControl) {
+        this.remoteSourceControl = remoteSourceControl;
 
     }
 
@@ -27,7 +27,7 @@ public class GitHubPullRequestCommentNotifier implements Notifier {
 
         PullRequest pr=(PullRequest)additionalInfos.get(PULL_REQUEST);
 
-        remoteGitHub.addCommentOnPR(pr.getRepo().getFullName(),pr.getNumber(),new Comment(message.getContent()));
+        remoteSourceControl.addCommentOnPR(pr.getRepo().getFullName(),pr.getNumber(),new Comment(message.getContent()));
 
     }
 

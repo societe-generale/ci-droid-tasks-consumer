@@ -1,6 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
@@ -16,15 +16,15 @@ public class PullRequestSizeCheckHandler implements PullRequestEventHandler {
 
     private final List<Notifier> notifiers;
 
-    private RemoteGitHub remoteGitHub;
+    private RemoteSourceControl remoteSourceControl;
 
     private int maxFilesInPr;
 
     private String maxFilesWarningMessage;
 
-    public PullRequestSizeCheckHandler(List<Notifier> notifiers, RemoteGitHub remoteGitHub, int maxFilesInPr, String maxFilesWarningMessage) {
+    public PullRequestSizeCheckHandler(List<Notifier> notifiers, RemoteSourceControl remoteSourceControl, int maxFilesInPr, String maxFilesWarningMessage) {
         this.notifiers = notifiers;
-        this.remoteGitHub = remoteGitHub;
+        this.remoteSourceControl = remoteSourceControl;
         this.maxFilesInPr = maxFilesInPr;
         this.maxFilesWarningMessage = maxFilesWarningMessage;
     }
@@ -32,11 +32,11 @@ public class PullRequestSizeCheckHandler implements PullRequestEventHandler {
     @Override
     public void handle(PullRequestEvent event) {
 
-        List<PullRequestFile> filesInPr = remoteGitHub.fetchPullRequestFiles(event.getRepository().getFullName(), event.getPrNumber());
-        List<PullRequestComment> existingPrComments = remoteGitHub.fetchPullRequestComments(event.getRepository().getFullName(), event.getPrNumber());
+        List<PullRequestFile> filesInPr = remoteSourceControl.fetchPullRequestFiles(event.getRepository().getFullName(), event.getPrNumber());
+        List<PullRequestComment> existingPrComments = remoteSourceControl.fetchPullRequestComments(event.getRepository().getFullName(), event.getPrNumber());
 
         StringBuilder warning = validateNumberOfFilesInPR(filesInPr.size(), existingPrComments);
-        PullRequest pullRequest = remoteGitHub.fetchPullRequestDetails(event.getRepository().getFullName(), event.getPrNumber());
+        PullRequest pullRequest = remoteSourceControl.fetchPullRequestDetails(event.getRepository().getFullName(), event.getPrNumber());
         notifyWarnings(pullRequest, warning, notifiers);
 
     }

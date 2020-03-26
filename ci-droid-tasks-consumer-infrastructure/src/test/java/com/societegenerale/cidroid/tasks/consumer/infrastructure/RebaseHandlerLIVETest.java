@@ -3,7 +3,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.RebaseHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
@@ -30,7 +30,7 @@ public class RebaseHandlerLIVETest {
     Rebaser rebaser;
 
     @Autowired
-    RemoteGitHub remoteGitHub;
+    RemoteSourceControl remoteSourceControl;
 
     PullRequest singlePr;
 
@@ -52,7 +52,7 @@ public class RebaseHandlerLIVETest {
 
         pushEvent = objectMapper.readValue(pushEventPayload, PushEvent.class);
 
-        rebaseHandler = new RebaseHandler(rebaser, remoteGitHub);
+        rebaseHandler = new RebaseHandler(rebaser, remoteSourceControl);
     }
 
     @Test

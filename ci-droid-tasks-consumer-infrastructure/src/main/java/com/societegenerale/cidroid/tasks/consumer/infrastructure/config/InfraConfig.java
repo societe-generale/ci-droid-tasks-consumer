@@ -78,9 +78,9 @@ public class InfraConfig {
 
     @Bean
     public ActionToPerformListener actionToPerformListener(ActionToPerformService actionToPerformService,
-            List<ActionToReplicate> actionsToReplicate, RemoteGitHub remoteGitHub,ActionNotifier actionNotifier) {
+                                                           List<ActionToReplicate> actionsToReplicate, RemoteSourceControl remoteSourceControl, ActionNotifier actionNotifier) {
 
-        return new ActionToPerformListener(actionToPerformService, actionsToReplicate,remoteGitHub,actionNotifier);
+        return new ActionToPerformListener(actionToPerformService, actionsToReplicate, remoteSourceControl,actionNotifier);
     }
 
     @Bean
@@ -91,10 +91,10 @@ public class InfraConfig {
     }
 
     @Bean
-    public PushEventOnDefaultBranchService pushOnMasterService(RemoteGitHub remoteGitHub,
-            List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers) {
+    public PushEventOnDefaultBranchService pushOnMasterService(RemoteSourceControl remoteSourceControl,
+                                                               List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers) {
 
-        return new PushEventOnDefaultBranchService(remoteGitHub, pushEventOnDefaultBranchHandlers);
+        return new PushEventOnDefaultBranchService(remoteSourceControl, pushEventOnDefaultBranchHandlers);
     }
 
     @Bean
@@ -109,10 +109,10 @@ public class InfraConfig {
     }
 
     @Bean
-    public ActionToPerformService actionToPerformService(RemoteGitHub remoteGitHub,
-            ActionNotificationService notificationService) {
+    public ActionToPerformService actionToPerformService(RemoteSourceControl remoteSourceControl,
+                                                         ActionNotificationService notificationService) {
 
-        return new ActionToPerformService(remoteGitHub, notificationService);
+        return new ActionToPerformService(remoteSourceControl, notificationService);
     }
 
     @Bean

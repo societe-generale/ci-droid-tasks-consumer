@@ -7,7 +7,7 @@ import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubIntera
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAction;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
-import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
@@ -23,12 +23,12 @@ import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.Mon
 @Slf4j
 public class ActionToPerformService {
 
-    private RemoteGitHub remoteGitHub;
+    private RemoteSourceControl remoteSourceControl;
 
     private ActionNotificationService actionNotificationService;
 
-    public ActionToPerformService(RemoteGitHub remoteGitHub, ActionNotificationService actionNotificationService) {
-        this.remoteGitHub = remoteGitHub;
+    public ActionToPerformService(RemoteSourceControl remoteSourceControl, ActionNotificationService actionNotificationService) {
+        this.remoteSourceControl = remoteSourceControl;
         this.actionNotificationService = actionNotificationService;
     }
 
@@ -53,7 +53,7 @@ public class ActionToPerformService {
 
                 PullRequestGitHubInteraction pullRequestAction = (PullRequestGitHubInteraction) action.getGitHubInteraction();
 
-                Optional<Repository> optionalImpactedRepo = remoteGitHub.fetchRepository(repoFullName);
+                Optional<Repository> optionalImpactedRepo = remoteSourceControl.fetchRepository(repoFullName);
 
                 //if repo doesn't exist, notify
                 if(!optionalImpactedRepo.isPresent()){
@@ -67,19 +67,19 @@ public class ActionToPerformService {
 
                 String branchFromWhichToCreatePrBranch= resourceToUpdate.getBranchName() == null ? impactedRepo.getDefaultBranch() : resourceToUpdate.getBranchName();
 
-                Reference masterCommitReference = remoteGitHub.fetchHeadReferenceFrom(repoFullName,branchFromWhichToCreatePrBranch );
+                Reference masterCommitReference = remoteSourceControl.fetchHeadReferenceFrom(repoFullName,branchFromWhichToCreatePrBranch );
 
                 Reference branchToUseForPr = null;
 
                 try {
-                    branchToUseForPr = remoteGitHub.createBranch(repoFullName, branchNameForPR, masterCommitReference.getObject().getSha(),
+                    branchToUseForPr = remoteSourceControl.createBranch(repoFullName, branchNameForPR, masterCommitReference.getObject().getSha(),
                             action.getGitHubOauthToken());
                 } catch (BranchAlreadyExistsException e) {
 
                     log.warn("branch " + branchNameForPR + " already exists, reusing it");
 
                     //TODO maybe we should add field in Reference to identify when it hasn't been created as expected
-                    branchToUseForPr = remoteGitHub.fetchHeadReferenceFrom(repoFullName, branchNameForPR);
+                    branchToUseForPr = remoteSourceControl.fetchHeadReferenceFrom(repoFullName, branchNameForPR);
                 }
 
                 UpdatedResource updatedResource;
@@ -103,7 +103,7 @@ public class ActionToPerformService {
                 log.warn("unknown gitHub interaction type : {}", action.getGitHubInteraction());
             }
 
-        } catch (GitHubAuthorizationException e) {
+        } catch (RemoteSourceControlAuthorizationException e) {
             log.warn("Github authorization problem while processing "+action,e);
             actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_AUTHENTICATION_ISSUE));
         }
@@ -144,16 +144,16 @@ public class ActionToPerformService {
 
     private Optional<PullRequest> findExistingOpenPRforBranch(Repository repo, Reference prBranch) {
 
-        List<PullRequest> openPRs=remoteGitHub.fetchOpenPullRequests(repo.getFullName());
+        List<PullRequest> openPRs= remoteSourceControl.fetchOpenPullRequests(repo.getFullName());
 
         return openPRs.stream().filter(pr -> pr.doneOnBranch(prBranch.getBranchName())).findAny();
 
     }
 
     private UpdatedResource updateRemoteResource(String repoFullName, ResourceToUpdate resourceToUpdate, BulkActionToPerform action,
-            String onBranch) throws GitHubAuthorizationException {
+            String onBranch) throws RemoteSourceControlAuthorizationException {
 
-        ResourceContent existingResourceContent = remoteGitHub
+        ResourceContent existingResourceContent = remoteSourceControl
                 .fetchContent(repoFullName, resourceToUpdate.getFilePathOnRepo(), onBranch);
 
         if(action.getActionToReplicate() instanceof DeleteResourceAction){
@@ -211,11 +211,11 @@ public class ActionToPerformService {
 
     }
 
-    private UpdatedResource deleteResource(BulkActionToPerform action, ResourceToUpdate resourceToDelete, ResourceContent existingResourceContent, String onBranch) throws GitHubAuthorizationException {
+    private UpdatedResource deleteResource(BulkActionToPerform action, ResourceToUpdate resourceToDelete, ResourceContent existingResourceContent, String onBranch) throws RemoteSourceControlAuthorizationException {
 
         DirectCommit directCommit = buildDirectCommit(action,existingResourceContent, onBranch);
 
-        UpdatedResource updatedResource = remoteGitHub
+        UpdatedResource updatedResource = remoteSourceControl
                 .deleteContent(resourceToDelete.getRepoFullName(), resourceToDelete.getFilePathOnRepo(), directCommit,
                         action.getGitHubOauthToken());
 
@@ -259,13 +259,13 @@ public class ActionToPerformService {
     }
 
     private UpdatedResource commitResource(BulkActionToPerform action, String newContent, ResourceToUpdate resourceToUpdate,
-            ResourceContent existingResourceContent, String onBranch) throws GitHubAuthorizationException {
+            ResourceContent existingResourceContent, String onBranch) throws RemoteSourceControlAuthorizationException {
 
         DirectCommit directCommit = buildDirectCommit(action,existingResourceContent, onBranch);
 
         directCommit.setBase64EncodedContent(GitHubContentBase64codec.encode(newContent));
 
-        UpdatedResource updatedResource = remoteGitHub
+        UpdatedResource updatedResource = remoteSourceControl
                 .updateContent(resourceToUpdate.getRepoFullName(), resourceToUpdate.getFilePathOnRepo(), directCommit,
                         action.getGitHubOauthToken());
 
@@ -328,9 +328,9 @@ public class ActionToPerformService {
         newPr.setBody("performed on behalf of " + action.getUserRequestingAction().getLogin() + " by CI-droid\n\n" + action.getCommitMessage());
 
         try{
-            return Optional.of(remoteGitHub.createPullRequest(impactedRepo.getFullName(), newPr, action.getGitHubOauthToken()));
+            return Optional.of(remoteSourceControl.createPullRequest(impactedRepo.getFullName(), newPr, action.getGitHubOauthToken()));
         }
-        catch(GitHubAuthorizationException e){
+        catch(RemoteSourceControlAuthorizationException e){
             log.warn("issue while creating the PR",e);
             return Optional.empty();
         }

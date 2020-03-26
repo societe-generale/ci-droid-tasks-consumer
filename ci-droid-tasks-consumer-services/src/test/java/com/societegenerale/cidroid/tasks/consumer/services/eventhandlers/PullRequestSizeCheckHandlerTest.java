@@ -1,6 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
@@ -25,14 +25,14 @@ public class PullRequestSizeCheckHandlerTest {
 
     private final Notifier mockNotifier = mock(Notifier.class);
 
-    private final RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
+    private final RemoteSourceControl mockRemoteSourceControl = mock(RemoteSourceControl.class);
 
     private final int maxFilesInPR = 5;
 
     private final String maxFilesInPRExceededWarningMessage = "The PR should not have more than {0} files";
 
     private final PullRequestSizeCheckHandler handler = new PullRequestSizeCheckHandler(singletonList(mockNotifier),
-            mockRemoteGitHub, maxFilesInPR, maxFilesInPRExceededWarningMessage);
+            mockRemoteSourceControl, maxFilesInPR, maxFilesInPRExceededWarningMessage);
 
     private final ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
 
@@ -76,12 +76,12 @@ public class PullRequestSizeCheckHandlerTest {
                 new User("someLogin", "firstName.lastName@domain.com"));
 
         List<PullRequestComment> existingPRcomments = singletonList(existingPrComment);
-        when(mockRemoteGitHub.fetchPullRequestComments(REPO_FULL_NAME, 123)).thenReturn(existingPRcomments);
+        when(mockRemoteSourceControl.fetchPullRequestComments(REPO_FULL_NAME, 123)).thenReturn(existingPRcomments);
     }
 
 
     private void returnMoreThanConfiguredMaxFilesInPRFilesWhenFetchPullRequestFiles() {
-        when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123)).thenReturn(
+        when(mockRemoteSourceControl.fetchPullRequestFiles(REPO_FULL_NAME, 123)).thenReturn(
                 asList(createPullRequestFile("MyClass1.java"), createPullRequestFile("MyClass2.java")
                         , createPullRequestFile("MyClass3.java"), createPullRequestFile("MyClass4.java")
                         , createPullRequestFile("MyClass5.java"), createPullRequestFile("MyClass6.java")));

@@ -2,7 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
 import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
@@ -19,9 +19,9 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 public class RebaseHandler implements PushEventOnDefaultBranchHandler {
 
     private Rebaser rebaser;
-    private RemoteGitHub gitHub;
+    private RemoteSourceControl gitHub;
 
-    public RebaseHandler(Rebaser rebaser,RemoteGitHub gitHub) {
+    public RebaseHandler(Rebaser rebaser, RemoteSourceControl gitHub) {
         this.rebaser = rebaser;
         this.gitHub=gitHub;
     }

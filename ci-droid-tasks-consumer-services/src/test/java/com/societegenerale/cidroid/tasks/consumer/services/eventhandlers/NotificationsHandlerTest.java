@@ -1,7 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
@@ -27,7 +27,7 @@ public class NotificationsHandlerTest {
 
     private static final int PULL_REQUEST_ID = 1347;
 
-    private final RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
+    private final RemoteSourceControl mockRemoteSourceControl = mock(RemoteSourceControl.class);
 
     private final Notifier mockNotifier = mock(Notifier.class);
 
@@ -48,9 +48,9 @@ public class NotificationsHandlerTest {
         String pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
         pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
 
-        when(mockRemoteGitHub.fetchUser("octocat")).thenReturn(new User("octocat", "octocat@github.com"));
+        when(mockRemoteSourceControl.fetchUser("octocat")).thenReturn(new User("octocat", "octocat@github.com"));
 
-        notificationsHandler = new NotificationsHandler(mockRemoteGitHub, singletonList(mockNotifier));
+        notificationsHandler = new NotificationsHandler(mockRemoteSourceControl, singletonList(mockNotifier));
     }
 
 

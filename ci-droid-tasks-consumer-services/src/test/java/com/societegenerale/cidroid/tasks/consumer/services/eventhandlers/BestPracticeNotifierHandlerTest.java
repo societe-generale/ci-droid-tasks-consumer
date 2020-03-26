@@ -4,7 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
@@ -37,12 +37,12 @@ public class BestPracticeNotifierHandlerTest {
 
     private final Notifier mockNotifier = mock(Notifier.class);
 
-    private final RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
+    private final RemoteSourceControl mockRemoteSourceControl = mock(RemoteSourceControl.class);
 
     private final Map<String, String> patternToContentMapping = new HashMap<>();
 
     private final BestPracticeNotifierHandler handler = new BestPracticeNotifierHandler(
-            patternToContentMapping, singletonList(mockNotifier), mockRemoteGitHub, mockResourceFetcher);
+            patternToContentMapping, singletonList(mockNotifier), mockRemoteSourceControl, mockResourceFetcher);
 
     private final ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
 
@@ -94,7 +94,7 @@ public class BestPracticeNotifierHandlerTest {
         PullRequestFile anotherMatchingPullRequestFile = new PullRequestFile();
         anotherMatchingPullRequestFile.setFilename("myModule/src/main/java/org/myPackage/CoucouDto.java");
 
-        when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123))
+        when(mockRemoteSourceControl.fetchPullRequestFiles(REPO_FULL_NAME, 123))
                 .thenReturn(asList(matchingPullRequestFile, anotherMatchingPullRequestFile));
         when(mockResourceFetcher.fetch("http://someUrl/noDtoBestPractice.md")).thenReturn(Optional.of("Don't name java object with DTO suffix"));
 
@@ -158,7 +158,7 @@ public class BestPracticeNotifierHandlerTest {
         PullRequestFile secondMatchingPullRequestFile = new PullRequestFile();
         secondMatchingPullRequestFile.setFilename(secondMatchingFileNameOnWhichTheresNoCommentYet);
 
-        when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123))
+        when(mockRemoteSourceControl.fetchPullRequestFiles(REPO_FULL_NAME, 123))
                 .thenReturn(asList(matchingPullRequestFile, secondMatchingPullRequestFile));
 
         returnExistingComment("some comments about " + MATCHING_FILENAME);
@@ -179,12 +179,12 @@ public class BestPracticeNotifierHandlerTest {
                 new User("someLogin", "firstName.lastName@domain.com"));
 
         List<PullRequestComment> existingPRcomments = singletonList(existingPrComment);
-        when(mockRemoteGitHub.fetchPullRequestComments(REPO_FULL_NAME, 123)).thenReturn(existingPRcomments);
+        when(mockRemoteSourceControl.fetchPullRequestComments(REPO_FULL_NAME, 123)).thenReturn(existingPRcomments);
     }
 
 
     private void returnMatchingPullRequestFileWhenFetchPullRequestFiles() {
-        when(mockRemoteGitHub.fetchPullRequestFiles(REPO_FULL_NAME, 123)).thenReturn(singletonList(matchingPullRequestFile));
+        when(mockRemoteSourceControl.fetchPullRequestFiles(REPO_FULL_NAME, 123)).thenReturn(singletonList(matchingPullRequestFile));
     }
 
 }
