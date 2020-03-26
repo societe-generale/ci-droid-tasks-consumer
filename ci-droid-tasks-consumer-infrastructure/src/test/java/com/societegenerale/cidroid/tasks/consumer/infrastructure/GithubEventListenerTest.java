@@ -40,10 +40,10 @@ public class GithubEventListenerTest {
 
         PushEvent pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
 
-        listener.onGitHubPushEventOnDefaultBranch(pushEvent);
+        listener.onPushEventOnDefaultBranch(pushEvent);
 
-        verify(mockPushOnDefaultBranchService,times(1)).onGitHubPushEvent(pushEvent);
-        verify(mockPullRequestEventService,never()).onGitHubPullRequestEvent(any(PullRequestEvent.class));
+        verify(mockPushOnDefaultBranchService,times(1)).onPushEvent(pushEvent);
+        verify(mockPullRequestEventService,never()).onPullRequestEvent(any(PullRequestEvent.class));
 
     }
 
@@ -55,9 +55,9 @@ public class GithubEventListenerTest {
         PullRequestEvent pullRequestEvent= objectMapper.readValue(pullRequestEventPayload, GitHubPullRequestEvent.class);
 
 
-        listener.onGitHubPullRequestEvent(pullRequestEvent);
+        listener.onPullRequestEvent(pullRequestEvent);
 
-        verify(mockPushOnDefaultBranchService,never()).onGitHubPushEvent(any(PushEvent.class));
-        verify(mockPullRequestEventService,times(1)).onGitHubPullRequestEvent(pullRequestEvent);
+        verify(mockPushOnDefaultBranchService,never()).onPushEvent(any(PushEvent.class));
+        verify(mockPullRequestEventService,times(1)).onPullRequestEvent(pullRequestEvent);
     }
 }

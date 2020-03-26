@@ -37,7 +37,7 @@ public class PullRequestEventServiceTest {
     @Test
     public void shouldProcessPullRequestEventsThatAre_Opened() {
 
-        pullRequestEventService.onGitHubPullRequestEvent(pullRequestEvent);
+        pullRequestEventService.onPullRequestEvent(pullRequestEvent);
 
         verify(mockHandler, times(1)).handle(pullRequestEvent);
 
@@ -48,7 +48,7 @@ public class PullRequestEventServiceTest {
 
         pullRequestEvent.setAction("synchronize");
 
-        pullRequestEventService.onGitHubPullRequestEvent(pullRequestEvent);
+        pullRequestEventService.onPullRequestEvent(pullRequestEvent);
 
         verify(mockHandler, times(1)).handle(pullRequestEvent);
 
@@ -59,7 +59,7 @@ public class PullRequestEventServiceTest {
 
         pullRequestEvent.setAction("assigned");
 
-        pullRequestEventService.onGitHubPullRequestEvent(pullRequestEvent);
+        pullRequestEventService.onPullRequestEvent(pullRequestEvent);
 
         verify(mockHandler, never()).handle(pullRequestEvent);
 

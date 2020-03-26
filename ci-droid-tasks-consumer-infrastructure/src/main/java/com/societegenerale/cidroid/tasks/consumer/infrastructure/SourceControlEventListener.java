@@ -19,22 +19,22 @@ public class SourceControlEventListener {
 
     }
 
-    public void onGitHubPushEventOnDefaultBranch(PushEvent pushEvent) {
+    public void onPushEventOnDefaultBranch(PushEvent pushEvent) {
 
         try {
             log.info("received event on branch {} for repo {}", pushEvent.getRef(), pushEvent.getRepository().getFullName());
 
-            pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
+            pushOnDefaultBranchService.onPushEvent(pushEvent);
         } catch (Exception e) {
             log.warn("problem while processing the event {}", pushEvent, e);
         }
     }
 
-    public void onGitHubPullRequestEvent(PullRequestEvent pullRequestEvent) {
+    public void onPullRequestEvent(PullRequestEvent pullRequestEvent) {
 
         log.info("received pullRequest event of type {} for repo {}",pullRequestEvent.getAction(),pullRequestEvent.getRepository().getFullName());
 
-        pullRequestEventService.onGitHubPullRequestEvent(pullRequestEvent);
+        pullRequestEventService.onPullRequestEvent(pullRequestEvent);
 
     }
 

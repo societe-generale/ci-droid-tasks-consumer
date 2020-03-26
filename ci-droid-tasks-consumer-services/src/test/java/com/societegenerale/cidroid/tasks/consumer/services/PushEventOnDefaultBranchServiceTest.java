@@ -89,7 +89,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
         pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteSourceControl, pushEventOnDefaultBranchHandlers);
 
-        pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
+        pushOnDefaultBranchService.onPushEvent(pushEvent);
 
         verify(mockPushEventOnDefaultBranchHandler,times(1)).handle(any(SourceControlEvent.class),anyList());
 
@@ -98,7 +98,7 @@ public class PushEventOnDefaultBranchServiceTest {
     @Test
     public void shouldRequestAllOpenPRsWhenPushOnDefaultBranch() {
 
-        pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
+        pushOnDefaultBranchService.onPushEvent(pushEvent);
 
         verify(mockRemoteSourceControl, times(1)).fetchOpenPullRequests(FULL_REPO_NAME);
     }
@@ -108,7 +108,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
         pushEvent.setRef("someOtherBranch");
 
-        pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
+        pushOnDefaultBranchService.onPushEvent(pushEvent);
 
         verify(mockRemoteSourceControl, never()).fetchOpenPullRequests(any(String.class));
     }
@@ -116,7 +116,7 @@ public class PushEventOnDefaultBranchServiceTest {
     @Test
     public void shouldRequestOpenPRDetailsWhenPushOnDefaultBranch() {
 
-        pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
+        pushOnDefaultBranchService.onPushEvent(pushEvent);
 
         verify(mockRemoteSourceControl, times(1)).fetchPullRequestDetails("baxterthehacker/public-repo", PULL_REQUEST_ID);
     }
@@ -124,7 +124,7 @@ public class PushEventOnDefaultBranchServiceTest {
     @Test
     public void shouldApplyActionHandlersForRepository(){
 
-        pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
+        pushOnDefaultBranchService.onPushEvent(pushEvent);
 
         verify(mockPushEventOnDefaultBranchHandler,times(1)).handle(eq(pushEvent),anyList());
 
@@ -149,7 +149,7 @@ public class PushEventOnDefaultBranchServiceTest {
         });
         System.out.println("submitted task to update PR merge status shortly...");
 
-        pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
+        pushOnDefaultBranchService.onPushEvent(pushEvent);
 
         ArgumentCaptor<List<PullRequest>> prListCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<SourceControlEvent> gitHubEventCaptor = ArgumentCaptor.forClass(SourceControlEvent.class);

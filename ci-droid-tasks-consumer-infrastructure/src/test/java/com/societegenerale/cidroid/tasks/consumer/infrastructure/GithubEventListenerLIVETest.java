@@ -31,7 +31,7 @@ public class GithubEventListenerLIVETest {
 
         PushEvent pushEvent = objectMapper.readValue(pushEventPayload, PushEvent.class);
 
-        sourceControlEventListener.onGitHubPushEventOnDefaultBranch(pushEvent);
+        sourceControlEventListener.onPushEventOnDefaultBranch(pushEvent);
 
     }
 

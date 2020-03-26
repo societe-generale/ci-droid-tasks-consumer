@@ -24,7 +24,7 @@ public class PullRequestEventService {
         this.actionHandlers = actionHandlers;
     }
 
-    public void onGitHubPullRequestEvent(PullRequestEvent pullRequestEvent) {
+    public void onPullRequestEvent(PullRequestEvent pullRequestEvent) {
 
         if (!acceptedPullRequestEventType.contains(pullRequestEvent.getAction())) {
             log.debug("not processing pullRequest event of type {}", pullRequestEvent.getAction());

@@ -34,7 +34,7 @@ public class PushEventOnDefaultBranchService {
         this.actionHandlers = pushEventOnDefaultBranchHandlers;
     }
 
-    public void onGitHubPushEvent(PushEvent pushEvent) {
+    public void onPushEvent(PushEvent pushEvent) {
 
         if (shouldNotProcess(pushEvent)) {
             return;
