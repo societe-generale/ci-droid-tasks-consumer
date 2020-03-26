@@ -4,14 +4,12 @@ import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.extensions.actionToReplicate.*;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformCommand;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.GithubEventListener;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.*;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventOnDefaultBranchHandler;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -80,9 +78,9 @@ public class InfraConfig {
 
     @Bean
     public ActionToPerformListener actionToPerformListener(ActionToPerformService actionToPerformService,
-            List<ActionToReplicate> actionsToReplicate, RemoteGitHub remoteGitHub,ActionNotifier actionNotifier) {
+                                                           List<ActionToReplicate> actionsToReplicate, RemoteSourceControl remoteSourceControl, ActionNotifier actionNotifier) {
 
-        return new ActionToPerformListener(actionToPerformService, actionsToReplicate,remoteGitHub,actionNotifier);
+        return new ActionToPerformListener(actionToPerformService, actionsToReplicate, remoteSourceControl,actionNotifier);
     }
 
     @Bean
@@ -93,10 +91,10 @@ public class InfraConfig {
     }
 
     @Bean
-    public PushEventOnDefaultBranchService pushOnMasterService(RemoteGitHub remoteGitHub,
-            List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers) {
+    public PushEventOnDefaultBranchService pushOnMasterService(RemoteSourceControl remoteSourceControl,
+                                                               List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers) {
 
-        return new PushEventOnDefaultBranchService(remoteGitHub, pushEventOnDefaultBranchHandlers);
+        return new PushEventOnDefaultBranchService(remoteSourceControl, pushEventOnDefaultBranchHandlers);
     }
 
     @Bean
@@ -111,10 +109,10 @@ public class InfraConfig {
     }
 
     @Bean
-    public ActionToPerformService actionToPerformService(RemoteGitHub remoteGitHub,
-            ActionNotificationService notificationService) {
+    public ActionToPerformService actionToPerformService(RemoteSourceControl remoteSourceControl,
+                                                         ActionNotificationService notificationService) {
 
-        return new ActionToPerformService(remoteGitHub, notificationService);
+        return new ActionToPerformService(remoteSourceControl, notificationService);
     }
 
     @Bean
@@ -134,20 +132,6 @@ public class InfraConfig {
     public Consumer<ActionToPerformCommand> msgConsumer(ActionToPerformListener actionToPerformListener) {
 
         return  action -> {actionToPerformListener.onActionToPerform(action);};
-    }
-
-
-    @Bean(name = "push-on-default-branch")
-    public Consumer<PushEvent> msgConsumerPush(GithubEventListener actionToPerformListener) {
-
-        return  action -> {actionToPerformListener.onGitHubPushEventOnDefaultBranch(action);};
-    }
-
-
-    @Bean(name = "pull-request-event")
-    public Consumer<PullRequestEvent> msgConsumerPREvent(GithubEventListener actionToPerformListener) {
-
-        return  action -> {actionToPerformListener.onGitHubPullRequestEvent(action);};
     }
 
 }

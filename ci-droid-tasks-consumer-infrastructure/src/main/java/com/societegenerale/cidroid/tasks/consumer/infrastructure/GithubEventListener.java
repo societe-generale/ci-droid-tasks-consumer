@@ -2,8 +2,8 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventOnDefaultBranchService;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

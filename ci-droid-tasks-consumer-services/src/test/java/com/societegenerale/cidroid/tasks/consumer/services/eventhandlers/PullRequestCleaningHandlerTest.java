@@ -3,10 +3,11 @@ package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.model.DateProvider;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.TestAppender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ public class PullRequestCleaningHandlerTest {
     private static final int PULL_REQUEST_NUMBER = 7;
 
     private PullRequestCleaningHandler pullRequestCleaningHandler;
-    private RemoteGitHub remoteGitHub;
+    private RemoteSourceControl remoteSourceControl;
     private DateProvider dateProvider;
     private PushEvent pushEvent;
 
@@ -36,18 +37,18 @@ public class PullRequestCleaningHandlerTest {
 
     @BeforeEach
     public void setUp() throws IOException {
-        remoteGitHub = mock(RemoteGitHub.class);
+        remoteSourceControl = mock(RemoteSourceControl.class);
 
         dateProvider = () -> LocalDateTime.of(2018, 12, 23, 16, 0, 0);
 
         pullRequestCleaningHandler = new PullRequestCleaningHandler(
-                remoteGitHub,
+                remoteSourceControl,
                 dateProvider,
                 PR_AGE_LIMIT_IN_DAYS
         );
 
         String pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
-        pushEvent = new ObjectMapper().readValue(pushEventPayload, PushEvent.class);
+        pushEvent = new ObjectMapper().readValue(pushEventPayload, GitHubPushEvent.class);
 
         LoggerContext logCtx = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger log = logCtx.getLogger("Main");
@@ -63,7 +64,7 @@ public class PullRequestCleaningHandlerTest {
         pullRequestCleaningHandler.handle(pushEvent, Collections.singletonList(oldPullRequest));
 
         String expectedRepositoryName = pushEvent.getRepository().getFullName();
-        verify(remoteGitHub, times(1))
+        verify(remoteSourceControl, times(1))
                 .closePullRequest(expectedRepositoryName, PULL_REQUEST_NUMBER);
 
         assertThat(testAppender.events.stream()
@@ -80,7 +81,7 @@ public class PullRequestCleaningHandlerTest {
 
         pullRequestCleaningHandler.handle(pushEvent, Collections.singletonList(recentPullRequest));
 
-        verifyZeroInteractions(remoteGitHub);
+        verifyZeroInteractions(remoteSourceControl);
 
         assertThat(testAppender.events.stream()
                                       .filter(logEvent -> logEvent.getMDCPropertyMap().getOrDefault("metricName", "NOT_FOUND").equals(OLD_PR_CLOSED))

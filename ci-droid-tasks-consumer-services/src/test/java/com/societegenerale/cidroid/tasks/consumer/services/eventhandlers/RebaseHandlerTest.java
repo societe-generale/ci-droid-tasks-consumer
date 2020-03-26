@@ -4,10 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestMatcher;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +30,7 @@ public class RebaseHandlerTest {
     private static final String SINGLE_PULL_REQUEST_JSON = "/singlePullRequest.json";
     private static final int PULL_REQUEST_NUMBER = 1347;
 
-    private RemoteGitHub mockRemoteGitHub = mock(RemoteGitHub.class);
+    private RemoteSourceControl mockRemoteSourceControl = mock(RemoteSourceControl.class);
 
     private Rebaser mockRebaser = mock(Rebaser.class);
 
@@ -48,9 +49,9 @@ public class RebaseHandlerTest {
         singlePr = objectMapper.readValue(prAsString, PullRequest.class);
 
         String pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
-        pushEvent = objectMapper.readValue(pushEventPayload, PushEvent.class);
+        pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
 
-        rebaseHandler = new RebaseHandler(mockRebaser, mockRemoteGitHub);
+        rebaseHandler = new RebaseHandler(mockRebaser, mockRemoteSourceControl);
     }
 
 
@@ -71,7 +72,7 @@ public class RebaseHandlerTest {
 
         ArgumentCaptor<Comment> commentCaptor = ArgumentCaptor.forClass(Comment.class);
 
-        verify(mockRemoteGitHub, times(1)).addCommentOnPR(eq(singlePr.getRepo().getFullName()), eq(singlePr.getNumber()), commentCaptor.capture());
+        verify(mockRemoteSourceControl, times(1)).addCommentOnPR(eq(singlePr.getRepo().getFullName()), eq(singlePr.getNumber()), commentCaptor.capture());
 
         String comment = commentCaptor.getValue().getBody();
 
@@ -111,7 +112,7 @@ public class RebaseHandlerTest {
 
         ArgumentCaptor<Comment> commentCaptor = ArgumentCaptor.forClass(Comment.class);
 
-        verify(mockRemoteGitHub, times(1)).addCommentOnPR(eq(singlePr.getRepo().getFullName()), eq(singlePr.getNumber()), commentCaptor.capture());
+        verify(mockRemoteSourceControl, times(1)).addCommentOnPR(eq(singlePr.getRepo().getFullName()), eq(singlePr.getNumber()), commentCaptor.capture());
 
         String comment = commentCaptor.getValue().getBody();
 

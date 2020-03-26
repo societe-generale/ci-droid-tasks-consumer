@@ -1,9 +1,9 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventOnDefaultBranchHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class PushEventOnDefaultBranchService {
 
-    private RemoteGitHub gitHub;
+    private RemoteSourceControl gitHub;
 
     private List<PushEventOnDefaultBranchHandler> actionHandlers;
 
@@ -28,7 +28,7 @@ public class PushEventOnDefaultBranchService {
     @Setter
     private int maxRetriesForMergeableStatus = 10;
 
-    public PushEventOnDefaultBranchService(RemoteGitHub gitHub, List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers) {
+    public PushEventOnDefaultBranchService(RemoteSourceControl gitHub, List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers) {
 
         this.gitHub = gitHub;
         this.actionHandlers = pushEventOnDefaultBranchHandlers;

@@ -1,13 +1,13 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
-import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface RemoteGitHub {
+public interface RemoteSourceControl {
 
     List<PullRequest> fetchOpenPullRequests(String repoFullName);
 
@@ -28,13 +28,13 @@ public interface RemoteGitHub {
     ResourceContent fetchContent(String repoFullName, String path, String branch);
 
     UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
-            throws GitHubAuthorizationException;
+            throws RemoteSourceControlAuthorizationException;
 
     UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
-            throws GitHubAuthorizationException;
+            throws RemoteSourceControlAuthorizationException;
 
     PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String oauthToken)
-            throws GitHubAuthorizationException;
+            throws RemoteSourceControlAuthorizationException;
 
     void closePullRequest(String repoFullName, int prNumber);
 
@@ -43,7 +43,7 @@ public interface RemoteGitHub {
     Reference fetchHeadReferenceFrom(String repoFullName, String branchName);
 
     Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String oauthToken)
-            throws BranchAlreadyExistsException, GitHubAuthorizationException;
+            throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException;
 
 }
 

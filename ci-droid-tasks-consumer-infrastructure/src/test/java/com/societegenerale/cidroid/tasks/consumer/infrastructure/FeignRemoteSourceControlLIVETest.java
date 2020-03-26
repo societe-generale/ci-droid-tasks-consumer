@@ -1,8 +1,9 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.GitHubContentBase64codec;
-import com.societegenerale.cidroid.tasks.consumer.services.exceptions.GitHubAuthorizationException;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes={ InfraConfig.class,LiveTestConfig.class}, initializers = YamlFileApplicationContextInitializer.class)
 @TestPropertySource("/application-test.yml")
 @Disabled("to launch manually and test in local - you probably need to update config before running")
-public class FeignRemoteGitHubLIVETest {
+public class FeignRemoteSourceControlLIVETest {
 
     @Autowired
     private FeignRemoteGitHub feignRemoteGitHub;
@@ -42,7 +43,7 @@ public class FeignRemoteGitHubLIVETest {
     }
 
     @Test
-    public void manualTestForUpdatingAResource() throws GitHubAuthorizationException {
+    public void manualTestForUpdatingAResource() throws RemoteSourceControlAuthorizationException {
 
         DirectCommit directCommit = new DirectCommit();
         directCommit.setBranch("master");

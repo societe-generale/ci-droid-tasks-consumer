@@ -1,10 +1,10 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestFile;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import io.github.azagniotov.matcher.AntPathMatcher;
@@ -24,29 +24,29 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
     private final List<Notifier> notifiers;
 
-    private RemoteGitHub remoteGitHub;
+    private RemoteSourceControl remoteSourceControl;
 
     private ResourceFetcher resourceFetcher;
 
 
     public BestPracticeNotifierHandler(Map<String, String> configuredPatternToContentMapping,
-                                       List<Notifier> notifiers, RemoteGitHub remoteGitHub, ResourceFetcher resourceFetcher) {
+                                       List<Notifier> notifiers, RemoteSourceControl remoteSourceControl, ResourceFetcher resourceFetcher) {
 
         this.configuredPatternToContentMapping = configuredPatternToContentMapping;
         this.notifiers = notifiers;
-        this.remoteGitHub = remoteGitHub;
+        this.remoteSourceControl = remoteSourceControl;
         this.resourceFetcher = resourceFetcher;
     }
 
     @Override
     public void handle(PullRequestEvent event) {
 
-        List<PullRequestFile> filesInPr = remoteGitHub.fetchPullRequestFiles(event.getRepository().getFullName(), event.getPrNumber());
-        List<PullRequestComment> existingPrComments = remoteGitHub.fetchPullRequestComments(event.getRepository().getFullName(), event.getPrNumber());
+        List<PullRequestFile> filesInPr = remoteSourceControl.fetchPullRequestFiles(event.getRepository().getFullName(), event.getPrNumber());
+        List<PullRequestComment> existingPrComments = remoteSourceControl.fetchPullRequestComments(event.getRepository().getFullName(), event.getPrNumber());
 
         StringBuilder bestPracticesViolationsWarnings = validateBestPracticesInPullRequestFiles(filesInPr, existingPrComments);
 
-        PullRequest pullRequest = remoteGitHub.fetchPullRequestDetails(event.getRepository().getFullName(), event.getPrNumber());
+        PullRequest pullRequest = remoteSourceControl.fetchPullRequestDetails(event.getRepository().getFullName(), event.getPrNumber());
         notifyWarnings(pullRequest, bestPracticesViolationsWarnings, notifiers);
 
     }

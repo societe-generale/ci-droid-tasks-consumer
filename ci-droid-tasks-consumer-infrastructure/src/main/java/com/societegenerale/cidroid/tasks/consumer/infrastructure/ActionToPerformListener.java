@@ -2,7 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
@@ -22,16 +22,16 @@ public class ActionToPerformListener {
 
     private final List<ActionToReplicate> actionsToReplicate;
 
-    private final RemoteGitHub remoteGitHub;
+    private final RemoteSourceControl remoteSourceControl;
 
     private final ActionNotifier notifier;
 
     private Map<String, Class<? extends ActionToReplicate>> registeredActionsToReplicate;
 
-    public ActionToPerformListener(ActionToPerformService actionToPerformService, List<ActionToReplicate> actionsToReplicate, RemoteGitHub remoteGitHub, ActionNotifier notifier) {
+    public ActionToPerformListener(ActionToPerformService actionToPerformService, List<ActionToReplicate> actionsToReplicate, RemoteSourceControl remoteSourceControl, ActionNotifier notifier) {
         this.actionToPerformService = actionToPerformService;
         this.actionsToReplicate = actionsToReplicate;
-        this.remoteGitHub=remoteGitHub;
+        this.remoteSourceControl = remoteSourceControl;
         this.notifier=notifier;
     }
 
@@ -66,7 +66,7 @@ public class ActionToPerformListener {
             actionToReplicate.init(updateActionInfos);
 
             BulkActionToPerform actionToPerform = BulkActionToPerform.builder()
-                    .userRequestingAction(remoteGitHub.fetchCurrentUser(actionToPerformCommand.getGitHubOauthToken()))
+                    .userRequestingAction(remoteSourceControl.fetchCurrentUser(actionToPerformCommand.getGitHubOauthToken()))
                     .gitHubOauthToken(actionToPerformCommand.getGitHubOauthToken())
                     .email(actionToPerformCommand.getEmail())
                     .commitMessage(actionToPerformCommand.getCommitMessage())

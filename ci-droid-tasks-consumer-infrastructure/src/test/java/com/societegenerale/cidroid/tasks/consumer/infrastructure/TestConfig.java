@@ -4,7 +4,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidB
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,27 +41,27 @@ public class TestConfig {
     }
 
     @Bean
-    public PushEventOnDefaultBranchHandler rebaseHandler(Rebaser rebaser, RemoteGitHub remoteGitHub) {
+    public PushEventOnDefaultBranchHandler rebaseHandler(Rebaser rebaser, RemoteSourceControl remoteSourceControl) {
 
-        return new RebaseHandler(rebaser, remoteGitHub);
+        return new RebaseHandler(rebaser, remoteSourceControl);
     }
 
     @Bean
-    public PushEventOnDefaultBranchHandler notificationsHandler(RemoteGitHub remoteGitHub, NotifierMock notifierMock) {
+    public PushEventOnDefaultBranchHandler notificationsHandler(RemoteSourceControl remoteSourceControl, NotifierMock notifierMock) {
 
-        return new NotificationsHandler(remoteGitHub, Collections.singletonList(notifierMock));
+        return new NotificationsHandler(remoteSourceControl, Collections.singletonList(notifierMock));
     }
 
     @Bean
-    public PushEventOnDefaultBranchHandler pullRequestCleaningHandler(RemoteGitHub remoteGitHub) {
+    public PushEventOnDefaultBranchHandler pullRequestCleaningHandler(RemoteSourceControl remoteSourceControl) {
 
-        return new PullRequestCleaningHandler(remoteGitHub, LocalDateTime::now, 180);
+        return new PullRequestCleaningHandler(remoteSourceControl, LocalDateTime::now, 180);
     }
 
     @Bean
-    public PullRequestEventHandler bestPracticeNotifierHandler(List<Notifier> notifiers, RemoteGitHub remoteGitHub) {
+    public PullRequestEventHandler bestPracticeNotifierHandler(List<Notifier> notifiers, RemoteSourceControl remoteSourceControl) {
 
-        return new BestPracticeNotifierHandler(Collections.emptyMap(), notifiers, remoteGitHub, new RestTemplateResourceFetcher());
+        return new BestPracticeNotifierHandler(Collections.emptyMap(), notifiers, remoteSourceControl, new RestTemplateResourceFetcher());
 
     }
 
@@ -69,10 +69,10 @@ public class TestConfig {
     @ConditionalOnProperty(value = "cidroid-behavior.maxFilesInPRNotifier.enabled", havingValue = "true")
     @AutoConfigureOrder(2)
     public PullRequestEventHandler pullRequestSizeCheckHandler(CiDroidBehavior ciDroidBehavior,
-                                                               List<Notifier> notifiers, RemoteGitHub remoteGitHub,
+                                                               List<Notifier> notifiers, RemoteSourceControl remoteSourceControl,
                                                                @Value("${cidroid-behavior.maxFilesInPRNotifier.maxFiles}") int maxFiles,
                                                                @Value("${cidroid-behavior.maxFilesInPRNotifier.warningMessage}") String warningMessage) {
-        return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, maxFiles, warningMessage);
+        return new PullRequestSizeCheckHandler(notifiers, remoteSourceControl, maxFiles, warningMessage);
 
     }
 
