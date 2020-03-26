@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -82,14 +81,6 @@ public class CiDroidTasksConsumerAutoConfiguration {
 
         return new PullRequestSizeCheckHandler(notifiers, remoteGitHub, maxFiles, warningMessage);
 
-    }
-
-    @Bean
-    @ConditionalOnProperty(value = "cidroid-behavior.devStatistics.enabled", havingValue = "true")
-    @AutoConfigureOrder(3)
-    public PullRequestEventHandler devStatistics() {
-
-        return new DevActivityPullRequestEventHandler();
     }
 
     @Bean

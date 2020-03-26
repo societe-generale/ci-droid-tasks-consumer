@@ -1,7 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents;
 import lombok.extern.slf4j.Slf4j;

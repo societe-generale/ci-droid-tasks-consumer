@@ -3,10 +3,11 @@ package com.societegenerale.cidroid.tasks.consumer.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventOnDefaultBranchHandler;
-import com.societegenerale.cidroid.tasks.consumer.services.model.GitHubEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,7 @@ public class PushEventOnDefaultBranchServiceTest {
         pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteGitHub, pushEventOnDefaultBranchHandlers);
 
         String pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
-        pushEvent = objectMapper.readValue(pushEventPayload, PushEvent.class);
+        pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
 
 
         String openPrsOnRepoAsString = readFromInputStream(getClass().getResourceAsStream("/pullRequests.json"));
@@ -80,7 +81,7 @@ public class PushEventOnDefaultBranchServiceTest {
         List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers = new ArrayList<>();
 
         PushEventOnDefaultBranchHandler mockPushEventOnDefaultBranchHandlerThrowingException = mock(PushEventOnDefaultBranchHandler.class);
-        doThrow(RuntimeException.class).when(mockPushEventOnDefaultBranchHandlerThrowingException).handle(any(GitHubEvent.class),anyList());
+        doThrow(RuntimeException.class).when(mockPushEventOnDefaultBranchHandlerThrowingException).handle(any(SourceControlEvent.class),anyList());
 
 
         pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandlerThrowingException);
@@ -90,7 +91,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
         pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
 
-        verify(mockPushEventOnDefaultBranchHandler,times(1)).handle(any(GitHubEvent.class),anyList());
+        verify(mockPushEventOnDefaultBranchHandler,times(1)).handle(any(SourceControlEvent.class),anyList());
 
     }
 
@@ -151,7 +152,7 @@ public class PushEventOnDefaultBranchServiceTest {
         pushOnDefaultBranchService.onGitHubPushEvent(pushEvent);
 
         ArgumentCaptor<List<PullRequest>> prListCaptor = ArgumentCaptor.forClass(List.class);
-        ArgumentCaptor<GitHubEvent> gitHubEventCaptor = ArgumentCaptor.forClass(GitHubEvent.class);
+        ArgumentCaptor<SourceControlEvent> gitHubEventCaptor = ArgumentCaptor.forClass(SourceControlEvent.class);
 
         await().atMost(3, SECONDS)
                 .until(() -> verify(mockPushEventOnDefaultBranchHandler, times(1)).handle(gitHubEventCaptor.capture(), prListCaptor.capture()));

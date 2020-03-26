@@ -3,7 +3,7 @@ package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
-import com.societegenerale.cidroid.tasks.consumer.services.model.GitHubEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class RebaseHandler implements PushEventOnDefaultBranchHandler {
     }
 
     @Override
-    public void handle(GitHubEvent event,List<PullRequest> pullRequests) {
+    public void handle(SourceControlEvent event, List<PullRequest> pullRequests) {
 
         log.info("handling rebase for {} PRs on repo {}", pullRequests.size(), event.getRepository().getUrl());
 

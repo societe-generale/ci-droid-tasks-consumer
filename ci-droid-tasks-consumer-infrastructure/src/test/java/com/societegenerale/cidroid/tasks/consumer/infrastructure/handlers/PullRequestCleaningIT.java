@@ -6,7 +6,7 @@ import org.mockserver.verify.VerificationTimes;
 
 import static org.mockserver.model.HttpRequest.request;
 
-public class PullRequestCleaningIT extends GitHubEventHandlerIT {
+public class PullRequestCleaningIT extends SourceControlEventHandlerIT {
 
     private static final int PULL_REQUEST_ID = 1347;
 

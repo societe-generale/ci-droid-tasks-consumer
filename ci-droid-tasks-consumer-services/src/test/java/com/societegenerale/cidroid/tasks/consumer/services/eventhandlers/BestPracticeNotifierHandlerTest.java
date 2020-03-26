@@ -7,6 +7,7 @@ import ch.qos.logback.core.Appender;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +62,7 @@ public class BestPracticeNotifierHandlerTest {
         patternToContentMapping.put("**/db/changelog/**/*.yml", "http://someUrl/liquibaseBestPractices.md");
 
         repository.setFullName(REPO_FULL_NAME);
-        pullRequestEvent = new PullRequestEvent("created", 123, repository);
+        pullRequestEvent = new GitHubPullRequestEvent("created", 123, repository);
 
     }
 

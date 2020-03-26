@@ -2,7 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.services.model.DateProvider;
-import com.societegenerale.cidroid.tasks.consumer.services.model.GitHubEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class PullRequestCleaningHandler implements PushEventOnDefaultBranchHandl
     }
 
     @Override
-    public void handle(GitHubEvent event, List<PullRequest> pullRequests) {
+    public void handle(SourceControlEvent event, List<PullRequest> pullRequests) {
         String repoFullName = event.getRepository().getFullName();
 
         pullRequests.stream()

@@ -2,7 +2,8 @@ package com.societegenerale.cidroid.tasks.consumer.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPullRequestEvent;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ public class PullRequestEventServiceTest {
         String pullRequestEventPayload = IOUtils
                 .toString(PullRequestEventServiceTest.class.getClassLoader().getResourceAsStream("pullRequestEvent.json"), "UTF-8");
 
-        pullRequestEvent = new ObjectMapper().readValue(pullRequestEventPayload, PullRequestEvent.class);
+        pullRequestEvent = new ObjectMapper().readValue(pullRequestEventPayload, GitHubPullRequestEvent.class);
 
     }
 

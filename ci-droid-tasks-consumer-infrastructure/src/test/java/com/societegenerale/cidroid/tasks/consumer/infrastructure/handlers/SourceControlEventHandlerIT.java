@@ -6,9 +6,9 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.TestConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.YamlFileApplicationContextInitializer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,6 @@ import org.mockserver.client.MockServerClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 
@@ -25,7 +24,7 @@ import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.Gi
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { InfraConfig.class, TestConfig.class },
         initializers = YamlFileApplicationContextInitializer.class)
-public abstract class GitHubEventHandlerIT {
+public abstract class SourceControlEventHandlerIT {
 
     @Autowired
     protected GithubEventListener githubEventListener;
@@ -46,7 +45,7 @@ public abstract class GitHubEventHandlerIT {
 
         gitHubMockClient = new MockServerClient("localhost", GITHUB_MOCK_PORT);
 
-        pushEvent = (PushEvent) getObjectFromJson("pushEvent.json", PushEvent.class);
+        pushEvent = (PushEvent) getObjectFromJson("pushEvent.json", GitHubPushEvent.class);
         pullRequest = (PullRequest) getObjectFromJson("singlePullRequest.json", PullRequest.class);
     }
 

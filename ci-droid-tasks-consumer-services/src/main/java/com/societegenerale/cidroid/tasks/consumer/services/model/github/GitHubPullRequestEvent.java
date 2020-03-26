@@ -2,7 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.services.model.github;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.societegenerale.cidroid.tasks.consumer.services.model.GitHubEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PullRequestEvent implements GitHubEvent {
+public class GitHubPullRequestEvent extends PullRequestEvent {
 
     private String action;
 

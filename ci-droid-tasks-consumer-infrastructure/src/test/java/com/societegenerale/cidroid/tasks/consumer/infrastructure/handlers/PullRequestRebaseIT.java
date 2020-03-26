@@ -5,7 +5,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
 import org.junit.jupiter.api.Test;
 import org.mockserver.verify.VerificationTimes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.request;
 
-public class PullRequestRebaseIT extends GitHubEventHandlerIT {
+public class PullRequestRebaseIT extends SourceControlEventHandlerIT {
 
     private static final int PULL_REQUEST_ID = 1347;
     private static final String COMMIT_ID = "123456";

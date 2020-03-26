@@ -3,8 +3,10 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventOnDefaultBranchService;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PushEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +38,7 @@ public class GithubEventListenerTest {
 
         String pushEventPayload = IOUtils.toString(classLoader.getResourceAsStream("pushEvent.json"),"UTF-8");
 
-        PushEvent pushEvent = objectMapper.readValue(pushEventPayload, PushEvent.class);
+        PushEvent pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
 
         listener.onGitHubPushEventOnDefaultBranch(pushEvent);
 
@@ -50,7 +52,7 @@ public class GithubEventListenerTest {
 
         String pullRequestEventPayload = IOUtils.toString(classLoader.getResourceAsStream("pullRequestEvent.json"),"UTF-8");
 
-        PullRequestEvent pullRequestEvent= objectMapper.readValue(pullRequestEventPayload, PullRequestEvent.class);
+        PullRequestEvent pullRequestEvent= objectMapper.readValue(pullRequestEventPayload, GitHubPullRequestEvent.class);
 
 
         listener.onGitHubPullRequestEvent(pullRequestEvent);
