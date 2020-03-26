@@ -16,13 +16,13 @@ public class GitHubConfig {
     @Bean(name = "push-on-default-branch")
     public Consumer<GitHubPushEvent> msgConsumerPush(GithubEventListener actionToPerformListener) {
 
-        return  action -> {actionToPerformListener.onGitHubPushEventOnDefaultBranch(action);};
+        return  event -> {actionToPerformListener.onGitHubPushEventOnDefaultBranch(event);};
     }
 
 
     @Bean(name = "pull-request-event")
     public Consumer<PullRequestEvent> msgConsumerPREvent(GithubEventListener actionToPerformListener) {
 
-        return  action -> {actionToPerformListener.onGitHubPullRequestEvent(action);};
+        return  event -> {actionToPerformListener.onGitHubPullRequestEvent(event);};
     }
 }
