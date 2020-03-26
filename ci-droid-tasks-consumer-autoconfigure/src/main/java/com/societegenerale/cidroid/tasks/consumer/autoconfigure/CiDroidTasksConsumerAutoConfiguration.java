@@ -31,33 +31,33 @@ public class CiDroidTasksConsumerAutoConfiguration {
     @Bean
     @ConditionalOnProperty(value = "cidroid-behavior.notifyOwnerForNonMergeablePr.enabled", havingValue = "true")
     @AutoConfigureOrder(1)
-    public PushEventOnDefaultBranchHandler notificationHandler(RemoteSourceControl gitHub, List<Notifier> notifiers) {
+    public PushEventHandler notificationHandler(RemoteSourceControl gitHub, List<Notifier> notifiers) {
         return new NotificationsHandler(gitHub, notifiers);
     }
 
     @Bean
     @ConditionalOnProperty(value = "cidroid-behavior.closeOldPullRequests.enabled", havingValue = "true")
     @AutoConfigureOrder(2)
-    public PushEventOnDefaultBranchHandler pullRequestCleaningHandler(RemoteSourceControl gitHub,
-                                                                      @Value("${cidroid-behavior.closeOldPullRequests.limitInDays}") int prAgeLimitInDays) {
+    public PushEventHandler pullRequestCleaningHandler(RemoteSourceControl gitHub,
+                                                       @Value("${cidroid-behavior.closeOldPullRequests.limitInDays}") int prAgeLimitInDays) {
         return new PullRequestCleaningHandler(gitHub, LocalDateTime::now, prAgeLimitInDays);
     }
 
     @Bean
     @ConditionalOnProperty(value = "cidroid-behavior.tryToRebaseOpenPrs.enabled", havingValue = "true")
     @AutoConfigureOrder(3)
-    public PushEventOnDefaultBranchHandler rebaseHandler(RemoteSourceControl gitHub, @Value("${gitHub.login}") String gitLogin,
-                                                         @Value("${gitHub.password}") String gitPassword) {
+    public PushEventHandler rebaseHandler(RemoteSourceControl gitHub, @Value("${gitHub.login}") String gitLogin,
+                                          @Value("${gitHub.password}") String gitPassword) {
 
         return new RebaseHandler(new GitRebaser(gitLogin, gitPassword, new GitWrapper()), gitHub);
     }
 
     @Bean
-    @ConditionalOnMissingBean(PushEventOnDefaultBranchHandler.class)
+    @ConditionalOnMissingBean(PushEventHandler.class)
     @AutoConfigureOrder(500)
-    public PushEventOnDefaultBranchHandler dummyPushEventOnDefaultBranchHandler() {
+    public PushEventHandler dummyPushEventOnDefaultBranchHandler() {
 
-        return new DummyPushEventOnDefaultBranchHandler();
+        return new DummyPushEventHandler();
     }
 
     @Bean

@@ -3,7 +3,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventOnDefaultBranchHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.RebaseHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +30,7 @@ public class LiveTestConfig {
     }
 
     @Bean
-    public PushEventOnDefaultBranchHandler rebaseHandler(Rebaser rebaser, RemoteSourceControl remoteSourceControl) {
+    public PushEventHandler rebaseHandler(Rebaser rebaser, RemoteSourceControl remoteSourceControl) {
 
         return new RebaseHandler(rebaser, remoteSourceControl);
     }

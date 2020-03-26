@@ -20,7 +20,7 @@ import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.Mon
 import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
 
 @Slf4j
-public class NotificationsHandler implements PushEventOnDefaultBranchHandler {
+public class NotificationsHandler implements PushEventHandler {
 
     private RemoteSourceControl gitHub;
 

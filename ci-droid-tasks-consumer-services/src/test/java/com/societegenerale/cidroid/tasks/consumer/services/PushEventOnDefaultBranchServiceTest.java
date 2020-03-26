@@ -2,7 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventOnDefaultBranchHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
@@ -39,7 +39,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
     private final RemoteSourceControl mockRemoteSourceControl = mock(RemoteSourceControl.class);
 
-    private final PushEventOnDefaultBranchHandler mockPushEventOnDefaultBranchHandler = mock(PushEventOnDefaultBranchHandler.class);
+    private final PushEventHandler mockPushEventHandler = mock(PushEventHandler.class);
 
     private PushEventOnDefaultBranchService pushOnDefaultBranchService;
 
@@ -53,10 +53,10 @@ public class PushEventOnDefaultBranchServiceTest {
     @BeforeEach
     public void setUp() throws IOException {
 
-        List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers = new ArrayList<>();
-        pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandler);
+        List<PushEventHandler> pushEventHandlers = new ArrayList<>();
+        pushEventHandlers.add(mockPushEventHandler);
 
-        pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteSourceControl, pushEventOnDefaultBranchHandlers);
+        pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteSourceControl, pushEventHandlers);
 
         String pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
         pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
@@ -78,20 +78,20 @@ public class PushEventOnDefaultBranchServiceTest {
     @Test
     public void runtimeExceptionInHandlerShouldNotPreventOthersToExecute() {
 
-        List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers = new ArrayList<>();
+        List<PushEventHandler> pushEventHandlers = new ArrayList<>();
 
-        PushEventOnDefaultBranchHandler mockPushEventOnDefaultBranchHandlerThrowingException = mock(PushEventOnDefaultBranchHandler.class);
-        doThrow(RuntimeException.class).when(mockPushEventOnDefaultBranchHandlerThrowingException).handle(any(SourceControlEvent.class),anyList());
+        PushEventHandler mockPushEventHandlerThrowingException = mock(PushEventHandler.class);
+        doThrow(RuntimeException.class).when(mockPushEventHandlerThrowingException).handle(any(SourceControlEvent.class),anyList());
 
 
-        pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandlerThrowingException);
-        pushEventOnDefaultBranchHandlers.add(mockPushEventOnDefaultBranchHandler);
+        pushEventHandlers.add(mockPushEventHandlerThrowingException);
+        pushEventHandlers.add(mockPushEventHandler);
 
-        pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteSourceControl, pushEventOnDefaultBranchHandlers);
+        pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteSourceControl, pushEventHandlers);
 
         pushOnDefaultBranchService.onPushEvent(pushEvent);
 
-        verify(mockPushEventOnDefaultBranchHandler,times(1)).handle(any(SourceControlEvent.class),anyList());
+        verify(mockPushEventHandler,times(1)).handle(any(SourceControlEvent.class),anyList());
 
     }
 
@@ -126,7 +126,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
         pushOnDefaultBranchService.onPushEvent(pushEvent);
 
-        verify(mockPushEventOnDefaultBranchHandler,times(1)).handle(eq(pushEvent),anyList());
+        verify(mockPushEventHandler,times(1)).handle(eq(pushEvent),anyList());
 
     }
 
@@ -155,7 +155,7 @@ public class PushEventOnDefaultBranchServiceTest {
         ArgumentCaptor<SourceControlEvent> gitHubEventCaptor = ArgumentCaptor.forClass(SourceControlEvent.class);
 
         await().atMost(3, SECONDS)
-                .until(() -> verify(mockPushEventOnDefaultBranchHandler, times(1)).handle(gitHubEventCaptor.capture(), prListCaptor.capture()));
+                .until(() -> verify(mockPushEventHandler, times(1)).handle(gitHubEventCaptor.capture(), prListCaptor.capture()));
 
         assertThat(prListCaptor.getValue()).containsExactly(singlePr);
         assertThat(gitHubEventCaptor.getValue()).isEqualTo(pushEvent);

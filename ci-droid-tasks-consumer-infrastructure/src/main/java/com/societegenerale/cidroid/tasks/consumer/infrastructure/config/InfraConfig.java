@@ -9,7 +9,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRem
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.*;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventOnDefaultBranchHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -92,9 +92,9 @@ public class InfraConfig {
 
     @Bean
     public PushEventOnDefaultBranchService pushOnMasterService(RemoteSourceControl remoteSourceControl,
-                                                               List<PushEventOnDefaultBranchHandler> pushEventOnDefaultBranchHandlers) {
+                                                               List<PushEventHandler> pushEventHandlers) {
 
-        return new PushEventOnDefaultBranchService(remoteSourceControl, pushEventOnDefaultBranchHandlers);
+        return new PushEventOnDefaultBranchService(remoteSourceControl, pushEventHandlers);
     }
 
     @Bean

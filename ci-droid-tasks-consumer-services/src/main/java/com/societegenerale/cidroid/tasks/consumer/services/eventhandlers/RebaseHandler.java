@@ -16,7 +16,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Slf4j
-public class RebaseHandler implements PushEventOnDefaultBranchHandler {
+public class RebaseHandler implements PushEventHandler {
 
     private Rebaser rebaser;
     private RemoteSourceControl gitHub;

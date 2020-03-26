@@ -15,7 +15,7 @@ import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.Mon
 import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.OLD_PR_CLOSED;
 
 @Slf4j
-public class PullRequestCleaningHandler implements PushEventOnDefaultBranchHandler {
+public class PullRequestCleaningHandler implements PushEventHandler {
 
     private RemoteSourceControl remoteSourceControl;
     private DateProvider dateProvider;

@@ -41,19 +41,19 @@ public class TestConfig {
     }
 
     @Bean
-    public PushEventOnDefaultBranchHandler rebaseHandler(Rebaser rebaser, RemoteSourceControl remoteSourceControl) {
+    public PushEventHandler rebaseHandler(Rebaser rebaser, RemoteSourceControl remoteSourceControl) {
 
         return new RebaseHandler(rebaser, remoteSourceControl);
     }
 
     @Bean
-    public PushEventOnDefaultBranchHandler notificationsHandler(RemoteSourceControl remoteSourceControl, NotifierMock notifierMock) {
+    public PushEventHandler notificationsHandler(RemoteSourceControl remoteSourceControl, NotifierMock notifierMock) {
 
         return new NotificationsHandler(remoteSourceControl, Collections.singletonList(notifierMock));
     }
 
     @Bean
-    public PushEventOnDefaultBranchHandler pullRequestCleaningHandler(RemoteSourceControl remoteSourceControl) {
+    public PushEventHandler pullRequestCleaningHandler(RemoteSourceControl remoteSourceControl) {
 
         return new PullRequestCleaningHandler(remoteSourceControl, LocalDateTime::now, 180);
     }

@@ -5,7 +5,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequ
 
 import java.util.List;
 
-public interface PushEventOnDefaultBranchHandler {
+public interface PushEventHandler {
 
     void handle(SourceControlEvent event, List<PullRequest> pullRequests);
 
