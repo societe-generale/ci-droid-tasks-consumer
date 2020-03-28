@@ -1,6 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
@@ -22,20 +23,31 @@ public class PushEventService {
 
     private List<PushEventHandler> defaultBranchPushActionHandlers;
 
+    private PushEventMonitor pushEventMonitor;
+
+    private boolean enableMonitoring;
+
     @Setter
     private long sleepDurationBeforeTryingAgainToFetchMergeableStatus = 300;
 
     @Setter
     private int maxRetriesForMergeableStatus = 10;
 
-    public PushEventService(RemoteSourceControl gitHub, List<PushEventHandler> pushEventHandlers) {
+    public PushEventService(RemoteSourceControl gitHub, List<PushEventHandler> pushEventHandlers, boolean enablePushEventsMonitoring, PushEventMonitor pushEventMonitor) {
+
+        if(enablePushEventsMonitoring && pushEventMonitor ==null){
+            throw new IllegalStateException("if Push events monitoring is enabled, then a proper "+PushEventMonitor.class+" must be provided");
+        }
 
         this.gitHub = gitHub;
         this.defaultBranchPushActionHandlers = pushEventHandlers;
+
+        this.pushEventMonitor = pushEventMonitor;
+        this.enableMonitoring=enablePushEventsMonitoring;
     }
 
     public void onPushOnNonDefaultBranchEvent(PushEvent pushEvent) {
-        //TODO
+        monitorEvent(pushEvent);
     }
 
     public void onPushOnDefaultBranchEvent(PushEvent pushEvent) {
@@ -43,6 +55,8 @@ public class PushEventService {
         if (shouldNotProcess(pushEvent)) {
             return;
         }
+
+        monitorEvent(pushEvent);
 
         Event techEvent = Event.technical(PUSH_EVENT_TO_PROCESS);
         techEvent.addAttribute(REPO, pushEvent.getRepository().getFullName());
@@ -74,6 +88,7 @@ public class PushEventService {
 
     private boolean shouldNotProcess(PushEvent pushEvent) {
 
+        //TODO now that we receive non default branch events on a separate channel, maybe this is not required anymore..
         if (!pushEvent.happenedOnDefaultBranch()) {
             log.warn("received an event from branch that is not default, ie {} - how is it possible ? ", pushEvent.getRef());
             return true;
@@ -155,5 +170,14 @@ public class PushEventService {
                 .collect(toList());
     }
 
+
+    private void monitorEvent(PushEvent pushEvent) {
+
+        if(!enableMonitoring){
+            return;
+        }
+
+        pushEventMonitor.record(pushEvent);
+    }
 
 }
