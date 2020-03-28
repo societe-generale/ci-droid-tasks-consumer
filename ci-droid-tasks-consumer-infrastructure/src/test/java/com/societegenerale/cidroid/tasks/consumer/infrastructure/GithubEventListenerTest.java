@@ -2,7 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
-import com.societegenerale.cidroid.tasks.consumer.services.PushEventOnDefaultBranchService;
+import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPullRequestEvent;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 
 public class GithubEventListenerTest {
 
-    private PushEventOnDefaultBranchService mockPushOnDefaultBranchService = mock(PushEventOnDefaultBranchService.class);
+    private PushEventService mockPushEventService = mock(PushEventService.class);
 
     private PullRequestEventService mockPullRequestEventService =mock(PullRequestEventService.class);
 
@@ -30,7 +30,7 @@ public class GithubEventListenerTest {
     @BeforeEach
     public void setUp() {
 
-        listener=new SourceControlEventListener(mockPushOnDefaultBranchService, mockPullRequestEventService);
+        listener=new SourceControlEventListener(mockPullRequestEventService, mockPushEventService);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class GithubEventListenerTest {
 
         listener.onPushEventOnDefaultBranch(pushEvent);
 
-        verify(mockPushOnDefaultBranchService,times(1)).onPushEvent(pushEvent);
+        verify(mockPushEventService,times(1)).onPushOnDefaultBranchEvent(pushEvent);
         verify(mockPullRequestEventService,never()).onPullRequestEvent(any(PullRequestEvent.class));
 
     }
@@ -57,7 +57,7 @@ public class GithubEventListenerTest {
 
         listener.onPullRequestEvent(pullRequestEvent);
 
-        verify(mockPushOnDefaultBranchService,never()).onPushEvent(any(PushEvent.class));
+        verify(mockPushEventService,never()).onPushOnDefaultBranchEvent(any(PushEvent.class));
         verify(mockPullRequestEventService,times(1)).onPullRequestEvent(pullRequestEvent);
     }
 }

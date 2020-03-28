@@ -5,6 +5,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.GitWrapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.RestTemplateResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidBehavior;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GitHubConfig;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GitLabConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.GitHubPullRequestCommentNotifier;
@@ -25,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Configuration
-@Import({InfraConfig.class, GitHubConfig.class})
+@Import({InfraConfig.class, GitHubConfig.class, GitLabConfig.class})
 public class CiDroidTasksConsumerAutoConfiguration {
 
     @Bean

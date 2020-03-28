@@ -8,8 +8,10 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEv
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.*;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.HttpEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -26,6 +28,8 @@ import java.util.function.Consumer;
 @EnableFeignClients(clients = { FeignRemoteGitHub.class})
 @ComponentScan
 public class InfraConfig {
+
+    private static final PushEventMonitor DONT_MONITOR_ANYTHING=(pushEvent) -> {};
 
     @Bean
     public ActionToReplicate overwriteStaticFileAction() {
@@ -84,17 +88,30 @@ public class InfraConfig {
     }
 
     @Bean
-    public SourceControlEventListener pushOnMasterListener(PushEventOnDefaultBranchService pushOnDefaultBranchService,
-                                                           PullRequestEventService pullRequestEventService) {
+    public SourceControlEventListener pushOnMasterListener(PullRequestEventService pullRequestEventService,
+                                                           PushEventService pushEventService) {
 
-        return new SourceControlEventListener(pushOnDefaultBranchService, pullRequestEventService);
+        return new SourceControlEventListener(pullRequestEventService,pushEventService);
     }
 
     @Bean
-    public PushEventOnDefaultBranchService pushOnMasterService(RemoteSourceControl remoteSourceControl,
-                                                               List<PushEventHandler> pushEventHandlers) {
+    public PushEventService pushEventService(RemoteSourceControl remoteSourceControl,
+                                             List<PushEventHandler> pushEventHandlers,
+                                             CiDroidBehavior ciDroidBehavior,
+                                             PushEventMonitor pushEventMonitor) {
 
-        return new PushEventOnDefaultBranchService(remoteSourceControl, pushEventHandlers);
+        return new PushEventService(remoteSourceControl, pushEventHandlers,ciDroidBehavior.isPushEventsMonitoringRequired(),pushEventMonitor);
+    }
+
+    @Bean
+    public PushEventMonitor pushEventMonitoringHandler(CiDroidBehavior ciDroidBehavior) {
+
+        if(ciDroidBehavior.isPushEventsMonitoringRequired()){
+            return new HttpEventMonitor();
+        }
+        else{
+            return DONT_MONITOR_ANYTHING;
+        }
     }
 
     @Bean
