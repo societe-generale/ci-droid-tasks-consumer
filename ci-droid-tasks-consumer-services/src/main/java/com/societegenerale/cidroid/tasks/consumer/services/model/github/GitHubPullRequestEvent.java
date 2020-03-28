@@ -18,10 +18,11 @@ public class GitHubPullRequestEvent extends PullRequestEvent {
     @JsonProperty("number")
     private int prNumber;
 
-    private Repository repository;
 
-    @Override
-    public Repository getRepository() {
-        return repository;
+    public GitHubPullRequestEvent(String action, int prNumber, Repository repository) {
+        this.action=action;
+        this.prNumber=prNumber;
+        this.repository=repository;
     }
+
 }

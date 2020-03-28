@@ -56,7 +56,7 @@ public class PushEventServiceTest {
         List<PushEventHandler> pushEventHandlers = new ArrayList<>();
         pushEventHandlers.add(mockPushEventHandler);
 
-        pushOnDefaultBranchService = new PushEventService(mockRemoteSourceControl, pushEventHandlers);
+        pushOnDefaultBranchService = new PushEventService(mockRemoteSourceControl, pushEventHandlers,false,null);
 
         String pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
         pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
@@ -87,7 +87,7 @@ public class PushEventServiceTest {
         pushEventHandlers.add(mockPushEventHandlerThrowingException);
         pushEventHandlers.add(mockPushEventHandler);
 
-        pushOnDefaultBranchService = new PushEventService(mockRemoteSourceControl, pushEventHandlers);
+        pushOnDefaultBranchService = new PushEventService(mockRemoteSourceControl, pushEventHandlers,false,null);
 
         pushOnDefaultBranchService.onPushOnDefaultBranchEvent(pushEvent);
 

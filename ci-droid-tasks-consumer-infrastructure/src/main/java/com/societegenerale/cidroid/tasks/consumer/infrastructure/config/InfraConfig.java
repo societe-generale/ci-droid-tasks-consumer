@@ -8,6 +8,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEv
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.*;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.HttpEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
@@ -105,10 +106,11 @@ public class InfraConfig {
     public PushEventMonitor pushEventMonitoringHandler(CiDroidBehavior ciDroidBehavior) {
 
         if(ciDroidBehavior.isPushEventsMonitoringRequired()){
-            return new PushEventMonitor();
+            return new HttpEventMonitor();
         }
         else{
-            return null;
+            // do nothing if monitoring is disabled
+            return (pushEvent) -> {};
         }
 
     }
