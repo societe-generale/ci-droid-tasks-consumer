@@ -12,5 +12,12 @@ import java.util.Map;
 public class CiDroidBehavior {
 
     private Map<String, String> patternToResourceMapping;
+
+    private boolean monitorPushEventOnDefaultBranch= false;
+    private boolean monitorPushEventOnNonDefaultBranch=false;
+
+    public boolean isPushEventsMonitoringRequired(){
+        return monitorPushEventOnDefaultBranch || monitorPushEventOnNonDefaultBranch;
+    }
     
 }

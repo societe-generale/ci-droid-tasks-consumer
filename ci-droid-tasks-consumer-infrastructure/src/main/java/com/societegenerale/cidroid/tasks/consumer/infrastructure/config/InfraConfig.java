@@ -10,6 +10,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMail
 import com.societegenerale.cidroid.tasks.consumer.services.*;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitoringHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -19,8 +20,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+
+import static java.util.Collections.emptyList;
 
 @Configuration
 @EnableFeignClients(clients = { FeignRemoteGitHub.class})
@@ -93,17 +97,39 @@ public class InfraConfig {
 
     @Bean
     public PushEventService pushOnDefaultBranchService(RemoteSourceControl remoteSourceControl,
-                                                List<PushEventHandler> pushEventHandlers) {
+                                                List<PushEventHandler> pushEventHandlers,
+                                                CiDroidBehavior ciDroidBehavior) {
 
         return new PushEventService(remoteSourceControl, pushEventHandlers);
     }
 
     @Bean
-    public PushEventService pushOnNonDefaultBranchService(RemoteSourceControl remoteSourceControl,
-                                                List<PushEventHandler> pushEventHandlers) {
+    public PushEventService pushOnNonDefaultBranchService(RemoteSourceControl remoteSourceControl, CiDroidBehavior ciDroidBehavior, PushEventMonitoringHandler monitoring) {
 
-        return new PushEventService(remoteSourceControl, pushEventHandlers);
+        List<PushEventHandler> pushOnNonDefaultBranchEventHandlers;
+
+        if(ciDroidBehavior.isMonitorPushEventOnNonDefaultBranch()){
+            pushOnNonDefaultBranchEventHandlers= Arrays.asList(monitoring);
+        }
+        else{
+            pushOnNonDefaultBranchEventHandlers= emptyList();
+        }
+
+        return new PushEventService(remoteSourceControl, pushOnNonDefaultBranchEventHandlers);
     }
+
+    @Bean
+    public PushEventMonitoringHandler pushEventMonitoringHandler(CiDroidBehavior ciDroidBehavior) {
+
+        if(ciDroidBehavior.isPushEventsMonitoringRequired()){
+            return new PushEventMonitoringHandler();
+        }
+        else{
+            return null;
+        }
+
+    }
+
 
     @Bean
     public PullRequestEventService pullRequestEventService(List<PullRequestEventHandler> pullRequestEventHandlers) {

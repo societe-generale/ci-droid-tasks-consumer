@@ -27,6 +27,10 @@ spring:
          destination: ${user.name}.ci-droid.github-push-events.default-branch.v1
          content-type: application/json
          group: live-ci-droid.github-events
+       push-on-non-default-branch:
+         destination: ${user.name}.ci-droid.github-push-events.non-default-branch.v1
+         content-type: application/json
+         group: live-ci-droid.github-events
        pull-request-event:
          destination: ${user.name}.ci-droid.github-pull-request-events.v1
          content-type: application/json
@@ -72,7 +76,8 @@ cidroid-behavior:
   patternToResourceMapping:
 # example of associating a document with a file pattern
     "**/*Dto.java": "https://some_link_to_some_best_practices_repo/noDtoClass.md"
-
+  monitorPushEventOnDefaultBranch: false
+  monitorPushEventOnNonDefaultBranch: false
   maxFilesInPRNotifier:
       enabled: true
       maxFiles: 10
