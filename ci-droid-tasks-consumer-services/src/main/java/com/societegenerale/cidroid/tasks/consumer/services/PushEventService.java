@@ -16,11 +16,11 @@ import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.Mon
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public class PushEventOnDefaultBranchService {
+public class PushEventService {
 
     private RemoteSourceControl gitHub;
 
-    private List<PushEventHandler> actionHandlers;
+    private List<PushEventHandler> defaultBranchPushActionHandlers;
 
     @Setter
     private long sleepDurationBeforeTryingAgainToFetchMergeableStatus = 300;
@@ -28,13 +28,17 @@ public class PushEventOnDefaultBranchService {
     @Setter
     private int maxRetriesForMergeableStatus = 10;
 
-    public PushEventOnDefaultBranchService(RemoteSourceControl gitHub, List<PushEventHandler> pushEventHandlers) {
+    public PushEventService(RemoteSourceControl gitHub, List<PushEventHandler> pushEventHandlers) {
 
         this.gitHub = gitHub;
-        this.actionHandlers = pushEventHandlers;
+        this.defaultBranchPushActionHandlers = pushEventHandlers;
     }
 
-    public void onPushEvent(PushEvent pushEvent) {
+    public void onPushOnNonDefaultBranchEvent(PushEvent pushEvent) {
+        //TODO
+    }
+
+    public void onPushOnDefaultBranchEvent(PushEvent pushEvent) {
 
         if (shouldNotProcess(pushEvent)) {
             return;
@@ -53,7 +57,7 @@ public class PushEventOnDefaultBranchService {
             logPrMergeabilityStatus(openPRsWithDefinedMergeabilityStatus);
         }
 
-        for (PushEventHandler pushEventHandler : actionHandlers) {
+        for (PushEventHandler pushEventHandler : defaultBranchPushActionHandlers) {
 
             try {
                 pushEventHandler.handle(pushEvent, openPRsWithDefinedMergeabilityStatus);

@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class PushEventOnDefaultBranchServiceTest {
+public class PushEventServiceTest {
 
     private static final String FULL_REPO_NAME = "baxterthehacker/public-repo";
 
@@ -41,7 +41,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
     private final PushEventHandler mockPushEventHandler = mock(PushEventHandler.class);
 
-    private PushEventOnDefaultBranchService pushOnDefaultBranchService;
+    private PushEventService pushOnDefaultBranchService;
 
     private PushEvent pushEvent;
 
@@ -56,7 +56,7 @@ public class PushEventOnDefaultBranchServiceTest {
         List<PushEventHandler> pushEventHandlers = new ArrayList<>();
         pushEventHandlers.add(mockPushEventHandler);
 
-        pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteSourceControl, pushEventHandlers);
+        pushOnDefaultBranchService = new PushEventService(mockRemoteSourceControl, pushEventHandlers);
 
         String pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
         pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
@@ -87,9 +87,9 @@ public class PushEventOnDefaultBranchServiceTest {
         pushEventHandlers.add(mockPushEventHandlerThrowingException);
         pushEventHandlers.add(mockPushEventHandler);
 
-        pushOnDefaultBranchService = new PushEventOnDefaultBranchService(mockRemoteSourceControl, pushEventHandlers);
+        pushOnDefaultBranchService = new PushEventService(mockRemoteSourceControl, pushEventHandlers);
 
-        pushOnDefaultBranchService.onPushEvent(pushEvent);
+        pushOnDefaultBranchService.onPushOnDefaultBranchEvent(pushEvent);
 
         verify(mockPushEventHandler,times(1)).handle(any(SourceControlEvent.class),anyList());
 
@@ -98,7 +98,7 @@ public class PushEventOnDefaultBranchServiceTest {
     @Test
     public void shouldRequestAllOpenPRsWhenPushOnDefaultBranch() {
 
-        pushOnDefaultBranchService.onPushEvent(pushEvent);
+        pushOnDefaultBranchService.onPushOnDefaultBranchEvent(pushEvent);
 
         verify(mockRemoteSourceControl, times(1)).fetchOpenPullRequests(FULL_REPO_NAME);
     }
@@ -108,7 +108,7 @@ public class PushEventOnDefaultBranchServiceTest {
 
         pushEvent.setRef("someOtherBranch");
 
-        pushOnDefaultBranchService.onPushEvent(pushEvent);
+        pushOnDefaultBranchService.onPushOnDefaultBranchEvent(pushEvent);
 
         verify(mockRemoteSourceControl, never()).fetchOpenPullRequests(any(String.class));
     }
@@ -116,7 +116,7 @@ public class PushEventOnDefaultBranchServiceTest {
     @Test
     public void shouldRequestOpenPRDetailsWhenPushOnDefaultBranch() {
 
-        pushOnDefaultBranchService.onPushEvent(pushEvent);
+        pushOnDefaultBranchService.onPushOnDefaultBranchEvent(pushEvent);
 
         verify(mockRemoteSourceControl, times(1)).fetchPullRequestDetails("baxterthehacker/public-repo", PULL_REQUEST_ID);
     }
@@ -124,7 +124,7 @@ public class PushEventOnDefaultBranchServiceTest {
     @Test
     public void shouldApplyActionHandlersForRepository(){
 
-        pushOnDefaultBranchService.onPushEvent(pushEvent);
+        pushOnDefaultBranchService.onPushOnDefaultBranchEvent(pushEvent);
 
         verify(mockPushEventHandler,times(1)).handle(eq(pushEvent),anyList());
 
@@ -149,7 +149,7 @@ public class PushEventOnDefaultBranchServiceTest {
         });
         System.out.println("submitted task to update PR merge status shortly...");
 
-        pushOnDefaultBranchService.onPushEvent(pushEvent);
+        pushOnDefaultBranchService.onPushOnDefaultBranchEvent(pushEvent);
 
         ArgumentCaptor<List<PullRequest>> prListCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<SourceControlEvent> gitHubEventCaptor = ArgumentCaptor.forClass(SourceControlEvent.class);

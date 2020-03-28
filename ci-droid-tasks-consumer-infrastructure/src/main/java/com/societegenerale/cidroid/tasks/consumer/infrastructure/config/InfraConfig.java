@@ -84,17 +84,25 @@ public class InfraConfig {
     }
 
     @Bean
-    public SourceControlEventListener pushOnMasterListener(PushEventOnDefaultBranchService pushOnDefaultBranchService,
-                                                           PullRequestEventService pullRequestEventService) {
+    public SourceControlEventListener pushOnMasterListener(PushEventService pushOnDefaultBranchService,
+                                                           PullRequestEventService pullRequestEventService,
+                                                           PushEventService pushOnNonDefaultBranchService) {
 
-        return new SourceControlEventListener(pushOnDefaultBranchService, pullRequestEventService);
+        return new SourceControlEventListener(pushOnDefaultBranchService, pullRequestEventService,pushOnNonDefaultBranchService);
     }
 
     @Bean
-    public PushEventOnDefaultBranchService pushOnMasterService(RemoteSourceControl remoteSourceControl,
-                                                               List<PushEventHandler> pushEventHandlers) {
+    public PushEventService pushOnDefaultBranchService(RemoteSourceControl remoteSourceControl,
+                                                List<PushEventHandler> pushEventHandlers) {
 
-        return new PushEventOnDefaultBranchService(remoteSourceControl, pushEventHandlers);
+        return new PushEventService(remoteSourceControl, pushEventHandlers);
+    }
+
+    @Bean
+    public PushEventService pushOnNonDefaultBranchService(RemoteSourceControl remoteSourceControl,
+                                                List<PushEventHandler> pushEventHandlers) {
+
+        return new PushEventService(remoteSourceControl, pushEventHandlers);
     }
 
     @Bean
