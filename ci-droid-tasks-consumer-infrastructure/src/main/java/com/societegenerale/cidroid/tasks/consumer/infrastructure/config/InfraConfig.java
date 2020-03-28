@@ -29,6 +29,8 @@ import java.util.function.Consumer;
 @ComponentScan
 public class InfraConfig {
 
+    private static final PushEventMonitor DONT_MONITOR_ANYTHING=(pushEvent) -> {};
+
     @Bean
     public ActionToReplicate overwriteStaticFileAction() {
 
@@ -101,7 +103,6 @@ public class InfraConfig {
         return new PushEventService(remoteSourceControl, pushEventHandlers,ciDroidBehavior.isPushEventsMonitoringRequired(),pushEventMonitor);
     }
 
-
     @Bean
     public PushEventMonitor pushEventMonitoringHandler(CiDroidBehavior ciDroidBehavior) {
 
@@ -109,12 +110,9 @@ public class InfraConfig {
             return new HttpEventMonitor();
         }
         else{
-            // do nothing if monitoring is disabled
-            return (pushEvent) -> {};
+            return DONT_MONITOR_ANYTHING;
         }
-
     }
-
 
     @Bean
     public PullRequestEventService pullRequestEventService(List<PullRequestEventHandler> pullRequestEventHandlers) {
