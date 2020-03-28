@@ -9,16 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SourceControlEventListener {
 
-    private PushEventService pushOnDefaultBranchService;
-
-    private PushEventService pushOnNonDefaultBranchService;
+    private PushEventService pushEventService;
 
     private PullRequestEventService pullRequestEventService;
 
-    public SourceControlEventListener(PushEventService pushOnDefaultBranchService, PullRequestEventService pullRequestEventService,PushEventService pushOnNonDefaultBranchService) {
-        this.pushOnDefaultBranchService = pushOnDefaultBranchService;
+    public SourceControlEventListener(PullRequestEventService pullRequestEventService,PushEventService pushEventService) {
         this.pullRequestEventService = pullRequestEventService;
-        this.pushOnNonDefaultBranchService = pushOnNonDefaultBranchService;
+        this.pushEventService = pushEventService;
     }
 
     public void onPushEventOnDefaultBranch(PushEvent pushEvent) {
@@ -26,7 +23,7 @@ public class SourceControlEventListener {
         try {
             log.info("received event on branch {} for repo {}", pushEvent.getRef(), pushEvent.getRepository().getFullName());
 
-            pushOnDefaultBranchService.onPushOnDefaultBranchEvent(pushEvent);
+            pushEventService.onPushOnDefaultBranchEvent(pushEvent);
         } catch (Exception e) {
             log.warn("problem while processing the event {}", pushEvent, e);
         }
@@ -36,7 +33,7 @@ public class SourceControlEventListener {
         try {
             log.info("received event on branch {} for repo {}", pushEvent.getRef(), pushEvent.getRepository().getFullName());
 
-            pushOnNonDefaultBranchService.onPushOnNonDefaultBranchEvent(pushEvent);
+            pushEventService.onPushOnNonDefaultBranchEvent(pushEvent);
         } catch (Exception e) {
             log.warn("problem while processing the event {}", pushEvent, e);
         }

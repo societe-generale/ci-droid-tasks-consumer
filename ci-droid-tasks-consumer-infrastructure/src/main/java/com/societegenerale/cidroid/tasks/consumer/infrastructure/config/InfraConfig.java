@@ -86,17 +86,17 @@ public class InfraConfig {
     }
 
     @Bean
-    public SourceControlEventListener pushOnMasterListener(PushEventService pushOnDefaultBranchService,
-                                                           PullRequestEventService pullRequestEventService,
-                                                           PushEventService pushOnNonDefaultBranchService) {
+    public SourceControlEventListener pushOnMasterListener(PullRequestEventService pullRequestEventService,
+                                                           PushEventService pushEventService) {
 
-        return new SourceControlEventListener(pushOnDefaultBranchService, pullRequestEventService,pushOnNonDefaultBranchService);
+        return new SourceControlEventListener(pullRequestEventService,pushEventService);
     }
 
     @Bean
-    public PushEventService pushOnDefaultBranchService(RemoteSourceControl remoteSourceControl,
-                                                       List<PushEventHandler> pushEventHandlers,
-                                                       CiDroidBehavior ciDroidBehavior, PushEventMonitor pushEventMonitor) {
+    public PushEventService pushEventService(RemoteSourceControl remoteSourceControl,
+                                             List<PushEventHandler> pushEventHandlers,
+                                             CiDroidBehavior ciDroidBehavior,
+                                             PushEventMonitor pushEventMonitor) {
 
         return new PushEventService(remoteSourceControl, pushEventHandlers,ciDroidBehavior.isPushEventsMonitoringRequired(),pushEventMonitor);
     }

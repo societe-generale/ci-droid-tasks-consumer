@@ -17,9 +17,7 @@ import static org.mockito.Mockito.*;
 
 public class GithubEventListenerTest {
 
-    private PushEventService mockPushOnDefaultBranchService = mock(PushEventService.class);
-
-    private PushEventService mockPushOnNonDefaultBranchService = mock(PushEventService.class);
+    private PushEventService mockPushEventService = mock(PushEventService.class);
 
     private PullRequestEventService mockPullRequestEventService =mock(PullRequestEventService.class);
 
@@ -32,7 +30,7 @@ public class GithubEventListenerTest {
     @BeforeEach
     public void setUp() {
 
-        listener=new SourceControlEventListener(mockPushOnDefaultBranchService, mockPullRequestEventService,mockPushOnNonDefaultBranchService);
+        listener=new SourceControlEventListener(mockPullRequestEventService, mockPushEventService);
     }
 
     @Test
@@ -44,7 +42,7 @@ public class GithubEventListenerTest {
 
         listener.onPushEventOnDefaultBranch(pushEvent);
 
-        verify(mockPushOnDefaultBranchService,times(1)).onPushOnDefaultBranchEvent(pushEvent);
+        verify(mockPushEventService,times(1)).onPushOnDefaultBranchEvent(pushEvent);
         verify(mockPullRequestEventService,never()).onPullRequestEvent(any(PullRequestEvent.class));
 
     }
@@ -59,7 +57,7 @@ public class GithubEventListenerTest {
 
         listener.onPullRequestEvent(pullRequestEvent);
 
-        verify(mockPushOnDefaultBranchService,never()).onPushOnDefaultBranchEvent(any(PushEvent.class));
+        verify(mockPushEventService,never()).onPushOnDefaultBranchEvent(any(PushEvent.class));
         verify(mockPullRequestEventService,times(1)).onPullRequestEvent(pullRequestEvent);
     }
 }
