@@ -1,12 +1,13 @@
 package com.societegenerale.cidroid.tasks.consumer.services.model;
 
-import lombok.Data;
 
-@Data
-public abstract class PullRequestEvent extends SourceControlEvent {
 
-    private String action;
+public abstract class PullRequestEvent implements SourceControlEvent {
 
-    private int prNumber;
+    public abstract String getAction();
+
+    public abstract void setAction(String actions);
+
+    public abstract int getPrNumber();
 
 }

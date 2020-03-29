@@ -15,9 +15,10 @@ public class GitHubPullRequestEvent extends PullRequestEvent {
 
     private String action;
 
+    private Repository repository;
+
     @JsonProperty("number")
     private int prNumber;
-
 
     public GitHubPullRequestEvent(String action, int prNumber, Repository repository) {
         this.action=action;
@@ -25,4 +26,9 @@ public class GitHubPullRequestEvent extends PullRequestEvent {
         this.repository=repository;
     }
 
+
+    @Override
+    public String getRawMessage() {
+        return null;
+    }
 }

@@ -5,23 +5,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GitHubPushEvent extends PushEvent {
 
-    private String ref;
-
     private Repository repository;
+
+    private String ref;
 
     @JsonProperty("head_commit")
     private Commit headCommit;
 
-    @Override
-    public Repository getRepository() {
-        return repository;
-    }
+    String userEmail;
 
-    public boolean happenedOnDefaultBranch(){
-        return ref.endsWith(getRepository().getDefaultBranch());
+    String userName;
+
+    private String rawMessage;
+
+    @JsonProperty("pusher")
+    private void unpackNestedPusher(Map<String,Object> pusher) {
+        this.userName = (String)pusher.get("name");
+        this.userEmail = (String)pusher.get("email");
     }
 }
+

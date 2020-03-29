@@ -11,4 +11,6 @@ public class GitLabProject {
     @JsonProperty("default_branch")
     private String defaultBranch;
 
+    private int id;
+
 }
