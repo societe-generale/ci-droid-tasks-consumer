@@ -35,7 +35,7 @@ public class PushEventService {
 
     public PushEventService(RemoteSourceControl gitHub, List<PushEventHandler> pushEventHandlers, boolean enablePushEventsMonitoring, PushEventMonitor pushEventMonitor) {
 
-        if(enablePushEventsMonitoring && pushEventMonitor ==null){
+        if(enablePushEventsMonitoring && pushEventMonitor == null){
             throw new IllegalStateException("if Push events monitoring is enabled, then a proper "+PushEventMonitor.class+" must be provided");
         }
 

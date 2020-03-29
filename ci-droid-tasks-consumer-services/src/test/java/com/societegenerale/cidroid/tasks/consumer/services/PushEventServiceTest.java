@@ -3,6 +3,7 @@ package com.societegenerale.cidroid.tasks.consumer.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
@@ -24,8 +25,9 @@ import static com.jayway.awaitility.Awaitility.await;
 import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.NOT_MERGEABLE;
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.UNKNOWN;
+import static java.util.Collections.emptyList;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -74,6 +76,24 @@ public class PushEventServiceTest {
         when(mockRemoteSourceControl.fetchUser("octocat")).thenReturn(new User("octocat", "octocat@github.com"));
 
     }
+
+    @Test
+    public void monitoringConfigMustBeConsistent() {
+
+        assertThat(catchThrowable(() -> new PushEventService(mockRemoteSourceControl, emptyList(),true,null) ))
+                .as("if monitoring is enabled, then pushEventMonitor can't be null")
+                .isInstanceOf(IllegalStateException.class);
+
+        assertThatCode(() -> {
+            new PushEventService(mockRemoteSourceControl, emptyList(),true,mock(PushEventMonitor.class));
+        }).doesNotThrowAnyException();
+
+        assertThatCode(() -> {
+            new PushEventService(mockRemoteSourceControl, emptyList(),false,mock(PushEventMonitor.class));
+        }).as("even when a pushEventMonitor is provided, it can be disabled with a flag")
+                .doesNotThrowAnyException();
+    }
+
 
     @Test
     public void runtimeExceptionInHandlerShouldNotPreventOthersToExecute() {
