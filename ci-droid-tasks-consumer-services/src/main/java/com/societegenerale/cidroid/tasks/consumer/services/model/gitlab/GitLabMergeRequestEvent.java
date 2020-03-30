@@ -2,15 +2,20 @@ package com.societegenerale.cidroid.tasks.consumer.services.model.gitlab;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonDeserialize(converter = GitLabMergeRequestEventSanitizer.class)
 public class GitLabMergeRequestEvent extends PullRequestEvent {
 
-    @JsonProperty("object_kind.id")
+    private GitLabProject project;
+
     private int prNumber;
 
     public String action;
@@ -18,4 +23,9 @@ public class GitLabMergeRequestEvent extends PullRequestEvent {
     private Repository repository;
 
     private String rawMessage;
+
+    @JsonProperty("object_attributes")
+    private void unpackNestedAttributes(Map<String,Object> attributes) {
+        this.prNumber = (Integer) attributes.get("id");
+    }
 }
