@@ -9,6 +9,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMoc
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,9 @@ public abstract class SourceControlEventHandlerIT {
 
     MockServerClient gitHubMockClient;
 
+    String rawGitHubPushEvent;
+    String rawGitHubPullRequest;
+
     PushEvent pushEvent;
     PullRequest pullRequest;
 
@@ -45,6 +49,9 @@ public abstract class SourceControlEventHandlerIT {
 
         gitHubMockClient = new MockServerClient("localhost", GITHUB_MOCK_PORT);
 
+        rawGitHubPushEvent = readFile("pushEvent.json");
+        rawGitHubPullRequest = readFile("singlePullRequest.json");
+
         pushEvent = (PushEvent) getObjectFromJson("pushEvent.json", GitHubPushEvent.class);
         pullRequest = (PullRequest) getObjectFromJson("singlePullRequest.json", PullRequest.class);
     }
@@ -52,6 +59,13 @@ public abstract class SourceControlEventHandlerIT {
     @AfterEach
     public void tearDown() {
         githubMockServer.stop();
+    }
+
+
+    private String readFile(String filename ) throws IOException {
+
+        return IOUtils
+                .toString(SourceControlEventHandlerIT.class.getClassLoader().getResourceAsStream(filename), "UTF-8");
     }
 
     private Object getObjectFromJson(String fileName, Class<?> clazz) throws IOException {

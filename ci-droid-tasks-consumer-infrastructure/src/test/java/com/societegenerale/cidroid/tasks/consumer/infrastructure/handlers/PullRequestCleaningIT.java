@@ -12,7 +12,7 @@ public class PullRequestCleaningIT extends SourceControlEventHandlerIT {
 
     @Test
     public void shouldCloseOldPullRequests() {
-        sourceControlEventListener.onPushEventOnDefaultBranch(pushEvent);
+        sourceControlEventListener.onPushEventOnDefaultBranch(rawGitHubPushEvent);
 
         gitHubMockClient.verify(
                 request()
