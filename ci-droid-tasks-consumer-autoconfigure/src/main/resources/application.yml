@@ -46,6 +46,10 @@ spring:
     virtual-host: ${ENVNAME}
     ssl.enabled: ${RABBITMQ_SSL}
 
+synchronous-mode: true
+spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+debug: true
 
 hystrix.command.default.execution.timeout.enabled: false
 feign.hystrix.enabled: false
@@ -53,10 +57,10 @@ feign.hystrix.enabled: false
 
 gitHub:
   api.url: "https://api.github.com"
-  oauthToken: ${SERVICE_ACCOUNT_GITHUB_OAUTH_TOKEN}
+  oauthToken: "blabla"
 #below credentials should be a service account credentials - they will be used to rebase PRs automatically using Git commands.
-  login: ${SERVICE_ACCOUNT_USERNAME}
-  password: ${SERVICE_ACCOUNT_PASSWORD}
+  login: "blabla"
+  password: "blabla"
 
 
 notifiers:

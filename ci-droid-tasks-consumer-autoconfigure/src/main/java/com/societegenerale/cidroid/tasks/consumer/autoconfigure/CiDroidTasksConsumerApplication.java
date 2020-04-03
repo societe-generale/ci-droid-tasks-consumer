@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
-@Import({CiDroidTasksConsumerAutoConfiguration.class})
+@Import({CiDroidTasksConsumerAutoConfiguration.class,AsyncConfig.class})
 @SuppressWarnings("squid:S1118") //can't add a private constructor, otherwise app won't start
 public class CiDroidTasksConsumerApplication {
 

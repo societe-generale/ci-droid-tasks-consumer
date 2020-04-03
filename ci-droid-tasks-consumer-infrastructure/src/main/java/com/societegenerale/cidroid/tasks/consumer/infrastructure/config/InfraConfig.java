@@ -2,9 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.extensions.actionToReplicate.*;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformCommand;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
@@ -24,7 +22,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 @Configuration
 @EnableFeignClients(clients = { FeignRemoteGitHub.class})
@@ -88,32 +85,6 @@ public class InfraConfig {
         return new ActionToPerformListener(actionToPerformService, actionsToReplicate, remoteSourceControl,actionNotifier);
     }
 
-    @Bean
-    @ConditionalOnProperty(name = "synchronous-mode", havingValue = "false", matchIfMissing = true)
-    public SourceControlEventListener pushOnMasterListener(PullRequestEventService pullRequestEventService,
-                                                           PushEventService pushEventService,
-                                                           SourceControlEventMapper eventMapper) {
-
-        return new SourceControlEventListener(pullRequestEventService,pushEventService,eventMapper);
-    }
-
-    @Bean(name = "push-on-default-branch")
-    public Consumer<String> msgConsumerPush(SourceControlEventListener actionToPerformListener) {
-
-        return  event -> {actionToPerformListener.onPushEventOnDefaultBranch(event);};
-    }
-
-    @Bean(name = "push-on-non-default-branch")
-    public Consumer<String> msgConsumerPushNonDefaultBranch(SourceControlEventListener actionToPerformListener) {
-
-        return  event -> {actionToPerformListener.onPushEventOnNonDefaultBranch(event);};
-    }
-
-    @Bean(name = "pull-request-event")
-    public Consumer<String> msgConsumerPREvent(SourceControlEventListener actionToPerformListener) {
-
-        return  event -> {actionToPerformListener.onPullRequestEvent(event);};
-    }
 
     @Bean
     @ConditionalOnProperty(name = "synchronous-mode", havingValue = "true")
@@ -164,10 +135,5 @@ public class InfraConfig {
         return new EMailActionNotifier(javaMailSender, mailSender);
     }
 
-    @Bean(name = "actions-to-perform")
-    public Consumer<ActionToPerformCommand> msgConsumer(ActionToPerformListener actionToPerformListener) {
-
-        return  action -> {actionToPerformListener.onActionToPerform(action);};
-    }
 
 }
