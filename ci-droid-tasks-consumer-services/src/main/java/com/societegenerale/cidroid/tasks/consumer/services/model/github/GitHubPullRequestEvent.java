@@ -26,9 +26,4 @@ public class GitHubPullRequestEvent extends PullRequestEvent {
         this.repository=repository;
     }
 
-
-    @Override
-    public String getRawMessage() {
-        return null;
-    }
 }

@@ -1,8 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -21,17 +19,13 @@ public class GithubEventListenerLIVETest {
     @Autowired
     SourceControlEventListener sourceControlEventListener;
 
-    ObjectMapper objectMapper = new ObjectMapper();
-
     @Test
     public void actualLiveTest() throws Exception {
 
         String pushEventPayload = IOUtils
                 .toString(GithubEventListenerLIVETest.class.getClassLoader().getResourceAsStream("pushEventLive.json"), "UTF-8");
 
-        PushEvent pushEvent = objectMapper.readValue(pushEventPayload, PushEvent.class);
-
-        sourceControlEventListener.onPushEventOnDefaultBranch(pushEvent);
+        sourceControlEventListener.onPushEventOnDefaultBranch(pushEventPayload);
 
     }
 

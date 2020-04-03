@@ -5,10 +5,10 @@ import com.societegenerale.cidroid.extensions.actionToReplicate.*;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformCommand;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventListener;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.*;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.HttpEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
@@ -29,7 +29,6 @@ import java.util.function.Consumer;
 @ComponentScan
 public class InfraConfig {
 
-    private static final PushEventMonitor DONT_MONITOR_ANYTHING=(pushEvent) -> {};
 
     @Bean
     public ActionToReplicate overwriteStaticFileAction() {
@@ -89,9 +88,28 @@ public class InfraConfig {
 
     @Bean
     public SourceControlEventListener pushOnMasterListener(PullRequestEventService pullRequestEventService,
-                                                           PushEventService pushEventService) {
+                                                           PushEventService pushEventService,
+                                                           SourceControlEventMapper eventMapper) {
 
-        return new SourceControlEventListener(pullRequestEventService,pushEventService);
+        return new SourceControlEventListener(pullRequestEventService,pushEventService,eventMapper);
+    }
+
+    @Bean(name = "push-on-default-branch")
+    public Consumer<String> msgConsumerPush(SourceControlEventListener actionToPerformListener) {
+
+        return  event -> {actionToPerformListener.onPushEventOnDefaultBranch(event);};
+    }
+
+    @Bean(name = "push-on-non-default-branch")
+    public Consumer<String> msgConsumerPushNonDefaultBranch(SourceControlEventListener actionToPerformListener) {
+
+        return  event -> {actionToPerformListener.onPushEventOnNonDefaultBranch(event);};
+    }
+
+    @Bean(name = "pull-request-event")
+    public Consumer<String> msgConsumerPREvent(SourceControlEventListener actionToPerformListener) {
+
+        return  event -> {actionToPerformListener.onPullRequestEvent(event);};
     }
 
     @Bean
@@ -103,16 +121,6 @@ public class InfraConfig {
         return new PushEventService(remoteSourceControl, pushEventHandlers,ciDroidBehavior.isPushEventsMonitoringRequired(),pushEventMonitor);
     }
 
-    @Bean
-    public PushEventMonitor pushEventMonitoringHandler(CiDroidBehavior ciDroidBehavior) {
-
-        if(ciDroidBehavior.isPushEventsMonitoringRequired()){
-            return new HttpEventMonitor();
-        }
-        else{
-            return DONT_MONITOR_ANYTHING;
-        }
-    }
 
     @Bean
     public PullRequestEventService pullRequestEventService(List<PullRequestEventHandler> pullRequestEventHandlers) {

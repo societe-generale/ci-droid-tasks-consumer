@@ -13,14 +13,20 @@ public class SourceControlEventListener {
 
     private PullRequestEventService pullRequestEventService;
 
-    public SourceControlEventListener(PullRequestEventService pullRequestEventService,PushEventService pushEventService) {
+    private  SourceControlEventMapper eventMapper;
+
+    public SourceControlEventListener(PullRequestEventService pullRequestEventService,PushEventService pushEventService, SourceControlEventMapper eventMapper) {
         this.pullRequestEventService = pullRequestEventService;
         this.pushEventService = pushEventService;
+        this.eventMapper=eventMapper;
     }
 
-    public void onPushEventOnDefaultBranch(PushEvent pushEvent) {
+    public void onPushEventOnDefaultBranch(String rawPushEvent) {
 
+        PushEvent pushEvent=null;
         try {
+            pushEvent=eventMapper.deserializePushEvent(rawPushEvent);
+
             log.info("received event on branch {} for repo {}", pushEvent.getRef(), pushEvent.getRepository().getFullName());
 
             pushEventService.onPushOnDefaultBranchEvent(pushEvent);
@@ -29,8 +35,12 @@ public class SourceControlEventListener {
         }
     }
 
-    public void onPushEventOnNonDefaultBranch(PushEvent pushEvent) {
+    public void onPushEventOnNonDefaultBranch(String rawPushEvent) {
+
+        PushEvent pushEvent=null;
         try {
+            pushEvent=eventMapper.deserializePushEvent(rawPushEvent);
+
             log.info("received event on branch {} for repo {}", pushEvent.getRef(), pushEvent.getRepository().getFullName());
 
             pushEventService.onPushOnNonDefaultBranchEvent(pushEvent);
@@ -39,12 +49,20 @@ public class SourceControlEventListener {
         }
     }
 
-    public void onPullRequestEvent(PullRequestEvent pullRequestEvent) {
+    public void onPullRequestEvent(String rawPullRequestEvent) {
 
-        log.info("received pullRequest event of type {} for repo {}",pullRequestEvent.getAction(),pullRequestEvent.getRepository().getFullName());
+        PullRequestEvent pullRequestEvent=null;
 
-        pullRequestEventService.onPullRequestEvent(pullRequestEvent);
+        try {
+            pullRequestEvent = eventMapper.deserializePullRequestEvent(rawPullRequestEvent);
 
+            log.info("received pullRequest event of type {} for repo {}", pullRequestEvent.getAction(), pullRequestEvent.getRepository().getFullName());
+
+            pullRequestEventService.onPullRequestEvent(pullRequestEvent);
+        }
+        catch (Exception e) {
+                log.warn("problem while processing the event {}",pullRequestEvent, e);
+            }
     }
 
 }

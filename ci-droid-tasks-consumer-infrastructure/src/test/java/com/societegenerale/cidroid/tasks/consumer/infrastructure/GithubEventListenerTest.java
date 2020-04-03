@@ -30,7 +30,7 @@ public class GithubEventListenerTest {
     @BeforeEach
     public void setUp() {
 
-        listener=new SourceControlEventListener(mockPullRequestEventService, mockPushEventService);
+        listener=new SourceControlEventListener(mockPullRequestEventService, mockPushEventService,new GitHubEventDeserializer());
     }
 
     @Test
@@ -40,7 +40,7 @@ public class GithubEventListenerTest {
 
         PushEvent pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
 
-        listener.onPushEventOnDefaultBranch(pushEvent);
+        listener.onPushEventOnDefaultBranch(pushEventPayload);
 
         verify(mockPushEventService,times(1)).onPushOnDefaultBranchEvent(pushEvent);
         verify(mockPullRequestEventService,never()).onPullRequestEvent(any(PullRequestEvent.class));
@@ -54,8 +54,7 @@ public class GithubEventListenerTest {
 
         PullRequestEvent pullRequestEvent= objectMapper.readValue(pullRequestEventPayload, GitHubPullRequestEvent.class);
 
-
-        listener.onPullRequestEvent(pullRequestEvent);
+        listener.onPullRequestEvent(pullRequestEventPayload);
 
         verify(mockPushEventService,never()).onPushOnDefaultBranchEvent(any(PushEvent.class));
         verify(mockPullRequestEventService,times(1)).onPullRequestEvent(pullRequestEvent);

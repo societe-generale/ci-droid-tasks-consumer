@@ -28,7 +28,7 @@ public class PullRequestNotificationsIT extends SourceControlEventHandlerIT {
 
     @Test
     public void shouldNotifyPullRequestOwnerIfNotMergeable() {
-        sourceControlEventListener.onPushEventOnDefaultBranch(pushEvent);
+        sourceControlEventListener.onPushEventOnDefaultBranch(rawGitHubPushEvent);
 
         await().atMost(2, SECONDS)
                 .until(() -> assertThat(notifier.getNotifications()).hasSize(1));

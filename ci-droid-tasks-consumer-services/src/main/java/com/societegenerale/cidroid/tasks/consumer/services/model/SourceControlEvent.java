@@ -7,6 +7,7 @@ public interface SourceControlEvent {
 
     Repository getRepository();
 
-    String getRawMessage();
+    String getRawEvent();
 
+    void setRawEvent(String rawEvent);
 }
