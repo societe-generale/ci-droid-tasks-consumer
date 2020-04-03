@@ -29,6 +29,8 @@ import java.util.List;
 @Import({InfraConfig.class, GitHubConfig.class, GitLabConfig.class})
 public class CiDroidTasksConsumerAutoConfiguration {
 
+    private static final PushEventMonitor DONT_MONITOR_ANYTHING=(pushEvent) -> {};
+
     @Bean
     @ConditionalOnProperty(value = "cidroid-behavior.notifyOwnerForNonMergeablePr.enabled", havingValue = "true")
     @AutoConfigureOrder(1)
@@ -59,6 +61,14 @@ public class CiDroidTasksConsumerAutoConfiguration {
     public PushEventHandler dummyPushEventOnDefaultBranchHandler() {
 
         return new DummyPushEventHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PushEventMonitor.class)
+    @AutoConfigureOrder(500)
+    public PushEventMonitor dummyPushEventMonitor() {
+
+        return DONT_MONITOR_ANYTHING;
     }
 
     @Bean

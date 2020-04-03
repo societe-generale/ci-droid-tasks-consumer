@@ -9,7 +9,6 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEv
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.*;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.HttpEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
@@ -30,7 +29,6 @@ import java.util.function.Consumer;
 @ComponentScan
 public class InfraConfig {
 
-    private static final PushEventMonitor DONT_MONITOR_ANYTHING=(pushEvent) -> {};
 
     @Bean
     public ActionToReplicate overwriteStaticFileAction() {
@@ -123,16 +121,6 @@ public class InfraConfig {
         return new PushEventService(remoteSourceControl, pushEventHandlers,ciDroidBehavior.isPushEventsMonitoringRequired(),pushEventMonitor);
     }
 
-    @Bean
-    public PushEventMonitor pushEventMonitoringHandler(CiDroidBehavior ciDroidBehavior) {
-
-        if(ciDroidBehavior.isPushEventsMonitoringRequired()){
-            return new HttpEventMonitor();
-        }
-        else{
-            return DONT_MONITOR_ANYTHING;
-        }
-    }
 
     @Bean
     public PullRequestEventService pullRequestEventService(List<PullRequestEventHandler> pullRequestEventHandlers) {

@@ -84,4 +84,11 @@ public class TestConfig {
 
     }
 
+    @Bean
+    public PushEventMonitor dummyPushEventMonitor() {
+
+        // do nothing..
+        return (pushEvent) -> {};
+    }
+
 }
