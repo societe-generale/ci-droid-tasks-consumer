@@ -8,12 +8,14 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEv
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.SourceControlEventController;
 import com.societegenerale.cidroid.tasks.consumer.services.*;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
@@ -87,6 +89,7 @@ public class InfraConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "synchronous-mode", havingValue = "false", matchIfMissing = true)
     public SourceControlEventListener pushOnMasterListener(PullRequestEventService pullRequestEventService,
                                                            PushEventService pushEventService,
                                                            SourceControlEventMapper eventMapper) {
@@ -111,6 +114,14 @@ public class InfraConfig {
 
         return  event -> {actionToPerformListener.onPullRequestEvent(event);};
     }
+
+    @Bean
+    @ConditionalOnProperty(name = "synchronous-mode", havingValue = "true")
+    public SourceControlEventController sourceControlEventController(PullRequestEventService pullRequestEventService, PushEventService pushEventService,SourceControlEventMapper sourceControlEventMapper) {
+
+        return new SourceControlEventController(pullRequestEventService, pushEventService,sourceControlEventMapper);
+    }
+
 
     @Bean
     public PushEventService pushEventService(RemoteSourceControl remoteSourceControl,
