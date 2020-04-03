@@ -22,12 +22,11 @@ public class GitHubPushEvent extends PushEvent {
 
     String userName;
 
-    private String rawMessage;
-
     @JsonProperty("pusher")
     private void unpackNestedPusher(Map<String,Object> pusher) {
         this.userName = (String)pusher.get("name");
         this.userEmail = (String)pusher.get("email");
     }
+
 }
 

@@ -1,6 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.GitHubeventDeserializer;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.GitHubEventDeserializer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +15,6 @@ public class GitHubConfig {
     public SourceControlEventMapper gitLabEventMapper()
     {
 
-        return  new GitHubeventDeserializer();
+        return  new GitHubEventDeserializer();
     }
 }

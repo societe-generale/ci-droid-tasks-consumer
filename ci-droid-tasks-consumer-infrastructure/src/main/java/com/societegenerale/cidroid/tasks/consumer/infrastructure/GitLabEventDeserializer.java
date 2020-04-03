@@ -14,11 +14,18 @@ public class GitLabEventDeserializer implements SourceControlEventMapper {
     @Override
     public PushEvent deserializePushEvent(String rawPushEvent) throws JsonProcessingException {
 
-        return objectMapper.readValue(rawPushEvent, GitLabPushEvent.class);
+        GitLabPushEvent pushEvent=objectMapper.readValue(rawPushEvent, GitLabPushEvent.class);
+        pushEvent.setRawEvent(rawPushEvent);
+
+        return pushEvent;
     }
 
     @Override
-    public PullRequestEvent deserializePullRequestEvent(String rawPullrequestEvent) throws JsonProcessingException {
-        return objectMapper.readValue(rawPullrequestEvent, GitLabMergeRequestEvent.class);
+    public PullRequestEvent deserializePullRequestEvent(String rawPullRequestEvent) throws JsonProcessingException {
+
+        GitLabMergeRequestEvent pullRequestEvent=objectMapper.readValue(rawPullRequestEvent, GitLabMergeRequestEvent.class);
+        pullRequestEvent.setRawEvent(rawPullRequestEvent);
+
+        return pullRequestEvent;
     }
 }

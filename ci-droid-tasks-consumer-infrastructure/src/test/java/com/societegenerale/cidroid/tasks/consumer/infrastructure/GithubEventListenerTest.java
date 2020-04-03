@@ -30,7 +30,7 @@ public class GithubEventListenerTest {
     @BeforeEach
     public void setUp() {
 
-        listener=new SourceControlEventListener(mockPullRequestEventService, mockPushEventService,new GitHubeventDeserializer());
+        listener=new SourceControlEventListener(mockPullRequestEventService, mockPushEventService,new GitHubEventDeserializer());
     }
 
     @Test

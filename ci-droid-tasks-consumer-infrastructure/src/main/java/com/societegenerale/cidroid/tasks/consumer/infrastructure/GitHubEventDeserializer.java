@@ -7,18 +7,25 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 
-public class GitHubeventDeserializer implements SourceControlEventMapper {
+public class GitHubEventDeserializer implements SourceControlEventMapper {
 
     private ObjectMapper objectMapper=new ObjectMapper();
 
     @Override
     public PushEvent deserializePushEvent(String rawPushEvent) throws JsonProcessingException {
 
-        return objectMapper.readValue(rawPushEvent, GitHubPushEvent.class);
+        GitHubPushEvent pushEvent=objectMapper.readValue(rawPushEvent, GitHubPushEvent.class);
+        pushEvent.setRawEvent(rawPushEvent);
+
+        return pushEvent;
     }
 
     @Override
-    public PullRequestEvent deserializePullRequestEvent(String rawPullrequestEvent) throws JsonProcessingException {
-        return objectMapper.readValue(rawPullrequestEvent, GitHubPullRequestEvent.class);
+    public PullRequestEvent deserializePullRequestEvent(String rawPullRequestEvent) throws JsonProcessingException {
+
+        GitHubPullRequestEvent pullRequestEvent=objectMapper.readValue(rawPullRequestEvent, GitHubPullRequestEvent.class);
+        pullRequestEvent.setRawEvent(rawPullRequestEvent);
+
+        return pullRequestEvent;
     }
 }

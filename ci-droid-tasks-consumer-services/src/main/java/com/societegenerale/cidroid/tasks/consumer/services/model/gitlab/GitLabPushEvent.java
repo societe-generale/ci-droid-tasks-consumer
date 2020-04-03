@@ -28,9 +28,6 @@ public class GitLabPushEvent extends PushEvent {
         throw new UnsupportedOperationException("headCommit is not implemented yet for GitLab");
     }
 
-
     private Repository repository;
-
-    private String rawMessage;
 
 }

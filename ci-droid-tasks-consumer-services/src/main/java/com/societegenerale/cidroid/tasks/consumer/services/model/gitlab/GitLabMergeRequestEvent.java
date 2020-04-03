@@ -22,8 +22,6 @@ public class GitLabMergeRequestEvent extends PullRequestEvent {
 
     private Repository repository;
 
-    private String rawMessage;
-
     @JsonProperty("object_attributes")
     private void unpackNestedAttributes(Map<String,Object> attributes) {
         this.prNumber = (Integer) attributes.get("id");
