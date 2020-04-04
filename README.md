@@ -19,5 +19,5 @@ For those situations, it's possible to start ci-droid-tasks-consumer in sync mod
 To achieve this : 
 
 - set `synchronous-mode` property to true
-- disable rabbit (or Kafka) autoconfig via `spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration`
+- disable rabbit (or Kafka) autoconfig via `spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration` property
 
