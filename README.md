@@ -10,7 +10,7 @@ Main documentation is available [here](https://github.com/societe-generale/ci-dr
 
 ## Sync mode 
 
-In regular mode, CI-droid-tasks-controller receives events from an event bus (RabbitMq or Kafka, which are supported by Spring Cloud) : since processing a source control event may take some time, we usually prefer to respond immediately to source the control and ackoweledge the request, then process it asynchronously. 
+In regular mode, CI-droid-tasks-controller receives events from an event bus (RabbitMq or Kafka, which are supported by Spring Cloud) : since processing a source control event may take some time, we usually prefer to respond immediately to source the control and acknowledge the request, then process it asynchronously. 
 
 However, especially while prototyping, we may want a simpler setup without a messaging bus and CI-droid may be preferable. 
 
