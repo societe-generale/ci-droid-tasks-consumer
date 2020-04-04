@@ -46,6 +46,11 @@ spring:
     virtual-host: ${ENVNAME}
     ssl.enabled: ${RABBITMQ_SSL}
 
+# enable below config to be in synchronous mode without messaging bus
+#synchronous-mode: true
+#spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+debug: true
 
 hystrix.command.default.execution.timeout.enabled: false
 feign.hystrix.enabled: false

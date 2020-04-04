@@ -1,9 +1,12 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.handlers;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.TestConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.YamlFileApplicationContextInitializer;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.AsyncConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
@@ -18,12 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.IOException;
-
 import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer.GITHUB_MOCK_PORT;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { InfraConfig.class, TestConfig.class },
+@ContextConfiguration(classes = { InfraConfig.class, AsyncConfig.class,TestConfig.class },
         initializers = YamlFileApplicationContextInitializer.class)
 public abstract class SourceControlEventHandlerIT {
 
