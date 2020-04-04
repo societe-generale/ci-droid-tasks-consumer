@@ -5,13 +5,20 @@
 ### Added
 
 ### Changed
-- upgrading to Spring Boot 2.2.x and Spring Cloud Hoxton SR3
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+## [1.3.0] - 2020-04-04
+
+### Changed
+- upgrading to Spring Boot 2.2.6 and Spring Cloud Hoxton SR3
+- now we can process events coming from GitLab - but very few operations are available for now
+- introducing PushEventMonitor concept to allow monitoring of raw events   
+
 
 ## [1.2.0] - 2019-08-04
 
