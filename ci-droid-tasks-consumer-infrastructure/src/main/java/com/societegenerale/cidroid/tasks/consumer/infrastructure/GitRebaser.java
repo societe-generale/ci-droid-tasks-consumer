@@ -1,5 +1,20 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import javax.annotation.Nonnull;
+
 import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
@@ -9,7 +24,14 @@ import lombok.val;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.jgit.api.*;
+import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand;
+import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.RebaseCommand;
+import org.eclipse.jgit.api.RebaseResult;
+import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
@@ -24,16 +46,9 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.*;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.DURATION;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
 import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PR_NOT_REBASED;
 import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PR_REBASED;
 import static java.util.Collections.emptyList;
@@ -470,6 +485,7 @@ public class GitRebaser implements Rebaser {
         techEvent.publish();
     }
 
+    @Nonnull
     private List<RevCommit> getCommitsOnWhichBranchIsLateComparedToBaseBranch(Git git, PullRequest pr) throws GitAPIException, IOException {
 
         List<RevCommit> commitsToRebase = gitWrapper.getCommitsOnWhichBranchIsLateComparedToBaseBranch(git, pr);
@@ -485,6 +501,7 @@ public class GitRebaser implements Rebaser {
         return commitsToRebase;
     }
 
+    @Nonnull
     private List<RevCommit> getCommitsInBranchOnly(Git git, PullRequest pr, boolean localBranch) throws GitAPIException, IOException {
 
         String branchName = pr.getBranchName();

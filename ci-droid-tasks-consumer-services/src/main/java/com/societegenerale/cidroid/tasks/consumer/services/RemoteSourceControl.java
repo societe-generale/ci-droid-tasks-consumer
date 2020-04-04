@@ -1,14 +1,27 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
-import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
-
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.Nonnull;
+
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestFile;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+
 public interface RemoteSourceControl {
 
+    @Nonnull
     List<PullRequest> fetchOpenPullRequests(String repoFullName);
 
     PullRequest fetchPullRequestDetails(String repoFullName, int prNumber);
@@ -21,8 +34,10 @@ public interface RemoteSourceControl {
             int prNumber,
             Comment comment);
 
+    @Nonnull
     List<PullRequestFile> fetchPullRequestFiles(String repoFullName, int prNumber);
 
+    @Nonnull
     List<PullRequestComment> fetchPullRequestComments(String repoFullName, int prNumber);
 
     ResourceContent fetchContent(String repoFullName, String path, String branch);

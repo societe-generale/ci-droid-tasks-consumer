@@ -1,11 +1,35 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.annotation.Nonnull;
+
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GlobalProperties;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
-import feign.*;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestFile;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import feign.Client;
+import feign.Feign;
+import feign.Headers;
+import feign.Logger;
+import feign.RequestInterceptor;
+import feign.RequestLine;
+import feign.RequestTemplate;
+import feign.Response;
 import feign.codec.ErrorDecoder;
 import feign.httpclient.ApacheHttpClient;
 import feign.jackson.JacksonDecoder;
@@ -25,11 +49,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import static feign.FeignException.errorStatus;
 
 @Profile("!gitLab")
@@ -43,6 +62,7 @@ public interface FeignRemoteGitHub extends RemoteSourceControl {
                     consumes = MediaType.APPLICATION_JSON_VALUE,
                     produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
+    @Nonnull
     List<PullRequest> fetchOpenPullRequests(@PathVariable("repoFullName") String repoFullName);
 
     @RequestMapping(method = RequestMethod.GET,
@@ -74,6 +94,7 @@ public interface FeignRemoteGitHub extends RemoteSourceControl {
                     consumes = MediaType.APPLICATION_JSON_VALUE,
                     produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
+    @Nonnull
     List<PullRequestFile> fetchPullRequestFiles(@PathVariable("repoFullName") String repoFullName,
                                                 @PathVariable("prNumber") int prNumber);
 
@@ -82,6 +103,7 @@ public interface FeignRemoteGitHub extends RemoteSourceControl {
                     consumes = MediaType.APPLICATION_JSON_VALUE,
                     produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
+    @Nonnull
     List<PullRequestComment> fetchPullRequestComments(@PathVariable("repoFullName") String repoFullName,
                                                       @PathVariable("prNumber") int prNumber);
 

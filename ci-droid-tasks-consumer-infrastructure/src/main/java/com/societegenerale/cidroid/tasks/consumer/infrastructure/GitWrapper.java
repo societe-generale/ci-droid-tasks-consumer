@@ -1,18 +1,5 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.eclipse.jgit.api.*;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.transport.PushResult;
-import org.eclipse.jgit.transport.RemoteRefUpdate;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.slf4j.MDC;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -22,6 +9,27 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.StreamSupport;
+
+import javax.annotation.Nonnull;
+
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.CreateBranchCommand;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.RebaseCommand;
+import org.eclipse.jgit.api.RebaseResult;
+import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RemoteRefUpdate;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.slf4j.MDC;
 
 import static java.util.stream.Collectors.toList;
 
@@ -61,6 +69,7 @@ public class GitWrapper {
                 .call();
     }
 
+    @Nonnull
     public List<RevCommit> getCommitsOnWhichBranchIsLateComparedToBaseBranch(Git git, PullRequest pr)
             throws IOException, GitAPIException {
 
@@ -75,6 +84,7 @@ public class GitWrapper {
 
     }
 
+    @Nonnull
     public List<RevCommit> getCommitsInBranchOnly(Git git, String baseBranch, String otherBranch)
             throws IOException, GitAPIException {
 
@@ -108,6 +118,7 @@ public class GitWrapper {
         return git.reset();
     }
 
+    @Nonnull
     public Set<String> cleanDirectories(Git git) throws GitAPIException {
 
         return git.clean().setCleanDirectories(true).call();
@@ -158,6 +169,7 @@ public class GitWrapper {
                 .call();
     }
 
+    @Nonnull
     public Iterable<PushResult> forcePush(Git git, String login, String password) throws GitAPIException {
 
         val result = git.push()
