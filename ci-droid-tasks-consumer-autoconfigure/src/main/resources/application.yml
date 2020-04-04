@@ -46,8 +46,9 @@ spring:
     virtual-host: ${ENVNAME}
     ssl.enabled: ${RABBITMQ_SSL}
 
-synchronous-mode: true
-spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+# enable below config to be in synchronous mode without messaging bus
+#synchronous-mode: true
+#spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 
 debug: true
 
@@ -57,10 +58,10 @@ feign.hystrix.enabled: false
 
 gitHub:
   api.url: "https://api.github.com"
-  oauthToken: "blabla"
+  oauthToken: ${SERVICE_ACCOUNT_GITHUB_OAUTH_TOKEN}
 #below credentials should be a service account credentials - they will be used to rebase PRs automatically using Git commands.
-  login: "blabla"
-  password: "blabla"
+  login: ${SERVICE_ACCOUNT_USERNAME}
+  password: ${SERVICE_ACCOUNT_PASSWORD}
 
 
 notifiers:
