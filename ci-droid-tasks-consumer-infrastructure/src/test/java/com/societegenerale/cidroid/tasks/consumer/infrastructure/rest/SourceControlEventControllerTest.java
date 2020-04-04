@@ -1,20 +1,17 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.rest;
 
-import java.io.IOException;
-
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.TestUtils;
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -34,15 +31,9 @@ class SourceControlEventControllerTest {
     @MockBean
     private PullRequestEventService mockPullRequestEventService;
 
-    @Captor
-    private ArgumentCaptor<PushEvent> sentMessage;
+    private String pushEventAsString= TestUtils.readFileToString("/gitLab/pushEventGitLab.json");
 
-    private String pushEventAsString;
-
-    @BeforeEach
-    void loadEventAndConfigureMock() throws IOException {
-        pushEventAsString = TestUtils.readFileToString("/gitLab/pushEventGitLab.json");
-    }
+    private String pullRequestEventAsString= TestUtils.readFileToString("/gitLab/mergeRequestEventGitLab.json");
 
     @Test
     void forwardEventToNonDefaultBranchProcessing_whenPushOnNonDefaultBranch() throws Exception {
@@ -51,7 +42,7 @@ class SourceControlEventControllerTest {
 
         performPOSTandExpectSuccess(pushEventOnBranchAsString, "Push Hook");
 
-        verify(mockPushEventService, times(1)).onPushOnNonDefaultBranchEvent(sentMessage.capture());
+        verify(mockPushEventService, times(1)).onPushOnNonDefaultBranchEvent(any(PushEvent.class));
 
     }
 
@@ -60,10 +51,18 @@ class SourceControlEventControllerTest {
 
         performPOSTandExpectSuccess(pushEventAsString, "Push Hook");
 
-        verify(mockPushEventService, times(1)).onPushOnDefaultBranchEvent(sentMessage.capture());
+        verify(mockPushEventService, times(1)).onPushOnDefaultBranchEvent(any(PushEvent.class));
 
     }
 
+    @Test
+    void forwardEventToPullRequestProcessing_whenPullRequestEvent() throws Exception {
+
+        performPOSTandExpectSuccess(pullRequestEventAsString, "Merge Request Hook");
+
+        verify(mockPullRequestEventService, times(1)).onPullRequestEvent(any(PullRequestEvent.class));
+
+    }
 
     private void performPOSTandExpectSuccess(String requestBodyContent, String headerValues) throws Exception {
         mvc.perform(post("/cidroid-sync-webhook/gitlab")

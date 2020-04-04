@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/cidroid-sync-webhook/gitlab")
+@RequestMapping(value = "/cidroid-sync-webhook")
 @Slf4j
 public class SourceControlEventController {
 
@@ -40,7 +40,7 @@ public class SourceControlEventController {
         return processPushEvent(rawPushEvent);
     }
 
-    @PostMapping(headers = "X-Gitlab-Event=Push Hook")
+    @PostMapping(value="/gitlab", headers = "X-Gitlab-Event=Push Hook")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> onGitLabPushEvent(HttpEntity<String> rawPushEvent) {
@@ -70,10 +70,24 @@ public class SourceControlEventController {
         }
     }
 
-    @PostMapping(headers = "X-Github-Event=pull_request")
+    @PostMapping(path="/github",headers = "X-Github-Event=pull_request")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> onPullRequestEvent(HttpEntity<String> rawPullRequestEvent) {
+    public ResponseEntity<?> onGitHubPullRequestEvent(HttpEntity<String> rawPullRequestEvent) {
+
+        return processPullRequestEvent(rawPullRequestEvent);
+    }
+
+    @PostMapping(path="/gitlab",headers = "X-Gitlab-Event=Merge Request Hook")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> onGitLabPullRequestEvent(HttpEntity<String> rawPullRequestEvent) {
+
+        return processPullRequestEvent(rawPullRequestEvent);
+    }
+
+    private ResponseEntity<?> processPullRequestEvent(HttpEntity<String> rawPullRequestEvent) {
+
 
         PullRequestEvent pullRequestEvent=null;
 
@@ -90,7 +104,8 @@ public class SourceControlEventController {
             log.warn("problem while processing the event {}",pullRequestEvent, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
 
+
+    }
 
 }
