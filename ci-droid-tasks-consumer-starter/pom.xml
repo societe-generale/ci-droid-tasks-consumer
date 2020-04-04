@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ci-droid-tasks-consumer-starter</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>CI droid starter</name>
@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
         <artifactId>ci-droid-tasks-consumer-parent</artifactId>
-        <version>1.3.0</version>
+        <version>1.3.1-SNAPSHOT</version>
     </parent>
 
 
