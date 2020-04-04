@@ -1,4 +1,6 @@
-package com.societegenerale.cidroid.tasks.consumer.autoconfigure;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
+
+import java.util.function.Consumer;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformCommand;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
@@ -9,8 +11,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.function.Consumer;
 
 @Configuration
 @ConditionalOnProperty(name = "synchronous-mode", havingValue = "false", matchIfMissing = true)

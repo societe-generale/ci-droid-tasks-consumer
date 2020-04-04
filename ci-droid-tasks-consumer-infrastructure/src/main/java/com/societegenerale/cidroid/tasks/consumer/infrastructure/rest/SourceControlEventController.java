@@ -9,10 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/cidroid-sync-webhook")
+@RequestMapping(value = "/cidroid-sync-webhook/gitlab")
 @Slf4j
 public class SourceControlEventController {
 
@@ -29,11 +33,21 @@ public class SourceControlEventController {
     }
 
 
-    @PostMapping(headers = "X-Github-Event=push")
+    @PostMapping(value="/github",headers = "X-Github-Event=push")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> onPushEvent(HttpEntity<String> rawPushEvent) {
+    public ResponseEntity<?> onGitHubPushEvent(HttpEntity<String> rawPushEvent) {
+        return processPushEvent(rawPushEvent);
+    }
 
+    @PostMapping(headers = "X-Gitlab-Event=Push Hook")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> onGitLabPushEvent(HttpEntity<String> rawPushEvent) {
+        return processPushEvent(rawPushEvent);
+    }
+
+    private ResponseEntity<?> processPushEvent(HttpEntity<String> rawPushEvent) {
         PushEvent pushEvent=null;
         try {
             pushEvent=sourceControlEventMapper.deserializePushEvent(rawPushEvent.getBody());
@@ -54,7 +68,6 @@ public class SourceControlEventController {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 
     @PostMapping(headers = "X-Github-Event=pull_request")
