@@ -8,6 +8,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
 import lombok.Data;
 
+import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -30,11 +32,21 @@ public class GitLabPushEvent extends PushEvent implements GitLabEvent {
 
     private String ref;
 
+    private Repository repository;
+
     @Override
     public Commit getHeadCommit() {
         throw new UnsupportedOperationException("headCommit is not implemented yet for GitLab");
     }
 
-    private Repository repository;
+    @Nonnull
+    public List<Commit> getCommits() {
+
+        if(commits==null){
+            return Collections.emptyList();
+        }
+
+        return commits;
+    }
 
 }

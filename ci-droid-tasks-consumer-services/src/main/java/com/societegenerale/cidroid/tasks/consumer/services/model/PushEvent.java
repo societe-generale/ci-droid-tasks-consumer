@@ -3,6 +3,7 @@ package com.societegenerale.cidroid.tasks.consumer.services.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 
@@ -20,6 +21,7 @@ public abstract class PushEvent implements SourceControlEvent {
 
     public abstract int getNbCommits();
 
+    @Nonnull
     public abstract List<Commit> getCommits();
 
     public boolean happenedOnDefaultBranch(){

@@ -6,6 +6,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import lombok.Data;
 import org.apache.commons.lang3.NotImplementedException;
 
+import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +25,16 @@ public class GitHubPushEvent extends PushEvent {
     String userEmail;
 
     String userName;
+
+    @Nonnull
+    public List<Commit> getCommits() {
+
+        if(commits==null){
+            return Collections.emptyList();
+        }
+
+        return commits;
+    }
 
     List<Commit> commits;
 
