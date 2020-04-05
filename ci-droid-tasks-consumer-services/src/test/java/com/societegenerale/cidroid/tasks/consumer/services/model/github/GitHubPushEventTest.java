@@ -28,6 +28,10 @@ class GitHubPushEventTest {
         assertThat(pushEvent.getRef()).isEqualTo("refs/heads/master");
 
         assertThat(pushEvent.getCommits()).isNotEmpty();
+
+        assertThat(pushEvent.getCommits()).extracting("sha").isNotNull();
+        assertThat(pushEvent.getCommits()).extracting("url").isNotNull();
+        assertThat(pushEvent.getCommits()).extracting("author").isNotNull();
     }
 
 }

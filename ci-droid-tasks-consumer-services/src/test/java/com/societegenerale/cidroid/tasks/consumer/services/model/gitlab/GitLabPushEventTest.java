@@ -32,6 +32,12 @@ class GitLabPushEventTest {
         assertThat(pushEvent.getNbCommits()).isGreaterThan(0);
 
         assertThat(pushEvent.getCommits()).isNotEmpty();
+
+
+        assertThat(pushEvent.getCommits()).extracting("sha").isNotNull();
+        assertThat(pushEvent.getCommits()).extracting("url").isNotNull();
+        assertThat(pushEvent.getCommits()).extracting("author").isNotNull();
+
     }
 
 }
