@@ -1,5 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.services.model.gitlab;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -7,12 +9,10 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEven
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
 import lombok.Data;
 
-import java.util.Map;
-
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(converter = GitLabMergeRequestEventSanitizer.class)
-public class GitLabMergeRequestEvent extends PullRequestEvent {
+public class GitLabMergeRequestEvent extends PullRequestEvent implements GitLabEvent{
 
     private GitLabProject project;
 

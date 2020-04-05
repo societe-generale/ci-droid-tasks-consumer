@@ -6,15 +6,7 @@ public class GitLabMergeRequestEventSanitizer extends StdConverter<GitLabMergeRe
 
         @Override
         public GitLabMergeRequestEvent convert(GitLabMergeRequestEvent gitLabPushEvent) {
-
-            gitLabPushEvent.getRepository().setDefaultBranch(gitLabPushEvent.getProject().getDefaultBranch());
-
-            gitLabPushEvent.getRepository().setId(gitLabPushEvent.getProject().getId());
-
-
-            gitLabPushEvent.getRepository().setFullName(gitLabPushEvent.getProject().getFullName());
-
-            return gitLabPushEvent;
+            return (GitLabMergeRequestEvent)GitLabEventSanitizerUtils.sanitizeProject(gitLabPushEvent);
         }
 
 }

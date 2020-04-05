@@ -10,14 +10,7 @@ public class GitLabPushEventSanitizer extends StdConverter<GitLabPushEvent, GitL
 
         @Override
         public GitLabPushEvent convert(GitLabPushEvent gitLabPushEvent) {
-
-            gitLabPushEvent.getRepository().setDefaultBranch(gitLabPushEvent.getProject().getDefaultBranch());
-
-            gitLabPushEvent.getRepository().setId(gitLabPushEvent.getProject().getId());
-
-            gitLabPushEvent.getRepository().setFullName(gitLabPushEvent.getProject().getFullName());
-
-            return gitLabPushEvent;
+            return (GitLabPushEvent)GitLabEventSanitizerUtils.sanitizeProject(gitLabPushEvent);
         }
 
 }

@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(converter = GitLabPushEventSanitizer.class)
-public class GitLabPushEvent extends PushEvent {
+public class GitLabPushEvent extends PushEvent implements GitLabEvent {
 
     private GitLabProject project;
 
