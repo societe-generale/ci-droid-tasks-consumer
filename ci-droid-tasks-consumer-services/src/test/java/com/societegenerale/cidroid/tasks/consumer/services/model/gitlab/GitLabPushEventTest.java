@@ -29,7 +29,9 @@ class GitLabPushEventTest {
 
         assertThat(pushEvent.getRef()).isEqualTo("refs/heads/master");
 
+        assertThat(pushEvent.getNbCommits()).isGreaterThan(0);
 
+        assertThat(pushEvent.getCommits()).isNotEmpty();
     }
 
 }

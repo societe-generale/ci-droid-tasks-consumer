@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import lombok.Data;
+import org.apache.commons.lang3.NotImplementedException;
 
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -22,11 +24,18 @@ public class GitHubPushEvent extends PushEvent {
 
     String userName;
 
+    List<Commit> commits;
+
     @JsonProperty("pusher")
-    private void unpackNestedPusher(Map<String,Object> pusher) {
-        this.userName = (String)pusher.get("name");
-        this.userEmail = (String)pusher.get("email");
+    private void unpackNestedPusher(Map<String, Object> pusher) {
+        this.userName = (String) pusher.get("name");
+        this.userEmail = (String) pusher.get("email");
     }
 
-}
+    @Override
+    public int getNbCommits() {
+        throw new NotImplementedException("need to provide the json mapping for GitHub");
+    }
 
+
+}

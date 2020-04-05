@@ -27,6 +27,7 @@ class GitHubPushEventTest {
 
         assertThat(pushEvent.getRef()).isEqualTo("refs/heads/master");
 
+        assertThat(pushEvent.getCommits()).isNotEmpty();
     }
 
 }
