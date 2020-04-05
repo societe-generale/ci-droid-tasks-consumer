@@ -20,6 +20,7 @@ class GitLabPushEventTest {
         assertThat(pushEvent).isNotNull();
 
         assertThat(pushEvent.getRepository()).isNotNull();
+        assertThat(pushEvent.getRepository().getFullName()).isNotNull();
         assertThat(pushEvent.getRepository().getDefaultBranch()).isEqualTo("master");
         assertThat(pushEvent.getRepository().getId()).isEqualTo(15);
 

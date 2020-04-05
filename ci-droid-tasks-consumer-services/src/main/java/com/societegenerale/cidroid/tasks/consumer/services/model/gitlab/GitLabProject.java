@@ -11,6 +11,9 @@ public class GitLabProject {
     @JsonProperty("default_branch")
     private String defaultBranch;
 
+    @JsonProperty("path_with_namespace")
+    private String fullName;
+
     private int id;
 
 }

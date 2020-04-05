@@ -15,6 +15,8 @@ public class GitLabPushEventSanitizer extends StdConverter<GitLabPushEvent, GitL
 
             gitLabPushEvent.getRepository().setId(gitLabPushEvent.getProject().getId());
 
+            gitLabPushEvent.getRepository().setFullName(gitLabPushEvent.getProject().getFullName());
+
             return gitLabPushEvent;
         }
 

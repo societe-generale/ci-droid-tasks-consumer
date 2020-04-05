@@ -11,6 +11,9 @@ public class GitLabMergeRequestEventSanitizer extends StdConverter<GitLabMergeRe
 
             gitLabPushEvent.getRepository().setId(gitLabPushEvent.getProject().getId());
 
+
+            gitLabPushEvent.getRepository().setFullName(gitLabPushEvent.getProject().getFullName());
+
             return gitLabPushEvent;
         }
 

@@ -20,6 +20,7 @@ class GitLabMergeRequestEventTest {
         assertThat(mergeRequestEvent).isNotNull();
 
         assertThat(mergeRequestEvent.getRepository()).isNotNull();
+        assertThat(mergeRequestEvent.getRepository().getFullName()).isNotNull();
         assertThat(mergeRequestEvent.getRepository().getDefaultBranch()).isEqualTo("master");
 
         assertThat(mergeRequestEvent.getPrNumber()).isEqualTo(99);
