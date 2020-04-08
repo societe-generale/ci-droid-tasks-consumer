@@ -7,4 +7,6 @@ public interface GitLabEvent {
     GitLabProject getProject();
 
     Repository getRepository();
+
+    void setRepository(Repository repo);
 }
