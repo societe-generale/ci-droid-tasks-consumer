@@ -6,6 +6,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -105,17 +107,23 @@ public class SourceControlEventController {
     @PostMapping(value="/gitlab", headers = "X-Gitlab-Event=System Hook")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> onGitLabSystemEvent(HttpEntity<String> rawSystemEvent) {
+    public ResponseEntity<?> onGitLabSystemEvent(HttpEntity<String> rawSystemEvent) throws JSONException {
 
-        if(rawSystemEvent.getBody().contains("\"event_name\": \"push\"")){
+        JSONObject systemEvent = new JSONObject(rawSystemEvent.getBody());
+
+        if(hasFieldWithValue(systemEvent,"event_name","push")){
             return processPushEvent(rawSystemEvent);
         }
-        else if(rawSystemEvent.getBody().contains("\"object_kind\": \"merge_request\"")){
+        else if(hasFieldWithValue(systemEvent,"object_kind","merge_request")){
             return processPullRequestEvent(rawSystemEvent);
         }
         else{
             return new ResponseEntity("Unknown event type for this system event : "+rawSystemEvent.getBody(),HttpStatus.BAD_REQUEST);
         }
+    }
+
+    private boolean hasFieldWithValue(JSONObject systemEvent,String fieldName, String fieldValue) throws JSONException {
+        return (systemEvent.has(fieldName) && systemEvent.getString(fieldName).equals(fieldValue));
     }
 
 }
