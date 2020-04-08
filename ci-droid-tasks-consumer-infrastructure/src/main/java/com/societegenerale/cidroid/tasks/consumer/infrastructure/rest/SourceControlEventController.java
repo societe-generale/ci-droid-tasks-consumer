@@ -9,11 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/cidroid-sync-webhook")
@@ -104,8 +100,22 @@ public class SourceControlEventController {
             log.warn("problem while processing the event {}",pullRequestEvent, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
 
+    @PostMapping(value="/gitlab", headers = "X-Gitlab-Event=System Hook")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> onGitLabSystemEvent(HttpEntity<String> rawSystemEvent) {
 
+        if(rawSystemEvent.getBody().contains("\"event_name\": \"push\"")){
+            return processPushEvent(rawSystemEvent);
+        }
+        else if(rawSystemEvent.getBody().contains("\"object_kind\": \"merge_request\"")){
+            return processPullRequestEvent(rawSystemEvent);
+        }
+        else{
+            return new ResponseEntity("Unknown event type for this system event : "+rawSystemEvent.getBody(),HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
