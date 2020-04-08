@@ -12,6 +12,11 @@
 
 ### Fixed
 
+## [1.3.1] - 2020-04-08
+
+### Fixed
+- several bugs/improvements on GitLab events deserialization 
+
 ## [1.3.0] - 2020-04-04
 
 ### Changed

@@ -13,7 +13,7 @@ class GitLabMergeRequestEventTest {
     @Test
     void canDeserialize() throws IOException {
 
-        String  pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/mergeRequestEventGitLab.json"));
+        String  pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/gitLab/mergeRequestEventGitLab.json"));
 
         GitLabMergeRequestEvent mergeRequestEvent = new ObjectMapper().readValue(pushEventPayload, GitLabMergeRequestEvent.class);
 
