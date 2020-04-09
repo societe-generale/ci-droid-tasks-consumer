@@ -12,6 +12,12 @@
 
 ### Fixed
 
+## [1.3.2] - 2020-04-0
+
+### Added
+- managing GitLab system events
+- mapping more Commit fields : impacted files by the commit
+
 ## [1.3.1] - 2020-04-08
 
 ### Fixed
