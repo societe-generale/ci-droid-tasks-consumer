@@ -1,6 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.services.model.gitlab;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -33,11 +34,15 @@ class GitLabPushEventTest {
 
         assertThat(pushEvent.getCommits()).isNotEmpty();
 
+        Commit commit1=pushEvent.getCommits().get(0);
 
-        assertThat(pushEvent.getCommits()).extracting("sha").isNotNull();
-        assertThat(pushEvent.getCommits()).extracting("url").isNotNull();
-        assertThat(pushEvent.getCommits()).extracting("author").isNotNull();
+        assertThat(commit1.getId()).isEqualTo("b6568db1bc1dcd7f8b4d5a946b0b91f9dacd7327");
+        assertThat(commit1.getUrl()).isEqualTo("http://example.com/mike/diaspora/commit/b6568db1bc1dcd7f8b4d5a946b0b91f9dacd7327");
+        assertThat(commit1.getAuthor().getEmail()).isEqualTo("jordi@softcatala.org");
 
+        assertThat(commit1.getAddedFiles()).containsExactly("CHANGELOG");
+        assertThat(commit1.getModifiedFiles()).containsExactly("app/controller/application.rb");
+        assertThat(commit1.getRemovedFiles()).containsExactlyInAnyOrder("test/Bla1.java","test/Bla2.java");
     }
 
     @Test
@@ -62,10 +67,6 @@ class GitLabPushEventTest {
         assertThat(pushEvent.getNbCommits()).isGreaterThan(0);
 
         assertThat(pushEvent.getCommits()).isNotEmpty();
-
-        assertThat(pushEvent.getCommits()).extracting("sha").isNotNull();
-        assertThat(pushEvent.getCommits()).extracting("url").isNotNull();
-        assertThat(pushEvent.getCommits()).extracting("author").isNotNull();
 
     }
 
