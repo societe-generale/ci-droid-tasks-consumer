@@ -49,7 +49,7 @@
       },
       "added": ["CHANGELOG"],
       "modified": ["app/controller/application.rb"],
-      "removed": []
+      "removed": ["test/Bla1.java","test/Bla2.java"]
     },
     {
       "id": "da1560886d4f094c3e6c9ef40349f7d38b5d27d7",

@@ -1,6 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.services.model.gitlab;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -33,11 +34,11 @@ class GitLabPushEventTest {
 
         assertThat(pushEvent.getCommits()).isNotEmpty();
 
+        Commit commit1=pushEvent.getCommits().get(0);
 
-        assertThat(pushEvent.getCommits()).extracting("sha").isNotNull();
-        assertThat(pushEvent.getCommits()).extracting("url").isNotNull();
-        assertThat(pushEvent.getCommits()).extracting("author").isNotNull();
-
+        assertThat(commit1.getAddedFiles()).containsExactly("CHANGELOG");
+        assertThat(commit1.getModifiedFiles()).containsExactly("app/controller/application.rb");
+        assertThat(commit1.getRemovedFiles()).containsExactlyInAnyOrder("test/Bla1.java","test/Bla2.java");
     }
 
     @Test
@@ -66,6 +67,7 @@ class GitLabPushEventTest {
         assertThat(pushEvent.getCommits()).extracting("sha").isNotNull();
         assertThat(pushEvent.getCommits()).extracting("url").isNotNull();
         assertThat(pushEvent.getCommits()).extracting("author").isNotNull();
+
 
     }
 
