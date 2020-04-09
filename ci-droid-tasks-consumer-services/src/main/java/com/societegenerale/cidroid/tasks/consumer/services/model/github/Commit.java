@@ -14,7 +14,7 @@ import static java.util.Collections.emptyList;
 public class Commit {
 
 
-    private String sha;
+    private String id;
 
     private String url;
 

@@ -161,7 +161,7 @@ public class ActionToPerformService {
                 UpdatedResource deletedResource = deleteResource(action, resourceToUpdate, existingResourceContent, onBranch);
 
                 log.info("{} deleted on repo {}, on branch {}. SHA1: {}", resourceToUpdate.getFilePathOnRepo(), repoFullName, onBranch,
-                        deletedResource.getCommit().getSha());
+                        deletedResource.getCommit().getId());
 
                 return deletedResource;
             }
@@ -251,10 +251,10 @@ public class ActionToPerformService {
         if (resourceWasNotExisting(decodedOriginalContent)) {
 
             log.info("{} created on repo {}, on branch {}. SHA1: {}", resourceToUpdate.getFilePathOnRepo(), repoFullName, onBranch,
-                    updatedResource.getCommit().getSha());
+                    updatedResource.getCommit().getId());
         } else {
             log.info("{} updated on repo {}, on branch {}. old SHA1: {} . new SHA1: {}", resourceToUpdate.getFilePathOnRepo(), repoFullName, onBranch,
-                    updatedResource.getCommit().getSha(), existingResourceContent.getSha());
+                    updatedResource.getCommit().getId(), existingResourceContent.getSha());
         }
     }
 
@@ -281,7 +281,7 @@ public class ActionToPerformService {
         techEvent.addAttribute(REPO, resourceToUpdate.getRepoFullName());
         techEvent.addAttribute("resourceName", resourceToUpdate.getFilePathOnRepo());
         techEvent.addAttribute("branchName", resourceToUpdate.getBranchName());
-        techEvent.addAttribute("newCommitSha", updatedResource.getCommit().getSha());
+        techEvent.addAttribute("newCommitSha", updatedResource.getCommit().getId());
         techEvent.publish();
     }
 

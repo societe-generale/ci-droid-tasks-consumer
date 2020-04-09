@@ -36,6 +36,10 @@ class GitLabPushEventTest {
 
         Commit commit1=pushEvent.getCommits().get(0);
 
+        assertThat(commit1.getId()).isEqualTo("b6568db1bc1dcd7f8b4d5a946b0b91f9dacd7327");
+        assertThat(commit1.getUrl()).isEqualTo("http://example.com/mike/diaspora/commit/b6568db1bc1dcd7f8b4d5a946b0b91f9dacd7327");
+
+
         assertThat(commit1.getAddedFiles()).containsExactly("CHANGELOG");
         assertThat(commit1.getModifiedFiles()).containsExactly("app/controller/application.rb");
         assertThat(commit1.getRemovedFiles()).containsExactlyInAnyOrder("test/Bla1.java","test/Bla2.java");
@@ -64,7 +68,7 @@ class GitLabPushEventTest {
 
         assertThat(pushEvent.getCommits()).isNotEmpty();
 
-        assertThat(pushEvent.getCommits()).extracting("sha").isNotNull();
+        assertThat(pushEvent.getCommits()).extracting("id").isNotNull();
         assertThat(pushEvent.getCommits()).extracting("url").isNotNull();
         assertThat(pushEvent.getCommits()).extracting("author").isNotNull();
 
