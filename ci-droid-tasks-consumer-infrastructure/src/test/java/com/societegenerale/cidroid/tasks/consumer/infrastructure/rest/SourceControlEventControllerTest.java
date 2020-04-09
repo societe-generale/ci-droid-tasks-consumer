@@ -43,7 +43,6 @@ class SourceControlEventControllerTest {
         performPOSTandExpectSuccess(pushEventOnBranchAsString, "Push Hook");
 
         verify(mockPushEventService, times(1)).onPushOnNonDefaultBranchEvent(any(PushEvent.class));
-
     }
 
     @Test
@@ -52,7 +51,41 @@ class SourceControlEventControllerTest {
         performPOSTandExpectSuccess(pushEventAsString, "Push Hook");
 
         verify(mockPushEventService, times(1)).onPushOnDefaultBranchEvent(any(PushEvent.class));
+    }
 
+    @Test
+    void forwardEventToDefaultBranchProcessing_whenSystemEvent_PushOnDefaultBranch() throws Exception {
+
+        String systemPushEventAsString= TestUtils.readFileToString("/gitLab/systemPushEventGitLab.json");
+
+        performPOSTandExpectSuccess(systemPushEventAsString, "System Hook");
+
+        verify(mockPushEventService, times(1)).onPushOnDefaultBranchEvent(any(PushEvent.class));
+    }
+
+
+    @Test
+    void forwardEventToPullRequestProcessing_whenSystemEvent_MergeRequestEvent() throws Exception {
+
+        String systemMergeRequestEventAsString= TestUtils.readFileToString("/gitLab/systemMergeRequestEventGitLab.json");
+
+        performPOSTandExpectSuccess(systemMergeRequestEventAsString, "System Hook");
+
+        verify(mockPullRequestEventService, times(1)).onPullRequestEvent(any(PullRequestEvent.class));
+    }
+
+    @Test
+    void returnBadRequest_whenUnknownSystemEvent() throws Exception {
+
+        String systemMergeRequestEventAsString= TestUtils.readFileToString("/gitLab/systemMergeRequestEventGitLab.json");
+
+        systemMergeRequestEventAsString=systemMergeRequestEventAsString.replace("\"merge_request\"","\"UNKOWN_TYPE\"" );
+
+        mvc.perform(post("/cidroid-sync-webhook/gitlab")
+                .header("X-Gitlab-Event", "System Hook")
+                .contentType(APPLICATION_JSON)
+                .content(systemMergeRequestEventAsString))
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -61,7 +94,6 @@ class SourceControlEventControllerTest {
         performPOSTandExpectSuccess(pullRequestEventAsString, "Merge Request Hook");
 
         verify(mockPullRequestEventService, times(1)).onPullRequestEvent(any(PullRequestEvent.class));
-
     }
 
     private void performPOSTandExpectSuccess(String requestBodyContent, String headerValues) throws Exception {
