@@ -29,9 +29,9 @@ class GitHubPushEventTest {
 
         assertThat(pushEvent.getCommits()).isNotEmpty();
 
-        assertThat(pushEvent.getCommits()).extracting("id").isNotNull();
-        assertThat(pushEvent.getCommits()).extracting("url").isNotNull();
-        assertThat(pushEvent.getCommits()).extracting("author").isNotNull();
+        assertThat(pushEvent.getCommits()).extracting("id").isNotEmpty();
+        assertThat(pushEvent.getCommits()).extracting("url").isNotEmpty();
+        assertThat(pushEvent.getCommits()).extracting("author").isNotEmpty();
     }
 
 }
