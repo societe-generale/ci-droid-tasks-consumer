@@ -1,18 +1,21 @@
 package com.societegenerale.cidroid.tasks.consumer.services.model.github;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toSet;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Commit {
-
 
     private String id;
 
@@ -60,7 +63,9 @@ public class Commit {
         return removedFiles;
     }
 
-
-
+    @Nonnull
+    public Set<String> getImpactedFiles() {
+        return Stream.of(getAddedFiles(),getRemovedFiles(),getModifiedFiles()).flatMap(List::stream).collect(toSet());
+    }
 }
 
