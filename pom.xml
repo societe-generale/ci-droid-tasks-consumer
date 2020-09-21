@@ -442,9 +442,8 @@
             <plugin>
                 <groupId>com.societegenerale.commons</groupId>
                 <artifactId>arch-unit-maven-plugin</artifactId>
-                <version>2.4.0</version>
+                <version>2.6.2</version>
                 <configuration>
-                    <projectPath>${project.basedir}/target</projectPath>
                     <rules>
                         <preConfiguredRules>
                             <rule>com.societegenerale.commons.plugin.rules.NoStandardStreamRuleTest</rule>
