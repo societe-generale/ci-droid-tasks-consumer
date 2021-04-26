@@ -73,7 +73,7 @@
         <lombok.version>1.18.4</lombok.version>
         <mockito.version>3.0.0</mockito.version>
         <assertj.version>3.9.1</assertj.version>
-        <commons-io.version>2.6</commons-io.version>
+        <commons-io.version>2.7</commons-io.version>
         <ant-style-path-matcher.version>1.0.0</ant-style-path-matcher.version>
         <logback-classic.version>1.2.3</logback-classic.version>
         <logstash-logback-encoder.version>4.11</logstash-logback-encoder.version>
