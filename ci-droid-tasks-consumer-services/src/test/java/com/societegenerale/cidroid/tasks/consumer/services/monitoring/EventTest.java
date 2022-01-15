@@ -1,12 +1,12 @@
 package com.societegenerale.cidroid.tasks.consumer.services.monitoring;
 
+import java.util.AbstractMap;
+
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
-
-import java.util.AbstractMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -25,8 +25,7 @@ public class EventTest {
         Event event = Event.technical("An event");
 
         //then
-        assertThat(event).extracting("attributes")
-                .containsExactly(ImmutableMap.of(
+        assertThat(event.getAttributes()).containsExactlyInAnyOrderEntriesOf(ImmutableMap.of(
                         "type", "TECHNICAL",
                         "metricName", "An event"));
     }
@@ -37,8 +36,7 @@ public class EventTest {
         Event event = Event.custom("An event", "custom");
 
         //then
-        assertThat(event).extracting("attributes")
-                .containsExactly(ImmutableMap.of(
+        assertThat(event.getAttributes()).containsExactlyInAnyOrderEntriesOf(ImmutableMap.of(
                         "type", "custom",
                         "metricName", "An event"));
     }
@@ -62,8 +60,8 @@ public class EventTest {
                 .addAttribute("new", "attribute");
 
         //then
-        assertThat(event).extracting("attributes")
-                .containsExactly(ImmutableMap.of(
+        assertThat(event.getAttributes())
+                .containsExactlyInAnyOrderEntriesOf(ImmutableMap.of(
                         "new", "attribute",
                         "type", "custom",
                         "metricName", "An event"));
