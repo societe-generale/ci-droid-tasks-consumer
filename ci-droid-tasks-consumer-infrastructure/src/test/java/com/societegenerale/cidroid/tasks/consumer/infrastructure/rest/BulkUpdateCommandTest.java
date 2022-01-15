@@ -16,12 +16,15 @@ class BulkUpdateCommandTest {
         String someOauthToken = "someOauthToken";
         String someEmail = "someEmail";
         String someCommitMessage = "some commit message";
+        SimpleReplaceAction someActionToPerform = new SimpleReplaceAction("initialValue", "newValue");
+        PullRequestGitHubInteraction someInteractionType = new PullRequestGitHubInteraction("branchName", "prTitle");
+
         BulkUpdateCommand commandFor2resources=BulkUpdateCommand.builder()
                 .gitHubOauthToken(someOauthToken)
                 .email(someEmail)
                 .commitMessage(someCommitMessage)
-                .updateAction(new SimpleReplaceAction("initialValue","newValue"))
-                .gitHubInteractionType(new PullRequestGitHubInteraction("branchName","prTitle"))
+                .updateAction(someActionToPerform)
+                .gitHubInteractionType(someInteractionType)
                 .build();
 
         ResourceToUpdate targetResource= new ResourceToUpdate("repoFullName","filePathOnRepo","branchName","placeHolderValue");
@@ -29,8 +32,14 @@ class BulkUpdateCommandTest {
         ActionToPerformCommand actualAction = commandFor2resources.toActionForSingleResource(targetResource);
 
         assertThat(actualAction).isNotNull();
-        assertThat(actualAction.getGitHubOauthToken()).isEqualToIgnoringCase(someOauthToken);
-        assertThat(actualAction.getEmail()).isEqualToIgnoringCase(someEmail);
-        assertThat(actualAction.getCommitMessage()).isEqualToIgnoringCase(someCommitMessage);
+        assertThat(actualAction.getGitHubOauthToken()).isEqualTo(someOauthToken);
+        assertThat(actualAction.getEmail()).isEqualTo(someEmail);
+        assertThat(actualAction.getCommitMessage()).isEqualTo(someCommitMessage);
+        assertThat(actualAction.getGitHubInteractionType()).isEqualTo(someInteractionType);
+        assertThat(actualAction.getUpdateAction()).isEqualTo(someActionToPerform);
+
+
+
+
     }
 }

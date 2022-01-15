@@ -59,17 +59,9 @@ public class BulkUpdateCommand {
         action.setGitHubOauthToken(gitHubOauthToken);
         action.setEmail(email);
         action.setCommitMessage(commitMessage);
-        /*
-        BulkUpdateCommand singleResourceUpdateCommand = BulkUpdateCommand.builder()
-                .gitHubOauthToken(bulkUpdateCommand.getGitHubOauthToken())
-                .email(bulkUpdateCommand.getEmail())
-                .gitHubInteractionType(bulkUpdateCommand.getGitHubInteractionType())
-                .updateAction(bulkUpdateCommand.getUpdateAction())
-                .commitMessage(bulkUpdateCommand.getCommitMessage())
-                // creating SINGLE resource update command
-                .resourcesToUpdate(Arrays.asList(resourceToUpdate))
-                .build();
-        */
+        action.setGitHubInteractionType(gitHubInteractionType);
+        action.setUpdateAction(updateAction);
+        action.setResourcesToUpdate(List.of(resourceToUpdate));
 
         return action;
     }
