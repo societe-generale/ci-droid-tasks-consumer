@@ -37,9 +37,7 @@ class BulkUpdateCommandTest {
         assertThat(actualAction.getCommitMessage()).isEqualTo(someCommitMessage);
         assertThat(actualAction.getGitHubInteractionType()).isEqualTo(someInteractionType);
         assertThat(actualAction.getUpdateAction()).isEqualTo(someActionToPerform);
-
-
-
+        assertThat(actualAction.getResourcesToUpdate()).containsExactly(targetResource);
 
     }
 }
