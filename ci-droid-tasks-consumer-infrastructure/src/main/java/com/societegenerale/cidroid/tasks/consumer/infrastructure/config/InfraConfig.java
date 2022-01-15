@@ -1,13 +1,27 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
+import java.util.List;
+
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
-import com.societegenerale.cidroid.extensions.actionToReplicate.*;
+import com.societegenerale.cidroid.extensions.actionToReplicate.AddXmlContentAction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.OverwriteStaticFileAction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.RemoveMavenDependencyOrPluginAction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.RemoveXmlElementAction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.ReplaceMavenProfileAction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.TemplateBasedContentAction;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.ActionToReplicateController;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.SourceControlEventController;
-import com.societegenerale.cidroid.tasks.consumer.services.*;
+import com.societegenerale.cidroid.tasks.consumer.services.ActionNotificationService;
+import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
+import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
+import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
@@ -20,8 +34,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
-
-import java.util.List;
 
 @Configuration
 @EnableFeignClients(clients = { FeignRemoteGitHub.class})
@@ -91,6 +103,13 @@ public class InfraConfig {
     public SourceControlEventController sourceControlEventController(PullRequestEventService pullRequestEventService, PushEventService pushEventService,SourceControlEventMapper sourceControlEventMapper) {
 
         return new SourceControlEventController(pullRequestEventService, pushEventService,sourceControlEventMapper);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "synchronous-mode", havingValue = "true")
+    public ActionToReplicateController actionToReplicateController(ActionToPerformListener actionToPerformListener) {
+
+        return new ActionToReplicateController(actionToPerformListener);
     }
 
 
