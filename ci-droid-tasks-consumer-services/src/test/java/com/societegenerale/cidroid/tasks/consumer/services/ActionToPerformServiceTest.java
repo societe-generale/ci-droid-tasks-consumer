@@ -1,8 +1,11 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Optional;
+
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import com.oneeyedmen.fakir.Faker;
 import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
@@ -10,25 +13,46 @@ import com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAc
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.TestAppender;
 import org.apache.commons.lang3.StringUtils;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Optional;
-
-import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.*;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.*;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_KO_AUTHENTICATION_ISSUE;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_KO_CANT_PROVIDE_CONTENT_ISSUE;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_KO_FILE_CONTENT_IS_SAME;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_KO_FILE_DOESNT_EXIST;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_KO_REPO_DOESNT_EXIST;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_OK;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_OK_BUT_PR_CREATION_KO;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_ALREADY_EXISTING;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_OK_WITH_PR_CREATED;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.BULK_ACTION_COMMIT_PERFORMED;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.BULK_ACTION_PROCESSED;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.BULK_ACTION_PR_CREATED;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ActionToPerformServiceTest {
 
@@ -59,21 +83,12 @@ public class ActionToPerformServiceTest {
 
     private ActionNotificationService mockActionNotificationService = mock(ActionNotificationService.class);
 
-    private ResourceContent fakeResourceContentBeforeUpdate = new Faker<ResourceContent>() {
-        String htmlLink = "http://github.com/someRepo/linkToTheResource";
-    }.get();
+    private ResourceContent sampleResourceContentBeforeUpdate = new ResourceContent();
 
-    private PullRequest fakePullRequest = new Faker<PullRequest>() {
-        int number = 789;
+    private PullRequest samplePullRequest = new PullRequest(789);
 
-        String htmlUrl = "http://linkToThePr";
-    }.get();
+    private Repository sampleRepository=new Repository();
 
-    private Repository fakeRepository = new Faker<Repository>() {
-        String defaultBranch = MASTER_BRANCH;
-
-        String fullName = REPO_FULL_NAME;
-    }.get();
 
     private ArgumentCaptor<UpdatedResource> updatedResourceCaptor = ArgumentCaptor.forClass(UpdatedResource.class);
 
@@ -109,7 +124,7 @@ public class ActionToPerformServiceTest {
         content.setHtmlUrl("http://github.com/someRepo/linkToTheResource");
 
         updatedResource = UpdatedResource.builder().content(content)
-                .commit(Faker.fakeA(Commit.class))
+                .commit(mock(Commit.class))
                 .build();
 
         when(mockRemoteSourceControl.updateContent(anyString(), anyString(), any(DirectCommit.class), anyString()))
@@ -119,6 +134,10 @@ public class ActionToPerformServiceTest {
         Logger log = logCtx.getLogger("Main");
         log.addAppender(testAppender);
 
+        sampleResourceContentBeforeUpdate.setHtmlLink("http://github.com/someRepo/linkToTheResource");
+        samplePullRequest.setHtmlUrl("http://linkToThePr");
+        sampleRepository.setDefaultBranch(MASTER_BRANCH);
+        sampleRepository.setFullName(REPO_FULL_NAME);
     }
 
     @AfterEach
@@ -132,7 +151,7 @@ public class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
-        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentBeforeUpdate);
+        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(sampleResourceContentBeforeUpdate);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -150,7 +169,7 @@ public class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
-        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentBeforeUpdate);
+        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(sampleResourceContentBeforeUpdate);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -166,13 +185,10 @@ public class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
-        ResourceContent fakeResourceContentWithSpecificContentBeforeUpdate = new Faker<ResourceContent>() {
-            String htmlLink = "http://github.com/someRepo/linkToTheResource";
+        ResourceContent sampleResourceContentWithSpecificContentBeforeUpdate = buildSampleResourceWithContent(contentThatWillNotBeModified);
 
-            String base64EncodedContent = GitHubContentBase64codec.encode(contentThatWillNotBeModified);
-        }.get();
 
-        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentWithSpecificContentBeforeUpdate);
+        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(sampleResourceContentWithSpecificContentBeforeUpdate);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -186,6 +202,15 @@ public class ActionToPerformServiceTest {
 
     }
 
+    private ResourceContent buildSampleResourceWithContent(String contentThatWillNotBeModified) {
+        var sampleResource = new ResourceContent();
+        sampleResource .setHtmlLink("http://github.com/someRepo/linkToTheResource");
+        sampleResource .setBase64EncodedContent(GitHubContentBase64codec.encode(contentThatWillNotBeModified));
+        sampleResource .setSha("someSha");
+
+        return sampleResource;
+    }
+
     @Test
     public void dontPushWhenContentIsNotModifiedByAction_andActionIs_PULL_REQUEST()
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
@@ -196,14 +221,10 @@ public class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
-        ResourceContent fakeResourceContentWithSpecificContentBeforeUpdate = new Faker<ResourceContent>() {
-            String htmlLink = "http://github.com/someRepo/linkToTheResource";
-
-            String base64EncodedContent = GitHubContentBase64codec.encode(contentThatWillNotBeModified);
-        }.get();
+        ResourceContent sampleResourceContentWithSpecificContentBeforeUpdate = buildSampleResourceWithContent(contentThatWillNotBeModified);
 
         when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", branchNameToCreateForPR))
-                .thenReturn(fakeResourceContentWithSpecificContentBeforeUpdate);
+                .thenReturn(sampleResourceContentWithSpecificContentBeforeUpdate);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -222,9 +243,9 @@ public class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
-        when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(fakePullRequest);
+        when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(samplePullRequest);
 
-        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", branchNameToCreateForPR)).thenReturn(fakeResourceContentBeforeUpdate);
+        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", branchNameToCreateForPR)).thenReturn(sampleResourceContentBeforeUpdate);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -350,7 +371,7 @@ public class ActionToPerformServiceTest {
 
         testActionToPerform.setThrowIssueProvidingContentException(true);
 
-        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentBeforeUpdate);
+        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(sampleResourceContentBeforeUpdate);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -371,7 +392,7 @@ public class ActionToPerformServiceTest {
                                                                             .gitHubOauthToken(SOME_OAUTH_TOKEN)
                                                                             .build();
 
-        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentBeforeUpdate);
+        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(sampleResourceContentBeforeUpdate);
 
         when(mockRemoteSourceControl.deleteContent(eq(REPO_FULL_NAME), eq("someFile.txt"),any(DirectCommit.class),eq(SOME_OAUTH_TOKEN))).thenReturn(updatedResource);
 
@@ -402,14 +423,14 @@ public class ActionToPerformServiceTest {
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
         when(mockRemoteSourceControl.fetchHeadReferenceFrom(REPO_FULL_NAME, branchNameToCreateForPR)).thenReturn(new Reference(
-                REFS_HEADS + branchNameToCreateForPR, Faker.fakeA(Reference.ObjectReference.class)));
+                REFS_HEADS + branchNameToCreateForPR, mock(Reference.ObjectReference.class)));
 
         when(mockRemoteSourceControl.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_OAUTH_TOKEN))
                 .thenThrow(new BranchAlreadyExistsException("branch already exists"));
 
-        when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(fakePullRequest);
+        when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(samplePullRequest);
 
-        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", branchNameToCreateForPR)).thenReturn(fakeResourceContentBeforeUpdate);
+        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", branchNameToCreateForPR)).thenReturn(sampleResourceContentBeforeUpdate);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -435,7 +456,7 @@ public class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
-        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(fakeResourceContentBeforeUpdate);
+        when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(sampleResourceContentBeforeUpdate);
 
         actionToPerformService.perform(bulkActionToPerform);
 
@@ -504,7 +525,7 @@ public class ActionToPerformServiceTest {
     public void shouldCreatePRwithProvidedTitle() throws RemoteSourceControlAuthorizationException, BranchAlreadyExistsException {
 
         mockPullRequestSpecificBehavior();
-        when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(fakePullRequest);
+        when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(samplePullRequest);
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR, "new feature branch")).build();
 
@@ -521,7 +542,7 @@ public class ActionToPerformServiceTest {
     public void shouldCreatePRwithBranchName_whenPRtitleIsNotProvided() throws RemoteSourceControlAuthorizationException, BranchAlreadyExistsException {
 
         mockPullRequestSpecificBehavior();
-        when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(fakePullRequest);
+        when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(samplePullRequest);
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR, null)).build();
 
@@ -552,9 +573,9 @@ public class ActionToPerformServiceTest {
         when(mockRemoteSourceControl.fetchHeadReferenceFrom(REPO_FULL_NAME, sourceBranchForPr)).thenReturn(dummyHeadOnSomeBranchReference);
 
         when(mockRemoteSourceControl.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnSomeBranch, SOME_OAUTH_TOKEN))
-                .thenReturn(new Reference(REFS_HEADS + branchNameToCreateForPR, Faker.fakeA(Reference.ObjectReference.class)));
+                .thenReturn(new Reference(REFS_HEADS + branchNameToCreateForPR, mock(Reference.ObjectReference.class)));
 
-        when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), newPrCaptor.capture(), anyString())).thenReturn(fakePullRequest);
+        when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), newPrCaptor.capture(), anyString())).thenReturn(samplePullRequest);
 
 
         actionToPerformService.perform(bulkActionToPerform);
@@ -658,13 +679,13 @@ public class ActionToPerformServiceTest {
     }
 
     private void mockPullRequestSpecificBehavior() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
-        when(mockRemoteSourceControl.fetchRepository(REPO_FULL_NAME)).thenReturn(Optional.of(fakeRepository));
+        when(mockRemoteSourceControl.fetchRepository(REPO_FULL_NAME)).thenReturn(Optional.of(sampleRepository));
 
         Reference dummyHeadOnMasterReference = new Reference(REFS_HEADS + MASTER_BRANCH, new Reference.ObjectReference("commit", sha1ForHeadOnMaster));
         when(mockRemoteSourceControl.fetchHeadReferenceFrom(REPO_FULL_NAME, MASTER_BRANCH)).thenReturn(dummyHeadOnMasterReference);
 
         when(mockRemoteSourceControl.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_OAUTH_TOKEN))
-                .thenReturn(new Reference(REFS_HEADS + branchNameToCreateForPR, Faker.fakeA(Reference.ObjectReference.class)));
+                .thenReturn(new Reference(REFS_HEADS + branchNameToCreateForPR, mock(Reference.ObjectReference.class)));
     }
 
 }

@@ -81,7 +81,6 @@
         <mockserver.version>5.5.1</mockserver.version>
         <awaitility.version>4.1.1</awaitility.version>
         <greenmail.version>1.6.5</greenmail.version>
-        <fakir.version>1.0.10</fakir.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
 
         <jacoco.version>0.8.2</jacoco.version>
@@ -172,13 +171,6 @@
                         <artifactId>junit</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>com.oneeyedmen</groupId>
-                <artifactId>fakir</artifactId>
-                <version>${fakir.version}</version>
-                <scope>test</scope>
             </dependency>
 
             <dependency>
