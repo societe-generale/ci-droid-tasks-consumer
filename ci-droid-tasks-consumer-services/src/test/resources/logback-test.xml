@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
     <appender name="test" class="com.societegenerale.cidroid.tasks.consumer.services.monitoring.TestAppender" />
 
     <root level="INFO">
+        <appender-ref ref="CONSOLE" />
         <appender-ref ref="test" />
     </root>
 

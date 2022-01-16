@@ -135,7 +135,11 @@ public class ActionToPerformServiceTest {
         log.addAppender(testAppender);
 
         sampleResourceContentBeforeUpdate.setHtmlLink("http://github.com/someRepo/linkToTheResource");
+        sampleResourceContentBeforeUpdate.setSha("someShaFromSetup");
+        sampleResourceContentBeforeUpdate.setBase64EncodedContent(GitHubContentBase64codec.encode("some content"));
+
         samplePullRequest.setHtmlUrl("http://linkToThePr");
+
         sampleRepository.setDefaultBranch(MASTER_BRANCH);
         sampleRepository.setFullName(REPO_FULL_NAME);
     }
@@ -204,9 +208,9 @@ public class ActionToPerformServiceTest {
 
     private ResourceContent buildSampleResourceWithContent(String contentThatWillNotBeModified) {
         var sampleResource = new ResourceContent();
-        sampleResource .setHtmlLink("http://github.com/someRepo/linkToTheResource");
-        sampleResource .setBase64EncodedContent(GitHubContentBase64codec.encode(contentThatWillNotBeModified));
-        sampleResource .setSha("someSha");
+        sampleResource.setHtmlLink("http://github.com/someRepo/linkToTheResource");
+        sampleResource.setBase64EncodedContent(GitHubContentBase64codec.encode(contentThatWillNotBeModified));
+        sampleResource.setSha("someSha");
 
         return sampleResource;
     }
