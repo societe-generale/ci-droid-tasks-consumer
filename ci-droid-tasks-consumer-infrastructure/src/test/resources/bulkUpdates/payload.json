@@ -1,0 +1,28 @@
+{
+  "gitLogin": "vincent-fuchs",
+  "gitHubOauthToken": "abcdef1234569687kugfwkugfewha",
+  "email": "vincent.fuchs@gmail.com",
+
+  "commitMessage": "updating Jenkinsfile with latest java image for build",
+
+  "updateAction": {
+    "@class": "com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAction",
+    "initialValue": "JDK1.8-20170718-121455-e2e6123",
+    "newValue": "JDK1.8-20180917-093720-5fdabcb014"
+  },
+
+  "gitHubInteractionType": {
+    "@c": ".PullRequestGitHubInteraction",
+    "branchNameToCreate": "newJavaImageForJenkinsBuild",
+    "pullRequestTitle": "Using new image for Jenkins build"
+  },
+
+  "resourcesToUpdate": [
+
+    {"repoFullName": "myOrga/project_A","filePathOnRepo": "Jenkinsfile","branchName": "master"},
+    {"repoFullName": "myOrga/project_B","filePathOnRepo": "Jenkinsfile","branchName": "master"},
+    {"repoFullName": "myOrga/project_C","filePathOnRepo": "Jenkinsfile","branchName": "master"},
+    {"repoFullName": "myOrga/project_D","filePathOnRepo": "Jenkinsfile","branchName": "master"}
+
+  ]
+}

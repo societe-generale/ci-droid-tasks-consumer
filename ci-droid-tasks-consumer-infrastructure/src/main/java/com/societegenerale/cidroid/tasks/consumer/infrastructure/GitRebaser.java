@@ -1,5 +1,18 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
+import static com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl.REFS_HEADS;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.DURATION;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PR_NOT_REBASED;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PR_REBASED;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+
+import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
+import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,13 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
 import javax.annotation.Nonnull;
-
-import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
-import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.time.StopWatch;
@@ -45,14 +52,6 @@ import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.DURATION;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PR_NOT_REBASED;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PR_REBASED;
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
 
 @Component
 @Slf4j
@@ -286,7 +285,7 @@ public class GitRebaser implements Rebaser {
 
         log.info("switching to branch {}...", branchName);
 
-        String remoteBranch = "refs/heads/" + branchName;
+        String remoteBranch = REFS_HEADS + branchName;
 
         if (gitWrapper.refDoesntExist(git, remoteBranch)) {
             // first we need to ensure that the remote branch is visible locally

@@ -49,7 +49,7 @@ public class ActionToPerformListener {
         log.info("received an action to perform {}", actionToPerformCommand);
 
         try {
-
+/*
             Map<String, String> updateActionInfos = (Map) actionToPerformCommand.getUpdateAction();
 
             String actionToReplicateClass = updateActionInfos.get("@class").trim();
@@ -58,28 +58,25 @@ public class ActionToPerformListener {
 
             if (actionToReplicateToInstantiate == null) {
                 throw new UnknownActionTypeException(
-                        "unknown action type " + actionToReplicateClass + ": please check it has been registered correctly");
+                    "unknown action type " + actionToReplicateClass + ": please check it has been registered correctly");
             }
 
             ActionToReplicate actionToReplicate = actionToReplicateToInstantiate.newInstance();
             actionToReplicate.init(updateActionInfos);
-
+*/
             BulkActionToPerform actionToPerform = BulkActionToPerform.builder()
-                    .userRequestingAction(remoteSourceControl.fetchCurrentUser(actionToPerformCommand.getGitHubOauthToken()))
-                    .gitHubOauthToken(actionToPerformCommand.getGitHubOauthToken())
-                    .email(actionToPerformCommand.getEmail())
-                    .commitMessage(actionToPerformCommand.getCommitMessage())
-                    .gitHubInteraction(actionToPerformCommand.getGitHubInteractionType())
-                    .resourcesToUpdate(actionToPerformCommand.getResourcesToUpdate())
-                    .actionToReplicate(actionToReplicate)
-                    .build();
+                .userRequestingAction(remoteSourceControl.fetchCurrentUser(actionToPerformCommand.getGitHubOauthToken()))
+                .gitHubOauthToken(actionToPerformCommand.getGitHubOauthToken())
+                .email(actionToPerformCommand.getEmail())
+                .commitMessage(actionToPerformCommand.getCommitMessage())
+                .gitHubInteraction(actionToPerformCommand.getGitHubInteractionType())
+                .resourcesToUpdate(actionToPerformCommand.getResourcesToUpdate())
+                .actionToReplicate((ActionToReplicate)actionToPerformCommand.getUpdateAction())
+                .build();
 
             actionToPerformService.perform(actionToPerform);
 
-        } catch (UnknownActionTypeException e) {
-            log.error("can't map the received command to a known action type", e);
-            notifyErrorToEndUser(actionToPerformCommand.getEmail(),e);
-        } catch (Exception e) {
+        }  catch (Exception e) {
             log.warn("some unexpected error happened", e);
             notifyErrorToEndUser(actionToPerformCommand.getEmail(),e);
         }
@@ -91,7 +88,7 @@ public class ActionToPerformListener {
         User user = new User("unknown user name ", endUserEmail);
 
         notifier.notify(user,"[KO] unexpected error when request received, before 'core processing' actually happened", "please contact support team to report the issue\n\n"+
-                ExceptionUtils.getStackTrace(e));
+            ExceptionUtils.getStackTrace(e));
 
     }
 
