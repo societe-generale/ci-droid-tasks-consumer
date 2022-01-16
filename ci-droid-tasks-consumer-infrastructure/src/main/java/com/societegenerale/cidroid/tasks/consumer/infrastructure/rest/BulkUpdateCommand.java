@@ -2,6 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.rest;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -51,6 +52,7 @@ public class BulkUpdateCommand {
 
     @ApiModelProperty(position = 6, required = true)
     @NotEmpty
+    @Nonnull
     private List<ResourceToUpdate> resourcesToUpdate;
 
     public ActionToPerformCommand toActionForSingleResource(ResourceToUpdate resourceToUpdate) {
