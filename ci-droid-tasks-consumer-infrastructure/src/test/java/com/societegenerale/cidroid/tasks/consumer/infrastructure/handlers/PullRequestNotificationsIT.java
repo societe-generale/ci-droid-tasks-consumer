@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.NOT_MERGEABLE;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +29,9 @@ public class PullRequestNotificationsIT extends SourceControlEventHandlerIT {
 
     @Test
     public void shouldNotifyPullRequestOwnerIfNotMergeable() {
+
+        githubMockServer.updatePullRequestMergeabilityStatus(NOT_MERGEABLE);
+
         sourceControlEventListener.onPushEventOnDefaultBranch(rawGitHubPushEvent);
 
         await().atMost(10, SECONDS)
