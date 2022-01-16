@@ -50,7 +50,7 @@ spring:
 #synchronous-mode: true
 #spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 
-debug: true
+#debug: true
 
 hystrix.command.default.execution.timeout.enabled: false
 feign.hystrix.enabled: false
@@ -88,6 +88,4 @@ cidroid-behavior:
       maxFiles: 10
       warningMessage: "The PR should not have more than {0} files"
 
-logging:
-  level:
-    root: info
+
