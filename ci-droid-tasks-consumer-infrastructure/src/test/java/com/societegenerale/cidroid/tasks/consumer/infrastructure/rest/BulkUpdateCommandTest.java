@@ -1,5 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.rest;
 
+import java.util.Collections;
+
 import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAction;
@@ -25,6 +27,7 @@ class BulkUpdateCommandTest {
                 .commitMessage(someCommitMessage)
                 .updateAction(someActionToPerform)
                 .gitHubInteractionType(someInteractionType)
+                .resourcesToUpdate(Collections.emptyList())
                 .build();
 
         ResourceToUpdate targetResource= new ResourceToUpdate("repoFullName","filePathOnRepo","branchName","placeHolderValue");
