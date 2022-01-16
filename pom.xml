@@ -84,7 +84,7 @@
         <validation-api.version>2.0.1.Final</validation-api.version>
 
         <jacoco.version>0.8.2</jacoco.version>
-        <guava.version>27.0-jre</guava.version>
+        <guava.version>31.0.1-jre</guava.version>
         <springfox.version>3.0.0</springfox.version>
 
 
