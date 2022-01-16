@@ -6,14 +6,13 @@ import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 @Slf4j
 public class ActionToPerformListener {
@@ -59,21 +58,21 @@ public class ActionToPerformListener {
 
             if (actionToReplicateToInstantiate == null) {
                 throw new UnknownActionTypeException(
-                        "unknown action type " + actionToReplicateClass + ": please check it has been registered correctly");
+                    "unknown action type " + actionToReplicateClass + ": please check it has been registered correctly");
             }
 
             ActionToReplicate actionToReplicate = actionToReplicateToInstantiate.newInstance();
             actionToReplicate.init(updateActionInfos);
 
             BulkActionToPerform actionToPerform = BulkActionToPerform.builder()
-                    .userRequestingAction(remoteSourceControl.fetchCurrentUser(actionToPerformCommand.getGitHubOauthToken()))
-                    .gitHubOauthToken(actionToPerformCommand.getGitHubOauthToken())
-                    .email(actionToPerformCommand.getEmail())
-                    .commitMessage(actionToPerformCommand.getCommitMessage())
-                    .gitHubInteraction(actionToPerformCommand.getGitHubInteractionType())
-                    .resourcesToUpdate(actionToPerformCommand.getResourcesToUpdate())
-                    .actionToReplicate(actionToReplicate)
-                    .build();
+                .userRequestingAction(remoteSourceControl.fetchCurrentUser(actionToPerformCommand.getGitHubOauthToken()))
+                .gitHubOauthToken(actionToPerformCommand.getGitHubOauthToken())
+                .email(actionToPerformCommand.getEmail())
+                .commitMessage(actionToPerformCommand.getCommitMessage())
+                .gitHubInteraction(actionToPerformCommand.getGitHubInteractionType())
+                .resourcesToUpdate(actionToPerformCommand.getResourcesToUpdate())
+                .actionToReplicate(actionToReplicate)
+                .build();
 
             actionToPerformService.perform(actionToPerform);
 
@@ -92,7 +91,7 @@ public class ActionToPerformListener {
         User user = new User("unknown user name ", endUserEmail);
 
         notifier.notify(user,"[KO] unexpected error when request received, before 'core processing' actually happened", "please contact support team to report the issue\n\n"+
-                ExceptionUtils.getStackTrace(e));
+            ExceptionUtils.getStackTrace(e));
 
     }
 
