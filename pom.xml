@@ -70,17 +70,17 @@
 
         <spring-cloud.version>2021.0.0</spring-cloud.version>
 
-        <commons-io.version>2.6</commons-io.version>
+        <commons-io.version>2.11.0</commons-io.version>
         <ant-style-path-matcher.version>1.0.0</ant-style-path-matcher.version>
         <logback-classic.version>1.2.3</logback-classic.version>
         <logstash-logback-encoder.version>4.11</logstash-logback-encoder.version>
         <janino.version>3.0.6</janino.version>
         <jgit.version>5.2.0.201812061821-r</jgit.version>
-        <commons-lang3.version>3.7</commons-lang3.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
 
         <mockserver.version>5.5.1</mockserver.version>
-        <awaitility.version>1.7.0</awaitility.version>
-        <greenmail.version>1.5.9</greenmail.version>
+        <awaitility.version>4.1.1</awaitility.version>
+        <greenmail.version>1.6.5</greenmail.version>
         <fakir.version>1.0.10</fakir.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
 
@@ -155,7 +155,7 @@
             <!-- Test -->
 
             <dependency>
-                <groupId>com.jayway.awaitility</groupId>
+                <groupId>org.awaitility</groupId>
                 <artifactId>awaitility</artifactId>
                 <version>${awaitility.version}</version>
                 <scope>test</scope>
