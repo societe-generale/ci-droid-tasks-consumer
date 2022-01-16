@@ -1,5 +1,9 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Collections;
+
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,15 +17,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Collections;
-
 import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
 import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.OLD_PR_CLOSED;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 public class PullRequestCleaningHandlerTest {
 
@@ -33,7 +36,7 @@ public class PullRequestCleaningHandlerTest {
     private DateProvider dateProvider;
     private PushEvent pushEvent;
 
-    private TestAppender testAppender=new TestAppender();
+    private final TestAppender testAppender=new TestAppender();
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -81,7 +84,7 @@ public class PullRequestCleaningHandlerTest {
 
         pullRequestCleaningHandler.handle(pushEvent, Collections.singletonList(recentPullRequest));
 
-        verifyZeroInteractions(remoteSourceControl);
+        verifyNoInteractions(remoteSourceControl);
 
         assertThat(testAppender.events.stream()
                                       .filter(logEvent -> logEvent.getMDCPropertyMap().getOrDefault("metricName", "NOT_FOUND").equals(OLD_PR_CLOSED))

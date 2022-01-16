@@ -1,5 +1,8 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
+import java.util.List;
+import java.util.Map;
+
 import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
@@ -8,9 +11,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.List;
-import java.util.Map;
 
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -39,6 +39,8 @@ public class RebaseHandler implements PushEventHandler {
                 .filter(this::keepPullRequestOnlyIfNotMadeFromFork)
                 .map(rebaser::rebase)
                 .collect(toMap(Pair::getKey, Pair::getValue));
+
+        log.info("{} PR(s) were rebased",rebasedCommits.keySet().size());
 
         for (Map.Entry<PullRequest, List<GitCommit>> commitsForSinglePr : rebasedCommits.entrySet()) {
 

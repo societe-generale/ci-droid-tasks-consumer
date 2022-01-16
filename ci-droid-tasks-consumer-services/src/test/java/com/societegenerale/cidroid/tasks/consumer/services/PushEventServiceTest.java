@@ -1,5 +1,12 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
@@ -14,22 +21,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import static com.jayway.awaitility.Awaitility.await;
 import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.NOT_MERGEABLE;
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.UNKNOWN;
 import static java.util.Collections.emptyList;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class PushEventServiceTest {
 
@@ -174,8 +183,7 @@ public class PushEventServiceTest {
         ArgumentCaptor<List<PullRequest>> prListCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<SourceControlEvent> gitHubEventCaptor = ArgumentCaptor.forClass(SourceControlEvent.class);
 
-        await().atMost(3, SECONDS)
-                .until(() -> verify(mockPushEventHandler, times(1)).handle(gitHubEventCaptor.capture(), prListCaptor.capture()));
+        verify(mockPushEventHandler, timeout(3000)).handle(gitHubEventCaptor.capture(), prListCaptor.capture());
 
         assertThat(prListCaptor.getValue()).containsExactly(singlePr);
         assertThat(gitHubEventCaptor.getValue()).isEqualTo(pushEvent);
