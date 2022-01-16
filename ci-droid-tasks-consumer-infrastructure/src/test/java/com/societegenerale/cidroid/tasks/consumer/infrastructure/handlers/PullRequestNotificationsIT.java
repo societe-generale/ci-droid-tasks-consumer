@@ -34,7 +34,7 @@ public class PullRequestNotificationsIT extends SourceControlEventHandlerIT {
 
         sourceControlEventListener.onPushEventOnDefaultBranch(rawGitHubPushEvent);
 
-        await().atMost(10, SECONDS)
+        await().atMost(2, SECONDS)
                 .until(() -> assertThat(notifier.getNotifications()).hasSize(1));
 
         Pair<User, Message> notification = notifier.getNotifications().get(0);
