@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -83,7 +83,7 @@ public class PullRequestCleaningHandlerTest {
 
         pullRequestCleaningHandler.handle(pushEvent, Collections.singletonList(recentPullRequest));
 
-        verifyZeroInteractions(remoteSourceControl);
+        verifyNoInteractions(remoteSourceControl);
 
         assertThat(testAppender.events.stream()
                                       .filter(logEvent -> logEvent.getMDCPropertyMap().getOrDefault("metricName", "NOT_FOUND").equals(OLD_PR_CLOSED))
