@@ -55,9 +55,9 @@ spring:
 hystrix.command.default.execution.timeout.enabled: false
 feign.hystrix.enabled: false
 
-
-gitHub:
-  api.url: "https://api.github.com"
+source-control:
+  type: "GITHUB"
+  url: "https://api.github.com"
   oauthToken: ${SERVICE_ACCOUNT_GITHUB_OAUTH_TOKEN}
 #below credentials should be a service account credentials - they will be used to rebase PRs automatically using Git commands.
   login: ${SERVICE_ACCOUNT_USERNAME}

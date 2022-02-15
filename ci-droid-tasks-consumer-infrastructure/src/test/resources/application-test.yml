@@ -1,5 +1,7 @@
-gitHub:
-  api.url: "http://localhost:9900/api/v3"
+
+source-control:
+  type: "GITHUB"
+  url: "http://localhost:9900/api/v3"
   login: "someLogin"
   password: "somePassword"
 

@@ -1,11 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.annotation.Nonnull;
+import static feign.FeignException.errorStatus;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GlobalProperties;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
@@ -35,73 +30,70 @@ import feign.httpclient.ApacheHttpClient;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.slf4j.Slf4jLogger;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import javax.annotation.Nonnull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
-import static feign.FeignException.errorStatus;
-
-@Profile("!gitLab")
-@FeignClient(name = "github", url = "${gitHub.api.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
+@ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "GITHUB")
+@FeignClient(name = "github", url = "${source-control.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
 public interface FeignRemoteGitHub extends RemoteSourceControl {
 
     Map<String, String> bodyToClosePR = Collections.singletonMap("state", "closed");
 
-    @RequestMapping(method = RequestMethod.GET,
-                    value = "/repos/{repoFullName}/pulls?state=open",
-                    consumes = MediaType.APPLICATION_JSON_VALUE,
-                    produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/repos/{repoFullName}/pulls?state=open",
+                consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     @Nonnull
     List<PullRequest> fetchOpenPullRequests(@PathVariable("repoFullName") String repoFullName);
 
-    @RequestMapping(method = RequestMethod.GET,
-                    value = "/repos/{repoFullName}/pulls/{prNumber}",
-                    consumes = MediaType.APPLICATION_JSON_VALUE,
-                    produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/repos/{repoFullName}/pulls/{prNumber}",
+                consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     PullRequest fetchPullRequestDetails(@PathVariable("repoFullName") String repoFullName,
                                         @PathVariable("prNumber") int prNumber);
 
-    @RequestMapping(method = RequestMethod.GET,
-                    value = "/users/{login}",
-                    consumes = MediaType.APPLICATION_JSON_VALUE,
-                    produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/users/{login}",
+                consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     User fetchUser(@PathVariable("login") String login);
 
-    @RequestMapping(method = RequestMethod.POST,
-                    value = "/repos/{repoFullName}/issues/{prNumber}/comments",
-                    consumes = MediaType.APPLICATION_JSON_VALUE,
-                    produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/repos/{repoFullName}/issues/{prNumber}/comments",
+                consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     void addCommentOnPR(@PathVariable("repoFullName") String repoFullName,
                                     @PathVariable("prNumber") int prNumber,
                                     @RequestBody Comment comment);
 
-    @RequestMapping(method = RequestMethod.GET,
-                    value = "/repos/{repoFullName}/pulls/{prNumber}/files",
-                    consumes = MediaType.APPLICATION_JSON_VALUE,
-                    produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/repos/{repoFullName}/pulls/{prNumber}/files",
+                consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     @Nonnull
     List<PullRequestFile> fetchPullRequestFiles(@PathVariable("repoFullName") String repoFullName,
                                                 @PathVariable("prNumber") int prNumber);
 
-    @RequestMapping(method = RequestMethod.GET,
-                    value = "/repos/{repoFullName}/issues/{prNumber}/comments",
-                    consumes = MediaType.APPLICATION_JSON_VALUE,
-                    produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/repos/{repoFullName}/issues/{prNumber}/comments",
+                consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     @Nonnull
     List<PullRequestComment> fetchPullRequestComments(@PathVariable("repoFullName") String repoFullName,
@@ -116,10 +108,9 @@ public interface FeignRemoteGitHub extends RemoteSourceControl {
     }
 
 
-    @RequestMapping(method = RequestMethod.GET,
-                    value = "/repos/{repoFullName}/contents/{path}?ref={branch}",
-                    consumes = MediaType.APPLICATION_JSON_VALUE,
-                    produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/repos/{repoFullName}/contents/{path}?ref={branch}",
+                consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     ResourceContent fetchContent(@PathVariable("repoFullName") String repoFullName,
                                  @PathVariable("path") String path,
@@ -145,17 +136,15 @@ public interface FeignRemoteGitHub extends RemoteSourceControl {
                 .target(ContentClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/contents/" + path);
     }
 
-    @RequestMapping(method = RequestMethod.GET,
-                    value = "/repos/{repoFullName}",
-                    consumes = MediaType.APPLICATION_JSON_VALUE,
-                    produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/repos/{repoFullName}",
+                consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     Optional<Repository> fetchRepository(@PathVariable("repoFullName") String repoFullName);
 
-    @RequestMapping(method = RequestMethod.GET,
-                    value = "/repos/{repoFullName}/git/refs/heads/{branchName}",
-                    consumes = MediaType.APPLICATION_JSON_VALUE,
-                    produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/repos/{repoFullName}/git/refs/heads/{branchName}",
+                consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     Reference fetchHeadReferenceFrom(@PathVariable("repoFullName") String repoFullNameString, @PathVariable("branchName") String branchName);
 
@@ -194,10 +183,9 @@ public interface FeignRemoteGitHub extends RemoteSourceControl {
         updatePullRequest(repoFullName, prNumber, bodyToClosePR);
     }
 
-    @RequestMapping(method = RequestMethod.PATCH,
-                    value = "/repos/{repoFullName}/pulls/{prNumber}",
-                    consumes = MediaType.APPLICATION_JSON_VALUE,
-                    produces = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/repos/{repoFullName}/pulls/{prNumber}",
+                  consumes = MediaType.APPLICATION_JSON_VALUE,
+                  produces = MediaType.APPLICATION_JSON_VALUE)
     void updatePullRequest(@PathVariable("repoFullName") String repoFullName,
                            @PathVariable("prNumber") int prNumber,
                            @RequestBody Map<String, String> body);
@@ -222,7 +210,7 @@ class RemoteGitHubConfig {
     }
 
     @Bean
-    RequestInterceptor oauthTokenSetterInterceptor(@Value("${gitHub.oauthToken:#{null}}") String oauthToken) {
+    RequestInterceptor oauthTokenSetterInterceptor(@Value("${source-control.oauthToken:#{null}}") String oauthToken) {
         return new OAuthInterceptor(oauthToken);
     }
 
@@ -277,8 +265,8 @@ class OAuthInterceptor implements RequestInterceptor {
 
     private String oauthToken;
 
-    public OAuthInterceptor(String OauthToken) {
-        this.oauthToken = OauthToken;
+    public OAuthInterceptor(String oauthToken) {
+        this.oauthToken = oauthToken;
     }
 
     @Override
