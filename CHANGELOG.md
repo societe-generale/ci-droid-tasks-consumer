@@ -5,6 +5,7 @@
 ### Added
 
 ### Changed
+- [BREAKING] source control config is now configured under `source-control`, with an explicit `type` attribute
 
 ### Deprecated
 
