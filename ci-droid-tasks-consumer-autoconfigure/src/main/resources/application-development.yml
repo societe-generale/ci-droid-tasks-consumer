@@ -2,13 +2,12 @@
 
 spring:
   rabbitmq:
-      addresses: yourRabbitMqServer
-      username: guest
-      password: guest
-      virtual-host: dev
+    ssl.enabled: false
 
-gitHub:
-  api.url: "http://api.github.com"
+
+source-control:
+  type: "GITHUB"
+  url: "http://api.github.com"
   login: "yourLogin"
   password: "yourPassword"
   oauthToken: "token"

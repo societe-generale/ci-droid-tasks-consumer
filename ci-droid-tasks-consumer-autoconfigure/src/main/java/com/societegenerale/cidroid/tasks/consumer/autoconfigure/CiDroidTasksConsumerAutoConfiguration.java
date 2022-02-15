@@ -11,8 +11,19 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMail
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.GitHubPullRequestCommentNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.HttpNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.*;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.BestPracticeNotifierHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.DummyPullRequestEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.DummyPushEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.NotificationsHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestCleaningHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestSizeCheckHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.RebaseHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -21,9 +32,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.mail.MailSender;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Configuration
 @Import({InfraConfig.class, GitHubConfig.class, GitLabConfig.class})
@@ -49,8 +57,8 @@ public class CiDroidTasksConsumerAutoConfiguration {
     @Bean
     @ConditionalOnProperty(value = "cidroid-behavior.tryToRebaseOpenPrs.enabled", havingValue = "true")
     @AutoConfigureOrder(3)
-    public PushEventHandler rebaseHandler(RemoteSourceControl gitHub, @Value("${gitHub.login}") String gitLogin,
-                                          @Value("${gitHub.password}") String gitPassword) {
+    public PushEventHandler rebaseHandler(RemoteSourceControl gitHub, @Value("${source-control.login}") String gitLogin,
+                                          @Value("${source-control.password}") String gitPassword) {
 
         return new RebaseHandler(new GitRebaser(gitLogin, gitPassword, new GitWrapper()), gitHub);
     }
