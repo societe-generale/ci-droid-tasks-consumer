@@ -4,9 +4,10 @@ spring:
   rabbitmq:
     ssl.enabled: false
 
+spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 
 source-control:
-  type: "GITHUB"
+  type: "GITLAB"
   url: "http://api.github.com"
   login: "yourLogin"
   password: "yourPassword"
