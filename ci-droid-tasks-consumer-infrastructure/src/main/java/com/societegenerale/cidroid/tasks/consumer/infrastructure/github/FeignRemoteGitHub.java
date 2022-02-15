@@ -47,6 +47,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "GITHUB")
@@ -75,7 +76,7 @@ public interface FeignRemoteGitHub extends RemoteSourceControl {
     @Override
     User fetchUser(@PathVariable("login") String login);
 
-    @GetMapping(value = "/repos/{repoFullName}/issues/{prNumber}/comments",
+    @PostMapping(value = "/repos/{repoFullName}/issues/{prNumber}/comments",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
@@ -263,7 +264,7 @@ interface GitReferenceClient {
 class OAuthInterceptor implements RequestInterceptor {
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private String oauthToken;
+    private final String oauthToken;
 
     public OAuthInterceptor(String oauthToken) {
         this.oauthToken = oauthToken;
