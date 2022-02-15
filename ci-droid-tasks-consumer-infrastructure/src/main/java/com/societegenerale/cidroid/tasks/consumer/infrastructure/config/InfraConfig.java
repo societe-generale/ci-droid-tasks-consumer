@@ -1,7 +1,5 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
-import java.util.List;
-
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.extensions.actionToReplicate.AddXmlContentAction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAction;
@@ -13,7 +11,6 @@ import com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAct
 import com.societegenerale.cidroid.extensions.actionToReplicate.TemplateBasedContentAction;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.ActionToReplicateController;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.SourceControlEventController;
@@ -26,17 +23,16 @@ import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullReq
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
 
 @Configuration
-@EnableFeignClients(clients = { FeignRemoteGitHub.class})
 @ComponentScan
 public class InfraConfig {
 
