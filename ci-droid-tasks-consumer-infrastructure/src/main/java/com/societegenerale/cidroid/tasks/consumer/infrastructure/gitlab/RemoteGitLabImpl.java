@@ -19,6 +19,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedR
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.GitLabApi;
@@ -29,10 +31,14 @@ import org.gitlab4j.api.models.RepositoryFile;
 @Slf4j
 public class RemoteGitLabImpl implements RemoteSourceControl {
 
+
+    private final Logger gitLabLogger=Logger.getLogger(RemoteGitLabImpl.class.toString());
+
     private final GitLabApi gitlabClient;
 
     public RemoteGitLabImpl(String gitLabUrl, String privateToken) {
         this.gitlabClient = new GitLabApi(gitLabUrl, privateToken);
+        this.gitlabClient.enableRequestResponseLogging(gitLabLogger, Level.INFO,1024);
     }
 
     @Nonnull
@@ -42,7 +48,7 @@ public class RemoteGitLabImpl implements RemoteSourceControl {
         try {
             List<MergeRequest> mergeRequests = gitlabClient.getMergeRequestApi().getMergeRequests(repoFullName);
 
-            return mergeRequests.stream().map(mr -> toPullRequest(mr)).collect(toList());
+            return mergeRequests.stream().map(RemoteGitLabImpl::toPullRequest).collect(toList());
         }
         catch (GitLabApiException e) {
             log.error("could not retrieve the list of merge requests for project "+repoFullName,e);
@@ -70,24 +76,34 @@ public class RemoteGitLabImpl implements RemoteSourceControl {
 
     @Override
     public User fetchCurrentUser(String oAuthToken) {
+
+        try {
+            var gitLabUser = gitlabClient.getUserApi().getCurrentUser();
+
+            return new User(gitLabUser.getUsername(),gitLabUser.getEmail());
+
+        } catch (GitLabApiException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
     @Override
     public void addCommentOnPR(String repoFullName, int prNumber, Comment comment) {
-
+        throw new UnsupportedOperationException("not implemented yet");
     }
 
     @Nonnull
     @Override
     public List<PullRequestFile> fetchPullRequestFiles(String repoFullName, int prNumber) {
-        return null;
+        throw new UnsupportedOperationException("not implemented yet");
     }
 
     @Nonnull
     @Override
     public List<PullRequestComment> fetchPullRequestComments(String repoFullName, int prNumber) {
-        return null;
+        throw new UnsupportedOperationException("not implemented yet");
     }
 
     @Override
@@ -129,22 +145,59 @@ public class RemoteGitLabImpl implements RemoteSourceControl {
 
     @Override
     public void closePullRequest(String repoFullName, int prNumber) {
-
+        throw new UnsupportedOperationException("not implemented yet");
     }
 
     @Override
     public Optional<Repository> fetchRepository(String repoFullName) {
-        return Optional.empty();
+
+
+        var optionalGitLabRepo=gitlabClient.getProjectApi().getOptionalProject(repoFullName);
+
+        if(optionalGitLabRepo.isEmpty()){
+            return Optional.empty();
+        }
+
+        var gitLabRepo=optionalGitLabRepo.get();
+
+        var repository=new Repository();
+        repository.setFullName(repoFullName);
+        repository.setId(gitLabRepo.getId());
+        repository.setDefaultBranch(gitLabRepo.getDefaultBranch());
+
+        return Optional.of(repository);
     }
 
     @Override
     public Reference fetchHeadReferenceFrom(String repoFullName, String branchName) {
+
+        try {
+            var lastCommit=gitlabClient.getCommitsApi().getCommits(repoFullName, branchName,null,null).get(0);
+
+            return new Reference(
+                REFS_HEADS + branchName, new Reference.ObjectReference("commit", lastCommit.getId()));
+
+        } catch (GitLabApiException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     @Override
     public Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String oauthToken)
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
+
+        try {
+            var newBranch=gitlabClient.getRepositoryApi().createBranch(repoFullName,branchName,fromReferenceSha1);
+
+            return new Reference(
+                REFS_HEADS + newBranch.getName(), new Reference.ObjectReference("commit", fromReferenceSha1));
+
+
+        } catch (GitLabApiException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
