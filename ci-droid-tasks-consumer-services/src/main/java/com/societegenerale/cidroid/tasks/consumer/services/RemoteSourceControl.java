@@ -1,10 +1,5 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import java.util.List;
-import java.util.Optional;
-
-import javax.annotation.Nonnull;
-
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
@@ -18,8 +13,13 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reposito
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nonnull;
 
 public interface RemoteSourceControl {
+
+    String REFS_HEADS = "refs/heads/";
 
     @Nonnull
     List<PullRequest> fetchOpenPullRequests(String repoFullName);
