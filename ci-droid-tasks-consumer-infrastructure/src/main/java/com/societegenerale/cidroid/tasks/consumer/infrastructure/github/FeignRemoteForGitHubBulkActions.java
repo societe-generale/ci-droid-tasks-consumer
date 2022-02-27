@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "GITHUB")
-@FeignClient(name = "github", url = "${source-control.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
+@FeignClient(name = "github-forBulkActions", url = "${source-control.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
 public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkActionsPerformer {
 
     Map<String, String> bodyToClosePR = Collections.singletonMap("state", "closed");

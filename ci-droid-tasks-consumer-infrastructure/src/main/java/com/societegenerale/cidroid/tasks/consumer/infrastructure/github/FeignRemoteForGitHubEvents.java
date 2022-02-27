@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "GITHUB")
-@FeignClient(name = "github", url = "${source-control.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
+@FeignClient(name = "github-forEvents", url = "${source-control.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
 public interface FeignRemoteForGitHubEvents extends SourceControlEventsReactionPerformer {
 
     Map<String, String> bodyToClosePR = Collections.singletonMap("state", "closed");
