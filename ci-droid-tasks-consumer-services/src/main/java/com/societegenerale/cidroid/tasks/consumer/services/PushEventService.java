@@ -1,8 +1,8 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PUSH_EVENT_TO_PROCESS;
+import static java.util.stream.Collectors.toList;
 
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
@@ -10,24 +10,22 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
+import java.util.List;
+import javax.annotation.Nonnull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PUSH_EVENT_TO_PROCESS;
-import static java.util.stream.Collectors.toList;
-
 @Slf4j
 public class PushEventService {
 
-    private RemoteSourceControl gitHub;
+    private final SourceControlEventsReactionPerformer gitHub;
 
-    private List<PushEventHandler> defaultBranchPushActionHandlers;
+    private final List<PushEventHandler> defaultBranchPushActionHandlers;
 
-    private PushEventMonitor pushEventMonitor;
+    private final PushEventMonitor pushEventMonitor;
 
-    private boolean enableMonitoring;
+    private final boolean enableMonitoring;
 
     @Setter
     private long sleepDurationBeforeTryingAgainToFetchMergeableStatus = 300;
@@ -35,7 +33,7 @@ public class PushEventService {
     @Setter
     private int maxRetriesForMergeableStatus = 10;
 
-    public PushEventService(RemoteSourceControl gitHub, List<PushEventHandler> pushEventHandlers, boolean enablePushEventsMonitoring, PushEventMonitor pushEventMonitor) {
+    public PushEventService(SourceControlEventsReactionPerformer gitHub, List<PushEventHandler> pushEventHandlers, boolean enablePushEventsMonitoring, PushEventMonitor pushEventMonitor) {
 
         if(enablePushEventsMonitoring && pushEventMonitor == null){
             throw new IllegalStateException("if Push events monitoring is enabled, then a proper "+PushEventMonitor.class+" must be provided");
@@ -100,7 +98,7 @@ public class PushEventService {
     }
 
     private void logPrMergeabilityStatus(List<PullRequest> openPRsWithDefinedMergeabilityStatus) {
-        if (openPRsWithDefinedMergeabilityStatus.size() > 0) {
+        if (!openPRsWithDefinedMergeabilityStatus.isEmpty()) {
 
             StringBuilder sb = new StringBuilder("PR status :\n");
 
@@ -123,7 +121,7 @@ public class PushEventService {
                 .filter(pr -> PRmergeableStatus.UNKNOWN == pr.getMergeStatus())
                 .collect(toList());
 
-        if (pullRequestsWithUnknownMergeabilityStatus.size() > 0 && nbRetry < maxRetriesForMergeableStatus) {
+        if (!pullRequestsWithUnknownMergeabilityStatus.isEmpty() && nbRetry < maxRetriesForMergeableStatus) {
 
             if (log.isDebugEnabled()) {
 

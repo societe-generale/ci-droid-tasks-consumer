@@ -1,38 +1,43 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
+import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestMatcher;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import java.io.IOException;
+import java.util.List;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.io.IOException;
-import java.util.List;
-
-import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-public class RebaseHandlerTest {
+class RebaseHandlerTest {
 
     private static final String SINGLE_PULL_REQUEST_JSON = "/singlePullRequest.json";
     private static final int PULL_REQUEST_NUMBER = 1347;
 
-    private RemoteSourceControl mockRemoteSourceControl = mock(RemoteSourceControl.class);
+    private final SourceControlEventsReactionPerformer mockRemoteSourceControl = mock(SourceControlEventsReactionPerformer.class);
 
-    private Rebaser mockRebaser = mock(Rebaser.class);
+    private final Rebaser mockRebaser = mock(Rebaser.class);
 
     private RebaseHandler rebaseHandler;
 
@@ -56,7 +61,7 @@ public class RebaseHandlerTest {
 
 
     @Test
-    public void shouldRebaseAndPostGitHubCommentForMergeablePr() {
+    void shouldRebaseAndPostGitHubCommentForMergeablePr() {
 
         singlePr.setMergeable(true);
 
@@ -82,7 +87,7 @@ public class RebaseHandlerTest {
     }
 
     @Test
-    public void shouldNotRebaseWhenPRisMadeFromFork() {
+    void shouldNotRebaseWhenPRisMadeFromFork() {
 
         singlePr.setMergeable(true);
         singlePr.setMadeFromForkedRepo(true);
@@ -94,7 +99,7 @@ public class RebaseHandlerTest {
     }
 
     @Test
-    public void shouldPostGitHubWarningCommentWhenProblemWhileRebasing() {
+    void shouldPostGitHubWarningCommentWhenProblemWhileRebasing() {
 
         singlePr.setMergeable(true);
 
@@ -122,11 +127,11 @@ public class RebaseHandlerTest {
 
 
     @Test
-    public void shouldNotRebase_whenPrIsNotMergeable() {
+    void shouldNotRebase_whenPrIsNotMergeable() {
 
         rebaseHandler.handle(pushEvent, singletonList(singlePr));
 
-        assertThat(verify(mockRebaser, never()).rebase(any(PullRequest.class)));
+        verify(mockRebaser, never()).rebase(any(PullRequest.class));
 
     }
 }

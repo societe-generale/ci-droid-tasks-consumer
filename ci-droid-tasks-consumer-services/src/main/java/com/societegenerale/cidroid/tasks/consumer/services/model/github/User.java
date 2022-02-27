@@ -1,7 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.services.model.github;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +19,7 @@ public class User {
     private String email;
 
 
-    public static User buildFrom(PullRequest pr, RemoteSourceControl gitHub){
+    public static User buildFrom(PullRequest pr, SourceControlEventsReactionPerformer gitHub){
 
         return gitHub.fetchUser(pr.getUser().login);
 

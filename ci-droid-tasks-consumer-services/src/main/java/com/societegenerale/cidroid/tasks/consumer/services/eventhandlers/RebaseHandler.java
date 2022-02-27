@@ -1,27 +1,26 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import java.util.List;
-import java.util.Map;
+import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-
-import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Slf4j
 public class RebaseHandler implements PushEventHandler {
 
-    private Rebaser rebaser;
-    private RemoteSourceControl gitHub;
+    private final Rebaser rebaser;
+    private final SourceControlEventsReactionPerformer gitHub;
 
-    public RebaseHandler(Rebaser rebaser, RemoteSourceControl gitHub) {
+    public RebaseHandler(Rebaser rebaser, SourceControlEventsReactionPerformer gitHub) {
         this.rebaser = rebaser;
         this.gitHub=gitHub;
     }

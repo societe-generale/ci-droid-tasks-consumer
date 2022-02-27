@@ -1,9 +1,13 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
+import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer.GITHUB_MOCK_PORT;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.JsonBody.json;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteGitHub;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteForGitHubBulkActions;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
@@ -18,10 +22,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer.GITHUB_MOCK_PORT;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.JsonBody.json;
-
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes={ InfraConfig.class,TestConfig.class}, initializers = YamlFileApplicationContextInitializer.class)
 @TestPropertySource("/application-test.yml")
@@ -29,10 +29,10 @@ import static org.mockserver.model.JsonBody.json;
  * We're not supposed to have too much business logic in the class under test, but this can be useful to verify the payload received on remote github server side,
  * and/or how the feign client behaves depending on various response codes
  */
-public class FeignRemoteSourceControlTest {
+class FeignRemoteSourceControlTest {
 
     @Autowired
-    private FeignRemoteGitHub feignRemoteGitHub;
+    private FeignRemoteForGitHubBulkActions feignRemoteGitHub;
 
     @Autowired
     private GitHubMockServer githubMockServer;
@@ -57,7 +57,7 @@ public class FeignRemoteSourceControlTest {
     }
 
     @Test
-    public void PRtitleShouldBeReceivedAsSent() throws RemoteSourceControlAuthorizationException, JsonProcessingException {
+    void PRtitleShouldBeReceivedAsSent() throws RemoteSourceControlAuthorizationException, JsonProcessingException {
 
         PullRequestToCreate prToCreate= new PullRequestToCreate();
         prToCreate.setBase("master");

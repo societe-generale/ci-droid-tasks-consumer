@@ -1,21 +1,20 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import static java.util.stream.Collectors.toMap;
+
 import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestFile;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import io.github.azagniotov.matcher.AntPathMatcher;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static java.util.stream.Collectors.toMap;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BestPracticeNotifierHandler implements PullRequestEventHandler {
@@ -24,13 +23,13 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
     private final List<Notifier> notifiers;
 
-    private RemoteSourceControl remoteSourceControl;
+    private final SourceControlEventsReactionPerformer remoteSourceControl;
 
-    private ResourceFetcher resourceFetcher;
+    private final ResourceFetcher resourceFetcher;
 
 
     public BestPracticeNotifierHandler(Map<String, String> configuredPatternToContentMapping,
-                                       List<Notifier> notifiers, RemoteSourceControl remoteSourceControl, ResourceFetcher resourceFetcher) {
+                                       List<Notifier> notifiers, SourceControlEventsReactionPerformer remoteSourceControl, ResourceFetcher resourceFetcher) {
 
         this.configuredPatternToContentMapping = configuredPatternToContentMapping;
         this.notifiers = notifiers;
@@ -101,7 +100,7 @@ public class BestPracticeNotifierHandler implements PullRequestEventHandler {
 
     private boolean hasntReceivedAnyCommentOnFileYet(String fileName, List<PullRequestComment> existingPrComments) {
 
-        return existingPrComments.stream().map(prComment -> prComment.getComment())
+        return existingPrComments.stream().map(PullRequestComment::getComment)
                 .noneMatch(comment -> comment.contains(fileName));
 
     }

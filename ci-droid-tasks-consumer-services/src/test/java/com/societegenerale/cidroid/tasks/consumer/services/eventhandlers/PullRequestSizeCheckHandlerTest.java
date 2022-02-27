@@ -1,31 +1,37 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
-import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
-import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-
-import java.util.List;
-import java.util.Map;
-
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-public class PullRequestSizeCheckHandlerTest {
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestFile;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+
+class PullRequestSizeCheckHandlerTest {
 
     private final String REPO_FULL_NAME = "someOrg/someRepo";
 
     private final Notifier mockNotifier = mock(Notifier.class);
 
-    private final RemoteSourceControl mockRemoteSourceControl = mock(RemoteSourceControl.class);
+    private final SourceControlEventsReactionPerformer mockRemoteSourceControl = mock(SourceControlEventsReactionPerformer.class);
 
     private final int maxFilesInPR = 5;
 
@@ -50,7 +56,7 @@ public class PullRequestSizeCheckHandlerTest {
 
 
     @Test
-    public void shouldNotifyWithConfiguredContentWhenTheNumberOfFilesInPRExceedsConfiguredValue() {
+    void shouldNotifyWithConfiguredContentWhenTheNumberOfFilesInPRExceedsConfiguredValue() {
         returnMoreThanConfiguredMaxFilesInPRFilesWhenFetchPullRequestFiles();
 
         handler.handle(pullRequestEvent);
@@ -61,7 +67,7 @@ public class PullRequestSizeCheckHandlerTest {
     }
 
     @Test
-    public void shouldNotCreateTheMaxFileInPRCommentIfAlreadyCommented() {
+    void shouldNotCreateTheMaxFileInPRCommentIfAlreadyCommented() {
         returnMoreThanConfiguredMaxFilesInPRFilesWhenFetchPullRequestFiles();
         returnExistingComment("The PR should not have more than 5 files");
 

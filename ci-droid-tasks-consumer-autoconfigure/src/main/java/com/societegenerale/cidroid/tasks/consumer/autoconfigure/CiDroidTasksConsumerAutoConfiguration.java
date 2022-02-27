@@ -10,7 +10,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraCon
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.GitHubPullRequestCommentNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.HttpNotifier;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.BestPracticeNotifierHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.DummyPullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.DummyPushEventHandler;
@@ -37,19 +37,19 @@ import org.springframework.mail.MailSender;
 @Import({InfraConfig.class, GitHubConfig.class, GitLabConfig.class})
 public class CiDroidTasksConsumerAutoConfiguration {
 
-    private static final PushEventMonitor DONT_MONITOR_ANYTHING=(pushEvent) -> {};
+    private static final PushEventMonitor DONT_MONITOR_ANYTHING=pushEvent -> {};
 
     @Bean
     @ConditionalOnProperty(value = "cidroid-behavior.notifyOwnerForNonMergeablePr.enabled", havingValue = "true")
     @AutoConfigureOrder(1)
-    public PushEventHandler notificationHandler(RemoteSourceControl gitHub, List<Notifier> notifiers) {
+    public PushEventHandler notificationHandler(SourceControlEventsReactionPerformer gitHub, List<Notifier> notifiers) {
         return new NotificationsHandler(gitHub, notifiers);
     }
 
     @Bean
     @ConditionalOnProperty(value = "cidroid-behavior.closeOldPullRequests.enabled", havingValue = "true")
     @AutoConfigureOrder(2)
-    public PushEventHandler pullRequestCleaningHandler(RemoteSourceControl gitHub,
+    public PushEventHandler pullRequestCleaningHandler(SourceControlEventsReactionPerformer gitHub,
                                                        @Value("${cidroid-behavior.closeOldPullRequests.limitInDays}") int prAgeLimitInDays) {
         return new PullRequestCleaningHandler(gitHub, LocalDateTime::now, prAgeLimitInDays);
     }
@@ -57,7 +57,7 @@ public class CiDroidTasksConsumerAutoConfiguration {
     @Bean
     @ConditionalOnProperty(value = "cidroid-behavior.tryToRebaseOpenPrs.enabled", havingValue = "true")
     @AutoConfigureOrder(3)
-    public PushEventHandler rebaseHandler(RemoteSourceControl gitHub, @Value("${source-control.login}") String gitLogin,
+    public PushEventHandler rebaseHandler(SourceControlEventsReactionPerformer gitHub, @Value("${source-control.login}") String gitLogin,
                                           @Value("${source-control.password}") String gitPassword) {
 
         return new RebaseHandler(new GitRebaser(gitLogin, gitPassword, new GitWrapper()), gitHub);
@@ -83,7 +83,7 @@ public class CiDroidTasksConsumerAutoConfiguration {
     @ConditionalOnProperty(value = "cidroid-behavior.bestPracticeNotifier.enabled", havingValue = "true")
     @AutoConfigureOrder(1)
     public PullRequestEventHandler bestPracticeNotifierHandler(CiDroidBehavior ciDroidBehavior, List<Notifier> notifiers,
-                                                               RemoteSourceControl remoteSourceControl) {
+                                                               SourceControlEventsReactionPerformer remoteSourceControl) {
 
         return new BestPracticeNotifierHandler(ciDroidBehavior.getPatternToResourceMapping(), notifiers, remoteSourceControl,
                 new RestTemplateResourceFetcher());
@@ -94,7 +94,7 @@ public class CiDroidTasksConsumerAutoConfiguration {
     @ConditionalOnProperty(value = "cidroid-behavior.maxFilesInPRNotifier.enabled", havingValue = "true")
     @AutoConfigureOrder(2)
     public PullRequestEventHandler pullRequestSizeCheckHandler(CiDroidBehavior ciDroidBehavior,
-                                                               List<Notifier> notifiers, RemoteSourceControl remoteSourceControl,
+                                                               List<Notifier> notifiers, SourceControlEventsReactionPerformer remoteSourceControl,
                                                                @Value("${cidroid-behavior.maxFilesInPRNotifier.maxFiles}") int maxFiles,
                                                                @Value("${cidroid-behavior.maxFilesInPRNotifier.warningMessage}") String warningMessage) {
 
@@ -112,7 +112,7 @@ public class CiDroidTasksConsumerAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "notifiers", value = "github.prComment.enable", havingValue = "true")
-    public Notifier gitHubCommentOnPRnotifier(RemoteSourceControl gitHub) {
+    public Notifier gitHubCommentOnPRnotifier(SourceControlEventsReactionPerformer gitHub) {
 
         return new GitHubPullRequestCommentNotifier(gitHub);
     }

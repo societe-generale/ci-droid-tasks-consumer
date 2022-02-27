@@ -1,35 +1,5 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Optional;
-
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import com.societegenerale.cidroid.api.ResourceToUpdate;
-import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
-import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
-import com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAction;
-import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
-import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
-import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import com.societegenerale.cidroid.tasks.consumer.services.monitoring.TestAppender;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.slf4j.LoggerFactory;
-
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_KO_AUTHENTICATION_ISSUE;
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_KO_CANT_PROVIDE_CONTENT_ISSUE;
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_KO_FILE_CONTENT_IS_SAME;
@@ -54,7 +24,36 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ActionToPerformServiceTest {
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import com.societegenerale.cidroid.api.ResourceToUpdate;
+import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
+import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
+import com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAction;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
+import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import com.societegenerale.cidroid.tasks.consumer.services.monitoring.TestAppender;
+import java.util.Base64;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.slf4j.LoggerFactory;
+
+class ActionToPerformServiceTest {
 
     private static final String MODIFIED_CONTENT = "modifiedContent";
 
@@ -72,35 +71,35 @@ public class ActionToPerformServiceTest {
 
     private final String MASTER_BRANCH = "masterBranch";
 
-    private String sha1ForHeadOnMaster = "123456abcdef";
+    private final String sha1ForHeadOnMaster = "123456abcdef";
 
-    private String branchNameToCreateForPR = "myPrBranch";
+    private final String branchNameToCreateForPR = "myPrBranch";
 
-    private TestAppender testAppender = new TestAppender();
-
-
-    private RemoteSourceControl mockRemoteSourceControl = mock(RemoteSourceControl.class);
-
-    private ActionNotificationService mockActionNotificationService = mock(ActionNotificationService.class);
-
-    private ResourceContent sampleResourceContentBeforeUpdate = new ResourceContent();
-
-    private PullRequest samplePullRequest = new PullRequest(789);
-
-    private Repository sampleRepository=new Repository();
+    private final TestAppender testAppender = new TestAppender();
 
 
-    private ArgumentCaptor<UpdatedResource> updatedResourceCaptor = ArgumentCaptor.forClass(UpdatedResource.class);
+    private final SourceControlBulkActionsPerformer mockRemoteSourceControl = mock(SourceControlBulkActionsPerformer.class);
 
-    private ArgumentCaptor<DirectCommit> directCommitCaptor = ArgumentCaptor.forClass(DirectCommit.class);
+    private final ActionNotificationService mockActionNotificationService = mock(ActionNotificationService.class);
 
-    private ArgumentCaptor<PullRequestToCreate> newPrCaptor = ArgumentCaptor.forClass(PullRequestToCreate.class);
+    private final ResourceContent sampleResourceContentBeforeUpdate = new ResourceContent();
 
-    private ActionToPerformService actionToPerformService = new ActionToPerformService(mockRemoteSourceControl, mockActionNotificationService);
+    private final PullRequest samplePullRequest = new PullRequest(789);
 
-    private TestActionToPerform testActionToPerform = new TestActionToPerform();
+    private final Repository sampleRepository=new Repository();
 
-    private ResourceToUpdate resourceToUpdate = new ResourceToUpdate(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH, StringUtils.EMPTY);
+
+    private final ArgumentCaptor<UpdatedResource> updatedResourceCaptor = ArgumentCaptor.forClass(UpdatedResource.class);
+
+    private final ArgumentCaptor<DirectCommit> directCommitCaptor = ArgumentCaptor.forClass(DirectCommit.class);
+
+    private final ArgumentCaptor<PullRequestToCreate> newPrCaptor = ArgumentCaptor.forClass(PullRequestToCreate.class);
+
+    private final ActionToPerformService actionToPerformService = new ActionToPerformService(mockRemoteSourceControl, mockActionNotificationService);
+
+    private final TestActionToPerform testActionToPerform = new TestActionToPerform();
+
+    private final ResourceToUpdate resourceToUpdate = new ResourceToUpdate(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH, StringUtils.EMPTY);
 
     private UpdatedResource updatedResource;
 
@@ -117,7 +116,7 @@ public class ActionToPerformServiceTest {
                 .gitHubOauthToken(SOME_OAUTH_TOKEN)
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)
-                .resourcesToUpdate(Arrays.asList(resourceToUpdate))
+                .resourcesToUpdate(List.of(resourceToUpdate))
                 .actionToReplicate(testActionToPerform);
 
         UpdatedResource.Content content = new UpdatedResource.Content();
@@ -151,7 +150,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void performActionOfType_DIRECT_PUSH() throws RemoteSourceControlAuthorizationException {
+    void performActionOfType_DIRECT_PUSH() throws RemoteSourceControlAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -169,7 +168,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void isPassingResourceToUpdateToTheAction_toGenerateItsContent() {
+    void isPassingResourceToUpdateToTheAction_toGenerateItsContent() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -182,7 +181,7 @@ public class ActionToPerformServiceTest {
 
 
     @Test
-    public void dontPushWhenContentIsNotModifiedByAction_andActionIs_DIRECT_PUSH() throws RemoteSourceControlAuthorizationException {
+    void dontPushWhenContentIsNotModifiedByAction_andActionIs_DIRECT_PUSH() throws RemoteSourceControlAuthorizationException {
 
         String contentThatWillNotBeModified = "some content that will not change";
         testActionToPerform.setContentToProvide(contentThatWillNotBeModified);
@@ -216,7 +215,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontPushWhenContentIsNotModifiedByAction_andActionIs_PULL_REQUEST()
+    void dontPushWhenContentIsNotModifiedByAction_andActionIs_PULL_REQUEST()
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         String contentThatWillNotBeModified = "some content that will not change";
@@ -243,7 +242,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void performActionOfType_PULL_REQUEST() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
+    void performActionOfType_PULL_REQUEST() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -268,7 +267,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void continueIfResourceDoesntExist_whenActionPermitsIt() throws RemoteSourceControlAuthorizationException {
+    void continueIfResourceDoesntExist_whenActionPermitsIt() throws RemoteSourceControlAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -288,7 +287,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void continueIfExistingResourceIsNull_whenActionPermitsIt() throws RemoteSourceControlAuthorizationException {
+    void continueIfExistingResourceIsNull_whenActionPermitsIt() throws RemoteSourceControlAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -306,7 +305,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_DIRECT_PUSH() throws RemoteSourceControlAuthorizationException {
+    void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_DIRECT_PUSH() throws RemoteSourceControlAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -326,7 +325,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_PULL_REQUEST()
+    void dontDoAnythingIfResourceDoesntExist_whenActionDoesntAllowIt_for_PULL_REQUEST()
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
@@ -347,7 +346,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontDoAnythingIfResourceDoesntExist_whenActionIsDeleteResource()
+    void dontDoAnythingIfResourceDoesntExist_whenActionIsDeleteResource()
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
@@ -369,7 +368,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontDoAnythingIfProblemWhileComputingContent() {
+    void dontDoAnythingIfProblemWhileComputingContent() {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction()).build();
 
@@ -388,11 +387,11 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void deleteResourceWhenRequested() throws RemoteSourceControlAuthorizationException {
+    void deleteResourceWhenRequested() throws RemoteSourceControlAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction())
                                                                             .actionToReplicate(new DeleteResourceAction())
-                                                                            .resourcesToUpdate(Arrays.asList(resourceToUpdate))
+                                                                            .resourcesToUpdate(List.of(resourceToUpdate))
                                                                             .gitHubOauthToken(SOME_OAUTH_TOKEN)
                                                                             .build();
 
@@ -422,7 +421,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void reuseBranchIfAlreadyExistWhenDoing_PULL_REQUEST() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
+    void reuseBranchIfAlreadyExistWhenDoing_PULL_REQUEST() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -453,7 +452,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void notifyProperlyWhenIncorrectCredentials_whenCommitting() throws RemoteSourceControlAuthorizationException {
+    void notifyProperlyWhenIncorrectCredentials_whenCommitting() throws RemoteSourceControlAuthorizationException {
 
         when(mockRemoteSourceControl.updateContent(eq(REPO_FULL_NAME), anyString(), any(DirectCommit.class), anyString()))
                 .thenThrow(new RemoteSourceControlAuthorizationException("invalid credentials"));
@@ -473,7 +472,7 @@ public class ActionToPerformServiceTest {
 
 
     @Test
-    public void notifyProperlyWhenIncorrectCredentials_whenCreatingBranch() throws RemoteSourceControlAuthorizationException, BranchAlreadyExistsException {
+    void notifyProperlyWhenIncorrectCredentials_whenCreatingBranch() throws RemoteSourceControlAuthorizationException, BranchAlreadyExistsException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -490,7 +489,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void notifyProperlyWhenUnexpectedError() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
+    void notifyProperlyWhenUnexpectedError() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -507,7 +506,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void notifyProperlyWhenRepoDoesntExist() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
+    void notifyProperlyWhenRepoDoesntExist() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -526,7 +525,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void shouldCreatePRwithProvidedTitle() throws RemoteSourceControlAuthorizationException, BranchAlreadyExistsException {
+    void shouldCreatePRwithProvidedTitle() throws RemoteSourceControlAuthorizationException, BranchAlreadyExistsException {
 
         mockPullRequestSpecificBehavior();
         when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(samplePullRequest);
@@ -543,7 +542,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void shouldCreatePRwithBranchName_whenPRtitleIsNotProvided() throws RemoteSourceControlAuthorizationException, BranchAlreadyExistsException {
+    void shouldCreatePRwithBranchName_whenPRtitleIsNotProvided() throws RemoteSourceControlAuthorizationException, BranchAlreadyExistsException {
 
         mockPullRequestSpecificBehavior();
         when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(samplePullRequest);
@@ -561,7 +560,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void shouldCreatePRbranchFromProvidedBranch() throws RemoteSourceControlAuthorizationException, BranchAlreadyExistsException {
+    void shouldCreatePRbranchFromProvidedBranch() throws RemoteSourceControlAuthorizationException, BranchAlreadyExistsException {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
@@ -593,7 +592,7 @@ public class ActionToPerformServiceTest {
     }
 
     @Test
-    public void dontCreatePR_ifAlreadyAnOpenPRonSameBranch() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
+    void dontCreatePR_ifAlreadyAnOpenPRonSameBranch() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         mockPullRequestSpecificBehavior();
 
@@ -617,7 +616,7 @@ public class ActionToPerformServiceTest {
 
 
     @Test
-    public void notifyProperlyWhenIssueWithPRcreation() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
+    void notifyProperlyWhenIssueWithPRcreation() throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         mockPullRequestSpecificBehavior();
 

@@ -1,33 +1,38 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
+import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
+import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyMap;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
+import java.io.IOException;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.io.IOException;
-import java.util.Map;
-
-import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
-import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
-import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
-
-public class NotificationsHandlerTest {
+class NotificationsHandlerTest {
 
     private static final String SINGLE_PULL_REQUEST_JSON = "/singlePullRequest.json";
 
     private static final int PULL_REQUEST_ID = 1347;
 
-    private final RemoteSourceControl mockRemoteSourceControl = mock(RemoteSourceControl.class);
+    private final SourceControlEventsReactionPerformer mockRemoteSourceControl = mock(SourceControlEventsReactionPerformer.class);
 
     private final Notifier mockNotifier = mock(Notifier.class);
 
@@ -55,7 +60,7 @@ public class NotificationsHandlerTest {
 
 
     @Test
-    public void shouldNotifyPRownerIFNotMergeable() {
+    void shouldNotifyPRownerIFNotMergeable() {
 
         notificationsHandler.handle(pushEvent, singletonList(singlePr));
 
@@ -77,7 +82,7 @@ public class NotificationsHandlerTest {
     }
 
     @Test
-    public void should_not_NotifyPRownerIFMergeable() {
+    void should_not_NotifyPRownerIFMergeable() {
 
         singlePr.setMergeable(true);
 

@@ -1,6 +1,11 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.NOTIFICATION_FOR_NON_MERGEABLE_PR;
+import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
+
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
@@ -8,25 +13,19 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequ
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.NOTIFICATION_FOR_NON_MERGEABLE_PR;
-import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class NotificationsHandler implements PushEventHandler {
 
-    private RemoteSourceControl gitHub;
+    private final SourceControlEventsReactionPerformer gitHub;
 
-    private List<Notifier> notifiers;
+    private final List<Notifier> notifiers;
 
-    public NotificationsHandler(RemoteSourceControl gitHub, List<Notifier> notifiers) {
+    public NotificationsHandler(SourceControlEventsReactionPerformer gitHub, List<Notifier> notifiers) {
 
         this.gitHub = gitHub;
         this.notifiers = notifiers;
@@ -48,8 +47,7 @@ public class NotificationsHandler implements PushEventHandler {
 
         pullRequests.stream()
                 .filter(pr -> pr.getMergeable().equals(Boolean.FALSE))
-                .forEach(pr -> {
-
+                .forEach(pr ->
                             notifiers.forEach(n -> {
                                 User user = User.buildFrom(pr, gitHub);
 
@@ -66,9 +64,7 @@ public class NotificationsHandler implements PushEventHandler {
 
                                 log.info("notifying that PR #{} is not mergeable..", pr.getNumber());
                                 n.notify(user, Message.buildFromNotMergeablePR(pr, pushEvent),additionalInfos);
-                            });
-                        }
+                            })
                 );
-
     }
 }

@@ -18,7 +18,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.ActionNotificationSer
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
@@ -88,7 +89,8 @@ public class InfraConfig {
 
     @Bean
     public ActionToPerformListener actionToPerformListener(ActionToPerformService actionToPerformService,
-                                                           List<ActionToReplicate> actionsToReplicate, RemoteSourceControl remoteSourceControl, ActionNotifier actionNotifier) {
+                                                           List<ActionToReplicate> actionsToReplicate,
+                                                           SourceControlBulkActionsPerformer remoteSourceControl, ActionNotifier actionNotifier) {
 
         return new ActionToPerformListener(actionToPerformService, actionsToReplicate, remoteSourceControl,actionNotifier);
     }
@@ -110,7 +112,7 @@ public class InfraConfig {
 
 
     @Bean
-    public PushEventService pushEventService(RemoteSourceControl remoteSourceControl,
+    public PushEventService pushEventService(SourceControlEventsReactionPerformer remoteSourceControl,
                                              List<PushEventHandler> pushEventHandlers,
                                              CiDroidBehavior ciDroidBehavior,
                                              PushEventMonitor pushEventMonitor) {
@@ -131,7 +133,7 @@ public class InfraConfig {
     }
 
     @Bean
-    public ActionToPerformService actionToPerformService(RemoteSourceControl remoteSourceControl,
+    public ActionToPerformService actionToPerformService(SourceControlBulkActionsPerformer remoteSourceControl,
                                                          ActionNotificationService notificationService) {
 
         return new ActionToPerformService(remoteSourceControl, notificationService);

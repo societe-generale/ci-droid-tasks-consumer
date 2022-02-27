@@ -1,15 +1,15 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
+import static org.mockito.Mockito.mock;
+
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.RebaseHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import static org.mockito.Mockito.mock;
 
 @Configuration
 public class LiveTestConfig {
@@ -30,7 +30,7 @@ public class LiveTestConfig {
     }
 
     @Bean
-    public PushEventHandler rebaseHandler(Rebaser rebaser, RemoteSourceControl remoteSourceControl) {
+    public PushEventHandler rebaseHandler(Rebaser rebaser, SourceControlEventsReactionPerformer remoteSourceControl) {
 
         return new RebaseHandler(rebaser, remoteSourceControl);
     }
