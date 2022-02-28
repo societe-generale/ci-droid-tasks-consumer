@@ -66,7 +66,21 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
   @Override
   public PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String oauthToken)
       throws RemoteSourceControlAuthorizationException {
+
+    try {
+      var gitLabMergeRequest=gitlabClient.getMergeRequestApi().createMergeRequest(repoFullName,newPr.getBase(),newPr.getHead(),newPr.getTitle(),"",null);
+
+      var pullRequest=new PullRequest(gitLabMergeRequest.getId());
+      pullRequest.setHtmlUrl(gitLabMergeRequest.getWebUrl());
+
+      return pullRequest;
+
+    } catch (GitLabApiException e) {
+      log.error("problem while creating a pull request",e);
+    }
+
     return null;
+
   }
 
   @Override
