@@ -79,7 +79,7 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
           REFS_HEADS + branchName, new Reference.ObjectReference("commit", lastCommit.getId()));
 
     } catch (GitLabApiException e) {
-      e.printStackTrace();
+      log.error("problem while fetching head",e);
     }
     return null;
   }
@@ -97,7 +97,7 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
 
 
     } catch (GitLabApiException e) {
-      e.printStackTrace();
+      log.error("problem while creating a branch",e);
     }
 
     return null;

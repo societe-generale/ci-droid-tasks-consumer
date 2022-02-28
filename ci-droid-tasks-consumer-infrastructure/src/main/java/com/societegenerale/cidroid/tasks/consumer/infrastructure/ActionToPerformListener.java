@@ -49,7 +49,7 @@ public class ActionToPerformListener {
         log.info("received an action to perform {}", actionToPerformCommand);
 
         try {
-/*
+
             Map<String, String> updateActionInfos = (Map) actionToPerformCommand.getUpdateAction();
 
             String actionToReplicateClass = updateActionInfos.get("@class").trim();
@@ -63,7 +63,7 @@ public class ActionToPerformListener {
 
             ActionToReplicate actionToReplicate = actionToReplicateToInstantiate.newInstance();
             actionToReplicate.init(updateActionInfos);
-*/
+
             BulkActionToPerform actionToPerform = BulkActionToPerform.builder()
                 .userRequestingAction(remoteSourceControl.fetchCurrentUser(actionToPerformCommand.getGitHubOauthToken()))
                 .gitHubOauthToken(actionToPerformCommand.getGitHubOauthToken())
@@ -71,16 +71,18 @@ public class ActionToPerformListener {
                 .commitMessage(actionToPerformCommand.getCommitMessage())
                 .gitHubInteraction(actionToPerformCommand.getGitHubInteractionType())
                 .resourcesToUpdate(actionToPerformCommand.getResourcesToUpdate())
-                .actionToReplicate((ActionToReplicate)actionToPerformCommand.getUpdateAction())
+                .actionToReplicate(actionToReplicate)
                 .build();
 
             actionToPerformService.perform(actionToPerform);
 
-        }  catch (Exception e) {
+        } catch (UnknownActionTypeException e) {
+            log.error("can't map the received command to a known action type", e);
+            notifyErrorToEndUser(actionToPerformCommand.getEmail(),e);
+        } catch (Exception e) {
             log.warn("some unexpected error happened", e);
             notifyErrorToEndUser(actionToPerformCommand.getEmail(),e);
         }
-
     }
 
     private void notifyErrorToEndUser(String endUserEmail, Exception e){

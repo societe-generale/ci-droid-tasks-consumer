@@ -62,7 +62,7 @@ public class RemoteForGitLabEventsActions implements SourceControlEventsReaction
       return new User(gitLabUser.getUsername(),gitLabUser.getEmail());
 
     } catch (GitLabApiException e) {
-      e.printStackTrace();
+      log.error("problem while fetching current user ",e);
     }
 
     return null;
