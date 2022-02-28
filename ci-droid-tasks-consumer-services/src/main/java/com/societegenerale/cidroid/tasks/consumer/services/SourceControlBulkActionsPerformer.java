@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
  * operations needed when performing bulk actions
  * Typically required when users push a bulk action (including their credentials) to CI-droid-tasks-consumer, so that it can be executed on their behalf
  */
-public interface SourceControlBulkActionsPerformer {
+public interface SourceControlBulkActionsPerformer extends RemoteSourceControl{
 
     ResourceContent fetchContent(String repoFullName, String path, String branch);
 

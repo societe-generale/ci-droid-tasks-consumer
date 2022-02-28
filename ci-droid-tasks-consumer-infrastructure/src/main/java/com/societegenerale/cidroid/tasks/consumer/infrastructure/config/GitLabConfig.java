@@ -2,12 +2,11 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.GitLabEventDeserializer;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.RemoteForGitLabEventsActions;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.RemoteGitLabImpl;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,7 +29,7 @@ public class GitLabConfig {
         @Value("${gitHub.oauthToken:#{null}}") String oauthToken)
     {
 
-        return  new RemoteGitLabImpl(url,oauthToken);
+        return  new RemoteForGitLabEventsActions(url,oauthToken);
     }
 
     @Bean
