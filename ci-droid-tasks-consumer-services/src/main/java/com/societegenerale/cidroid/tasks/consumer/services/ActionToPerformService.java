@@ -1,5 +1,12 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.DURATION;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.BULK_ACTION_COMMIT_PERFORMED;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.BULK_ACTION_PROCESSED;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.BULK_ACTION_PR_CREATED;
+
 import com.societegenerale.cidroid.api.IssueProvidingContentException;
 import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
@@ -9,25 +16,27 @@ import com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAc
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.*;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.time.StopWatch;
-
 import java.util.List;
 import java.util.Optional;
-
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.*;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
 
 @Slf4j
 public class ActionToPerformService {
 
-    private RemoteSourceControl remoteSourceControl;
+    private final SourceControlBulkActionsPerformer remoteSourceControl;
 
-    private ActionNotificationService actionNotificationService;
+    private final ActionNotificationService actionNotificationService;
 
-    public ActionToPerformService(RemoteSourceControl remoteSourceControl, ActionNotificationService actionNotificationService) {
+    public ActionToPerformService(SourceControlBulkActionsPerformer remoteSourceControl, ActionNotificationService actionNotificationService) {
         this.remoteSourceControl = remoteSourceControl;
         this.actionNotificationService = actionNotificationService;
     }
@@ -56,7 +65,7 @@ public class ActionToPerformService {
                 Optional<Repository> optionalImpactedRepo = remoteSourceControl.fetchRepository(repoFullName);
 
                 //if repo doesn't exist, notify
-                if(!optionalImpactedRepo.isPresent()){
+                if(optionalImpactedRepo.isEmpty()){
                     actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_REPO_DOESNT_EXIST));
                     return;
                 }

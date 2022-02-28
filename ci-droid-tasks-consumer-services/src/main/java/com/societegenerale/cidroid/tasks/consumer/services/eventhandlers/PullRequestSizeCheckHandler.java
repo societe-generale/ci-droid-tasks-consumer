@@ -1,28 +1,27 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestFile;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import lombok.extern.slf4j.Slf4j;
-
 import java.text.MessageFormat;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class PullRequestSizeCheckHandler implements PullRequestEventHandler {
 
     private final List<Notifier> notifiers;
 
-    private RemoteSourceControl remoteSourceControl;
+    private final SourceControlEventsReactionPerformer remoteSourceControl;
 
-    private int maxFilesInPr;
+    private final int maxFilesInPr;
 
-    private String maxFilesWarningMessage;
+    private final String maxFilesWarningMessage;
 
-    public PullRequestSizeCheckHandler(List<Notifier> notifiers, RemoteSourceControl remoteSourceControl, int maxFilesInPr, String maxFilesWarningMessage) {
+    public PullRequestSizeCheckHandler(List<Notifier> notifiers, SourceControlEventsReactionPerformer remoteSourceControl, int maxFilesInPr, String maxFilesWarningMessage) {
         this.notifiers = notifiers;
         this.remoteSourceControl = remoteSourceControl;
         this.maxFilesInPr = maxFilesInPr;

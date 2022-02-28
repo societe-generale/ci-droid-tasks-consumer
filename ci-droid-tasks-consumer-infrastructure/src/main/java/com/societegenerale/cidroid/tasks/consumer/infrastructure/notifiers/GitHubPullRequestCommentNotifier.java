@@ -1,23 +1,22 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 @Slf4j
 @Component
 public class GitHubPullRequestCommentNotifier implements Notifier {
 
-    private RemoteSourceControl remoteSourceControl;
+    private final SourceControlEventsReactionPerformer remoteSourceControl;
 
-    public GitHubPullRequestCommentNotifier(RemoteSourceControl remoteSourceControl) {
+    public GitHubPullRequestCommentNotifier(SourceControlEventsReactionPerformer remoteSourceControl) {
         this.remoteSourceControl = remoteSourceControl;
 
     }

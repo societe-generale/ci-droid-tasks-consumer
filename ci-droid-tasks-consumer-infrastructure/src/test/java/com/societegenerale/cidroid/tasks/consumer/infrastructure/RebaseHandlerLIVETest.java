@@ -3,10 +3,12 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.RebaseHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import java.io.IOException;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -17,20 +19,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { InfraConfig.class, LiveTestConfig.class }, initializers = YamlFileApplicationContextInitializer.class)
 @TestPropertySource("/application-test.yml")
 @Disabled("to launch manually and test in local")
-public class RebaseHandlerLIVETest {
+class RebaseHandlerLIVETest {
 
     @Autowired
     Rebaser rebaser;
 
     @Autowired
-    RemoteSourceControl remoteSourceControl;
+    SourceControlEventsReactionPerformer remoteSourceControl;
 
     PullRequest singlePr;
 
@@ -56,9 +55,9 @@ public class RebaseHandlerLIVETest {
     }
 
     @Test
-    public void manualTest() {
+    void manualTest() {
 
-        rebaseHandler.handle(pushEvent, Arrays.asList(singlePr));
+        rebaseHandler.handle(pushEvent, List.of(singlePr));
     }
 
 }

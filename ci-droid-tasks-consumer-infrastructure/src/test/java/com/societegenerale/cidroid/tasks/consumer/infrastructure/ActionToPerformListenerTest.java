@@ -1,37 +1,41 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.api.gitHubInteractions.DirectPushGitHubInteraction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.OverwriteStaticFileAction;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.io.IOException;
-import java.util.Arrays;
+class ActionToPerformListenerTest {
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+    private final ActionToReplicate overWriteStaticContentAction = new OverwriteStaticFileAction();
 
-public class ActionToPerformListenerTest {
+    private final ActionToReplicate mockSomeOtherAction = mock(ActionToReplicate.class);
 
-    private ActionToReplicate overWriteStaticContentAction = new OverwriteStaticFileAction();
+    private final ActionToPerformService mockActionToPerformService = mock(ActionToPerformService.class);
 
-    private ActionToReplicate mockSomeOtherAction = mock(ActionToReplicate.class);
+    private final SourceControlBulkActionsPerformer mockRemoteSourceControl = mock(SourceControlBulkActionsPerformer.class);
 
-    private ActionToPerformService mockActionToPerformService = mock(ActionToPerformService.class);
-
-    private RemoteSourceControl mockRemoteSourceControl = mock(RemoteSourceControl.class);
-
-    private ActionNotifier mockNotifier = mock(ActionNotifier.class);
+    private final ActionNotifier mockNotifier = mock(ActionNotifier.class);
 
     private ActionToPerformListener actionToPerformListener = new ActionToPerformListener(mockActionToPerformService,
                                                                                             Arrays.asList(overWriteStaticContentAction, mockSomeOtherAction),
@@ -55,7 +59,7 @@ public class ActionToPerformListenerTest {
     }
 
     @Test
-    public void shouldMapCorrectlyIncomingCommand() {
+    void shouldMapCorrectlyIncomingCommand() {
         //postConstruct
         actionToPerformListener.registerActionsToReplicate();
 
@@ -77,13 +81,13 @@ public class ActionToPerformListenerTest {
     }
 
     @Test
-    public void shouldNotifyIfUnexpectedExceptionDuringDeserialization_and_notPerformAnything() {
+    void shouldNotifyIfUnexpectedExceptionDuringDeserialization_and_notPerformAnything() {
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         ArgumentCaptor<String> notificationBodyCaptor = ArgumentCaptor.forClass(String.class);
 
         //only one action registered, not matching the one
-        actionToPerformListener = new ActionToPerformListener(mockActionToPerformService, Arrays.asList(mockSomeOtherAction), mockRemoteSourceControl,mockNotifier);
+        actionToPerformListener = new ActionToPerformListener(mockActionToPerformService, List.of(mockSomeOtherAction), mockRemoteSourceControl,mockNotifier);
 
         actionToPerformListener.registerActionsToReplicate();
 

@@ -1,26 +1,5 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-
 import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.NOT_MERGEABLE;
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.UNKNOWN;
@@ -40,7 +19,27 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class PushEventServiceTest {
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+
+class PushEventServiceTest {
 
     private static final String FULL_REPO_NAME = "baxterthehacker/public-repo";
 
@@ -48,7 +47,7 @@ public class PushEventServiceTest {
 
     private static final String SINGLE_PULL_REQUEST_JSON = "/singlePullRequest.json";
 
-    private final RemoteSourceControl mockRemoteSourceControl = mock(RemoteSourceControl.class);
+    private final SourceControlEventsReactionPerformer mockRemoteSourceControl = mock(SourceControlEventsReactionPerformer.class);
 
     private final PushEventHandler mockPushEventHandler = mock(PushEventHandler.class);
 
@@ -74,7 +73,7 @@ public class PushEventServiceTest {
 
 
         String openPrsOnRepoAsString = readFromInputStream(getClass().getResourceAsStream("/pullRequests.json"));
-        List<PullRequest> openPrsOnRepo = objectMapper.readValue(openPrsOnRepoAsString, new TypeReference<List<PullRequest>>() {
+        List<PullRequest> openPrsOnRepo = objectMapper.readValue(openPrsOnRepoAsString, new TypeReference<>() {
         });
         when(mockRemoteSourceControl.fetchOpenPullRequests(FULL_REPO_NAME)).thenReturn(openPrsOnRepo);
 
@@ -87,25 +86,24 @@ public class PushEventServiceTest {
     }
 
     @Test
-    public void monitoringConfigMustBeConsistent() {
+    void monitoringConfigMustBeConsistent() {
 
         assertThat(catchThrowable(() -> new PushEventService(mockRemoteSourceControl, emptyList(),true,null) ))
                 .as("if monitoring is enabled, then pushEventMonitor can't be null")
                 .isInstanceOf(IllegalStateException.class);
 
-        assertThatCode(() -> {
-            new PushEventService(mockRemoteSourceControl, emptyList(),true,mock(PushEventMonitor.class));
-        }).doesNotThrowAnyException();
+        assertThatCode(() ->
+            new PushEventService(mockRemoteSourceControl, emptyList(),true,mock(PushEventMonitor.class))
+        ).doesNotThrowAnyException();
 
-        assertThatCode(() -> {
-            new PushEventService(mockRemoteSourceControl, emptyList(),false,mock(PushEventMonitor.class));
-        }).as("even when a pushEventMonitor is provided, it can be disabled with a flag")
+        assertThatCode(() -> new PushEventService(mockRemoteSourceControl, emptyList(),false,mock(PushEventMonitor.class)))
+            .as("even when a pushEventMonitor is provided, it can be disabled with a flag")
                 .doesNotThrowAnyException();
     }
 
 
     @Test
-    public void runtimeExceptionInHandlerShouldNotPreventOthersToExecute() {
+    void runtimeExceptionInHandlerShouldNotPreventOthersToExecute() {
 
         List<PushEventHandler> pushEventHandlers = new ArrayList<>();
 
@@ -125,7 +123,7 @@ public class PushEventServiceTest {
     }
 
     @Test
-    public void shouldRequestAllOpenPRsWhenPushOnDefaultBranch() {
+    void shouldRequestAllOpenPRsWhenPushOnDefaultBranch() {
 
         pushOnDefaultBranchService.onPushOnDefaultBranchEvent(pushEvent);
 
@@ -133,7 +131,7 @@ public class PushEventServiceTest {
     }
 
     @Test
-    public void shouldNotDoAnythingIfPushEventNotOnDefaultBranch() {
+    void shouldNotDoAnythingIfPushEventNotOnDefaultBranch() {
 
         pushEvent.setRef("someOtherBranch");
 
@@ -143,7 +141,7 @@ public class PushEventServiceTest {
     }
 
     @Test
-    public void shouldRequestOpenPRDetailsWhenPushOnDefaultBranch() {
+    void shouldRequestOpenPRDetailsWhenPushOnDefaultBranch() {
 
         pushOnDefaultBranchService.onPushOnDefaultBranchEvent(pushEvent);
 
@@ -151,7 +149,7 @@ public class PushEventServiceTest {
     }
 
     @Test
-    public void shouldApplyActionHandlersForRepository(){
+    void shouldApplyActionHandlersForRepository(){
 
         pushOnDefaultBranchService.onPushOnDefaultBranchEvent(pushEvent);
 
@@ -161,7 +159,7 @@ public class PushEventServiceTest {
 
 
     @Test
-    public void shouldTrySeveralTimesToGetMergeableStatusIfNotAvailableImmediately() throws Exception {
+    void shouldTrySeveralTimesToGetMergeableStatusIfNotAvailableImmediately() throws Exception {
 
         updatePRmergeabilityStatus(UNKNOWN);
 

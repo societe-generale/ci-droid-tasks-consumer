@@ -1,17 +1,16 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.handlers;
 
+import static org.mockserver.model.HttpRequest.request;
 
 import org.junit.jupiter.api.Test;
 import org.mockserver.verify.VerificationTimes;
 
-import static org.mockserver.model.HttpRequest.request;
-
-public class PullRequestCleaningIT extends SourceControlEventHandlerIT {
+class PullRequestCleaningIT extends SourceControlEventHandlerIT {
 
     private static final int PULL_REQUEST_ID = 1347;
 
     @Test
-    public void shouldCloseOldPullRequests() {
+    void shouldCloseOldPullRequests() {
         sourceControlEventListener.onPushEventOnDefaultBranch(rawGitHubPushEvent);
 
         gitHubMockClient.verify(
@@ -22,5 +21,4 @@ public class PullRequestCleaningIT extends SourceControlEventHandlerIT {
                 VerificationTimes.once()
         );
     }
-
 }

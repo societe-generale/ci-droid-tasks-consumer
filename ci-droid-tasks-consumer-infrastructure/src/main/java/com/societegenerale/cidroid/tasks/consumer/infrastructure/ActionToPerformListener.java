@@ -2,18 +2,17 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 @Slf4j
 public class ActionToPerformListener {
@@ -22,13 +21,13 @@ public class ActionToPerformListener {
 
     private final List<ActionToReplicate> actionsToReplicate;
 
-    private final RemoteSourceControl remoteSourceControl;
+    private final SourceControlBulkActionsPerformer remoteSourceControl;
 
     private final ActionNotifier notifier;
 
     private Map<String, Class<? extends ActionToReplicate>> registeredActionsToReplicate;
 
-    public ActionToPerformListener(ActionToPerformService actionToPerformService, List<ActionToReplicate> actionsToReplicate, RemoteSourceControl remoteSourceControl, ActionNotifier notifier) {
+    public ActionToPerformListener(ActionToPerformService actionToPerformService, List<ActionToReplicate> actionsToReplicate, SourceControlBulkActionsPerformer remoteSourceControl, ActionNotifier notifier) {
         this.actionToPerformService = actionToPerformService;
         this.actionsToReplicate = actionsToReplicate;
         this.remoteSourceControl = remoteSourceControl;

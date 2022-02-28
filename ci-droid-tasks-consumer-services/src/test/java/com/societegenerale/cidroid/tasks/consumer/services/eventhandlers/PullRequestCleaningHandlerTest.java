@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
@@ -25,13 +25,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-public class PullRequestCleaningHandlerTest {
+class PullRequestCleaningHandlerTest {
 
     private static final int PR_AGE_LIMIT_IN_DAYS = 180;
     private static final int PULL_REQUEST_NUMBER = 7;
 
     private PullRequestCleaningHandler pullRequestCleaningHandler;
-    private RemoteSourceControl remoteSourceControl;
+    private SourceControlEventsReactionPerformer remoteSourceControl;
     private PushEvent pushEvent;
 
     private final TestAppender testAppender=new TestAppender();
@@ -40,7 +40,7 @@ public class PullRequestCleaningHandlerTest {
 
     @BeforeEach
     public void setUp() throws IOException {
-        remoteSourceControl = mock(RemoteSourceControl.class);
+        remoteSourceControl = mock(SourceControlEventsReactionPerformer.class);
 
 
       pullRequestCleaningHandler = new PullRequestCleaningHandler(
@@ -58,7 +58,7 @@ public class PullRequestCleaningHandlerTest {
     }
 
     @Test
-    public void shouldClosePRWhichOutlivedTheLimit() {
+    void shouldClosePRWhichOutlivedTheLimit() {
         LocalDateTime oldDate = dateProvider.get().minusDays(PR_AGE_LIMIT_IN_DAYS + 10);
         PullRequest oldPullRequest = new PullRequest(PULL_REQUEST_NUMBER);
         oldPullRequest.setCreationDate(oldDate);
@@ -75,7 +75,7 @@ public class PullRequestCleaningHandlerTest {
     }
 
     @Test
-    public void shouldNotClosePRWhichAgeIsBelowTheLimit() {
+    void shouldNotClosePRWhichAgeIsBelowTheLimit() {
 
         LocalDateTime recentDate = dateProvider.get().minusDays(1);
         PullRequest recentPullRequest = new PullRequest(PULL_REQUEST_NUMBER);
