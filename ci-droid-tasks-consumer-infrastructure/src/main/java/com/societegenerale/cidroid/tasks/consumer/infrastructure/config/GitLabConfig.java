@@ -25,8 +25,8 @@ public class GitLabConfig {
 
     @Bean
     public SourceControlEventsReactionPerformer gitLabClient(
-        @Value("${gitHub.api.url}") String url,
-        @Value("${gitHub.oauthToken:#{null}}") String oauthToken)
+        @Value("${source-control.url}") String url,
+        @Value("${source-control.oauthToken:#{null}}") String oauthToken)
     {
 
         return  new RemoteForGitLabEventsActions(url,oauthToken);
