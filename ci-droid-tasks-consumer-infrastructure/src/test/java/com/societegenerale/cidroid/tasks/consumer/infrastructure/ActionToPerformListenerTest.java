@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -82,7 +81,6 @@ class ActionToPerformListenerTest {
     }
 
     @Test
-    @Disabled("not sure this is still required, or at the right place - need to check")
     void shouldNotifyIfUnexpectedExceptionDuringDeserialization_and_notPerformAnything() {
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);

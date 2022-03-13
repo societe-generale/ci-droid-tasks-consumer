@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
-import com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAction;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformCommand;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.TestUtils;
@@ -40,7 +39,7 @@ class ActionToReplicateControllerTest {
 
     var firstCapturedCommand=actionCaptor.getAllValues().get(0);
 
-    assertThat(firstCapturedCommand.getUpdateAction()).isInstanceOf(SimpleReplaceAction.class);
+   // at controller level, the actual action is not available yet, as it requires special processing that happens downstream
     assertThat(firstCapturedCommand.getGitHubInteractionType()).isInstanceOf(PullRequestGitHubInteraction.class);
 
   }

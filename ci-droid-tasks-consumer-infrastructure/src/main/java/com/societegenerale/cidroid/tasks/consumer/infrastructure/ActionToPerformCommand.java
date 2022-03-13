@@ -53,6 +53,7 @@ public class ActionToPerformCommand {
 
     @NotEmpty
     private List<ResourceToUpdate> resourcesToUpdate;
+
     public ActionToPerformCommand toActionForSingleResource(ResourceToUpdate resourceToUpdate) {
 
         ActionToPerformCommand action=new ActionToPerformCommand();
@@ -66,5 +67,41 @@ public class ActionToPerformCommand {
         return action;
     }
 
+    /**
+    public ActionToReplicate getActionToReplicateOutOf(Map<String, Class<? extends ActionToReplicate>> registeredActionsToReplicate)
+        throws UnknownActionTypeException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
+        Map<String, String> updateActionInfos = (Map) this.getRawUpdateAction();
+
+        String actionToReplicateClass = updateActionInfos.get("@class").trim();
+
+        Class<? extends ActionToReplicate> actionToReplicateToInstantiate = findActualActionToPerform(actionToReplicateClass,registeredActionsToReplicate);
+
+        if (actionToReplicateToInstantiate == null) {
+            throw new UnknownActionTypeException(
+                "unknown action type " + actionToReplicateClass + ": please check it has been registered correctly");
+        }
+
+        return actionToReplicateToInstantiate.getDeclaredConstructor().newInstance();
+
+    }
+
+
+    private Class<? extends ActionToReplicate> findActualActionToPerform(String actionToReplicateClass,
+                                                    Map<String, Class<? extends ActionToReplicate>> registeredActionsToReplicate) {
+
+
+
+        for( String registeredAction : registeredActionsToReplicate.keySet()){
+
+            if(StringUtils.containsIgnoreCase(actionToReplicateClass,registeredAction)){
+                return registeredActionsToReplicate.get(registeredAction);
+            }
+
+        }
+
+        return null;
+
+    }
+**/
 }

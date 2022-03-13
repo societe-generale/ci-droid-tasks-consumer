@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 @Slf4j
@@ -46,32 +47,46 @@ public class ActionToPerformListener {
     }
 
 
-    public void onActionToPerform(ActionToPerformCommand actionToPerformCommand) {
+    public void onActionToPerform(ActionToPerformCommand actionToPerformCommand){
 
         log.info("received an action to perform {}", actionToPerformCommand);
 
-        try {
+        try{
+        Map<String, String> updateActionInfos = (Map) actionToPerformCommand.getUpdateAction();
 
-            if (actionToPerformCommand.getUpdateAction() == null) {
-                throw new UnknownActionTypeException("null action type, it has been registered correctly");
-            }
+        String actionToReplicateClass = updateActionInfos.get("@class").trim();
 
-            BulkActionToPerform actionToPerform = BulkActionToPerform.builder()
-                .sourceControlPersonalToken(actionToPerformCommand.getGitHubOauthToken())
-                .email(actionToPerformCommand.getEmail())
-                .commitMessage(actionToPerformCommand.getCommitMessage())
-                .gitHubInteraction(actionToPerformCommand.getGitHubInteractionType())
-                .resourcesToUpdate(actionToPerformCommand.getResourcesToUpdate())
-                .actionToReplicate((ActionToReplicate) actionToPerformCommand.getUpdateAction())
-                .build();
+        Class<? extends ActionToReplicate> actionToReplicateToInstantiate = findActualActionToPerform(actionToReplicateClass);
 
-            actionToPerformService.perform(actionToPerform);
-
-        } catch (Exception e) {
-            log.warn("some unexpected error happened", e);
-            notifyErrorToEndUser(actionToPerformCommand.getEmail(),e);
+        if (actionToReplicateToInstantiate == null) {
+            throw new UnknownActionTypeException(
+                "unknown action type " + actionToReplicateClass + ": please check it has been registered correctly");
         }
+
+        ActionToReplicate actionToReplicate = actionToReplicateToInstantiate.getDeclaredConstructor().newInstance();
+        actionToReplicate.init(updateActionInfos);
+
+        BulkActionToPerform actionToPerform = BulkActionToPerform.builder()
+            .userRequestingAction(remoteSourceControl.fetchCurrentUser(actionToPerformCommand.getGitHubOauthToken()))
+            .sourceControlPersonalToken(actionToPerformCommand.getGitHubOauthToken())
+            .email(actionToPerformCommand.getEmail())
+            .commitMessage(actionToPerformCommand.getCommitMessage())
+            .gitHubInteraction(actionToPerformCommand.getGitHubInteractionType())
+            .resourcesToUpdate(actionToPerformCommand.getResourcesToUpdate())
+            .actionToReplicate(actionToReplicate)
+            .build();
+
+        actionToPerformService.perform(actionToPerform);
+
+    } catch (UnknownActionTypeException e) {
+        log.error("can't map the received command to a known action type", e);
+        notifyErrorToEndUser(actionToPerformCommand.getEmail(),e);
+    } catch (Exception e) {
+        log.warn("some unexpected error happened", e);
+        notifyErrorToEndUser(actionToPerformCommand.getEmail(),e);
     }
+
+}
 
     private void notifyErrorToEndUser(String endUserEmail, Exception e){
 
@@ -82,5 +97,19 @@ public class ActionToPerformListener {
 
     }
 
+
+    private Class<? extends ActionToReplicate> findActualActionToPerform(String actionToReplicateClass) {
+
+        for( String registeredAction : registeredActionsToReplicate.keySet()){
+
+            if(StringUtils.containsIgnoreCase(actionToReplicateClass,registeredAction)){
+                return registeredActionsToReplicate.get(registeredAction);
+            }
+
+        }
+
+        return null;
+
+    }
 
 }
