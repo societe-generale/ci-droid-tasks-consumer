@@ -37,7 +37,7 @@ import org.gitlab4j.api.models.RepositoryFile;
 @Slf4j
 public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerformer {
 
-  private final Logger gitLabLogger=Logger.getLogger(RemoteForGitLabEventsActions.class.toString());
+  private static final Logger gitLabLogger=Logger.getLogger(RemoteForGitLabEventsActions.class.toString());
 
   private final String gitLabApiUrl;
 
