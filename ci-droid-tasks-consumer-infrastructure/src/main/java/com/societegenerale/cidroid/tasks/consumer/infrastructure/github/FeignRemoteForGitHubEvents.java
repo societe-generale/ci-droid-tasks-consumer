@@ -1,23 +1,14 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GlobalProperties;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestFile;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import feign.Feign;
-import feign.Logger;
-import feign.jackson.JacksonDecoder;
-import feign.jackson.JacksonEncoder;
-import feign.slf4j.Slf4jLogger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import javax.annotation.Nonnull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -79,43 +70,6 @@ public interface FeignRemoteForGitHubEvents extends SourceControlEventsReactionP
     @Nonnull
     List<PullRequestComment> fetchPullRequestComments(@PathVariable("repoFullName") String repoFullName,
                                                       @PathVariable("prNumber") int prNumber);
-
-
-
-    static ContentClient buildContentClient(String repoFullName, String path, String oauthToken) {
-        return Feign.builder()
-                .logger(new Slf4jLogger(ContentClient.class))
-                .encoder(new JacksonEncoder())
-                .decoder(new JacksonDecoder())
-                .errorDecoder(new UpdateContentErrorDecoder())
-                .requestInterceptor(new OAuthInterceptor(oauthToken))
-                .logLevel(Logger.Level.FULL)
-                .target(ContentClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/contents/" + path);
-    }
-
-    @GetMapping(value = "/repos/{repoFullName}",
-                consumes = MediaType.APPLICATION_JSON_VALUE,
-                produces = MediaType.APPLICATION_JSON_VALUE)
-    @Override
-    Optional<Repository> fetchRepository(@PathVariable("repoFullName") String repoFullName);
-
-    @GetMapping(value = "/repos/{repoFullName}/git/refs/heads/{branchName}",
-                consumes = MediaType.APPLICATION_JSON_VALUE,
-                produces = MediaType.APPLICATION_JSON_VALUE)
-    @Override
-    Reference fetchHeadReferenceFrom(@PathVariable("repoFullName") String repoFullNameString, @PathVariable("branchName") String branchName);
-
-
-    @Override
-    default User fetchCurrentUser(String oAuthToken) {
-
-        GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(oAuthToken)
-                .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/user");
-
-        return gitReferenceClient.getCurrentUser();
-
-    }
-
 
     @Override
     default void closePullRequest(String repoFullName, int prNumber) {

@@ -17,9 +17,7 @@ import feign.Logger;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.slf4j.Slf4jLogger;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import lombok.AllArgsConstructor;
@@ -34,22 +32,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "github-forBulkActions", url = "${source-control.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
 public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkActionsPerformer {
 
-    Map<String, String> bodyToClosePR = Collections.singletonMap("state", "closed");
-
     @GetMapping(value = "/repos/{repoFullName}/pulls?state=open",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @Override
     @Nonnull
     List<PullRequest> fetchOpenPullRequests(@PathVariable("repoFullName") String repoFullName);
-
-    @GetMapping(value = "/repos/{repoFullName}/pulls/{prNumber}",
-                consumes = MediaType.APPLICATION_JSON_VALUE,
-                produces = MediaType.APPLICATION_JSON_VALUE)
-    @Override
-    PullRequest fetchPullRequestDetails(@PathVariable("repoFullName") String repoFullName,
-                                        @PathVariable("prNumber") int prNumber);
-
 
     @Override
     default UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
@@ -139,10 +127,3 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
 
     }
 }
-
-
-
-
-
-
-

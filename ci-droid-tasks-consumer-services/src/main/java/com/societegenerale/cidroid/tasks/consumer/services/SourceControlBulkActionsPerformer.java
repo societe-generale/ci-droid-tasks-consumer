@@ -55,7 +55,6 @@ public interface SourceControlBulkActionsPerformer extends RemoteSourceControl{
 
     User fetchCurrentUser(String oAuthToken);
 
-    PullRequest fetchPullRequestDetails(String repoFullName, int prNumber);
 }
 
 

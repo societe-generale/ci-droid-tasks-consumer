@@ -19,6 +19,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedR
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.Constants.Encoding;
@@ -35,6 +37,8 @@ import org.gitlab4j.api.models.RepositoryFile;
 @Slf4j
 public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerformer {
 
+  private final Logger gitLabLogger=Logger.getLogger(RemoteForGitLabEventsActions.class.toString());
+
   private final String gitLabApiUrl;
 
   private final GitLabApi readOnlyGitlabClient;
@@ -43,6 +47,7 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
     this.gitLabApiUrl=gitLabApiUrl;
 
     readOnlyGitlabClient = new GitLabApi(gitLabApiUrl, apiKeyForReadOnlyAccess);
+    readOnlyGitlabClient.enableRequestResponseLogging(gitLabLogger, Level.INFO,1024);
   }
 
   @Override
@@ -186,7 +191,6 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
   @Override
   public Optional<Repository> fetchRepository(String repoFullName) {
 
-
     var optionalGitLabRepo=readOnlyGitlabClient.getProjectApi().getOptionalProject(repoFullName);
 
     if(optionalGitLabRepo.isEmpty()){
@@ -238,20 +242,19 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
     return null;
   }
 
-  @Override
-  public PullRequest fetchPullRequestDetails(String repoFullName, int prNumber) {
-    return null;
-  }
 
   private static PullRequest toPullRequest(MergeRequest mr) {
 
     return new PullRequest(mr.getId(),mr.getSourceBranch());
-    //TODO map other fields if required.
+    //map other fields if required.
 
   }
 
   private GitLabApi getReadWriteGitLabClient(String apiKey){
-    return new GitLabApi(gitLabApiUrl,apiKey);
+    var rwGitLabClient = new GitLabApi(gitLabApiUrl,apiKey);
+
+    rwGitLabClient.enableRequestResponseLogging(gitLabLogger, Level.INFO,1024);
+    return rwGitLabClient;
   }
 
 
