@@ -34,9 +34,11 @@ public class GitLabConfig {
     }
 
     @Bean
-    public SourceControlBulkActionsPerformer gitLabClientForBulkActions(@Value("${source-control.url}") String gitLabApiUrl)
+    public SourceControlBulkActionsPerformer gitLabClientForBulkActions(
+        @Value("${source-control.url}") String gitLabApiUrl,
+        @Value("${source-control.oauthToken:#{null}}") String apiKeyForReadOnlyAccess)
     {
-        return new RemoteForGitLabBulkActions(gitLabApiUrl);
+        return new RemoteForGitLabBulkActions(gitLabApiUrl,apiKeyForReadOnlyAccess);
     }
 
 }

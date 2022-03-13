@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toList;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
@@ -13,39 +14,42 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.Referenc
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.Content;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import lombok.extern.slf4j.Slf4j;
+import org.gitlab4j.api.Constants.Encoding;
+import org.gitlab4j.api.Constants.MergeRequestState;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
+import org.gitlab4j.api.models.CommitAction;
+import org.gitlab4j.api.models.CommitAction.Action;
+import org.gitlab4j.api.models.CommitPayload;
 import org.gitlab4j.api.models.MergeRequest;
+import org.gitlab4j.api.models.MergeRequestFilter;
 import org.gitlab4j.api.models.RepositoryFile;
 
 @Slf4j
 public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerformer {
 
-  private final Logger gitLabLogger=Logger.getLogger(RemoteForGitLabBulkActions.class.toString());
-
   private final String gitLabApiUrl;
 
-  private GitLabApi gitlabClient;
+  private final GitLabApi readOnlyGitlabClient;
 
-  public RemoteForGitLabBulkActions(String gitLabApiUrl) {
-
+  public RemoteForGitLabBulkActions(String gitLabApiUrl, String apiKeyForReadOnlyAccess) {
     this.gitLabApiUrl=gitLabApiUrl;
 
-    //TODO
-    //gitlabClient=new GitLabApi();
+    readOnlyGitlabClient = new GitLabApi(gitLabApiUrl, apiKeyForReadOnlyAccess);
   }
 
   @Override
   public ResourceContent fetchContent(String repoFullName, String path, String branch) {
 
     try {
-      RepositoryFile file = gitlabClient.getRepositoryFileApi().getFile(path, repoFullName, branch);
+      RepositoryFile file = readOnlyGitlabClient.getRepositoryFileApi().getFile(repoFullName,path,branch);
 
       var fileContent= new ResourceContent();
       fileContent.setBase64EncodedContent(file.getContent());
@@ -64,7 +68,46 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
   @Override
   public UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
       throws RemoteSourceControlAuthorizationException {
-    return null;
+
+    var user=fetchCurrentUser(oauthToken);
+
+    CommitAction commit=new CommitAction();
+    commit.setContent(directCommit.getBase64EncodedContent());
+    commit.setEncoding(Encoding.BASE64);
+    commit.setFilePath(path);
+    //TODO what is it's not an update but a create ?
+    commit.setAction(Action.UPDATE);
+
+
+    CommitPayload commitPayload=new CommitPayload();
+    commitPayload.setBranch(directCommit.getBranch());
+    commitPayload.setCommitMessage(directCommit.getCommitMessage());
+    commitPayload.setAuthorName(user.getLogin());
+    commitPayload.setAuthorEmail(user.getEmail());
+
+    commitPayload.setActions(List.of(commit));
+
+    try {
+
+      var commitPerformed=getReadWriteGitLabClient(oauthToken).getCommitsApi().createCommit(repoFullName,commitPayload);
+
+      Commit commitOnUpdatedResource=new Commit();
+      commitOnUpdatedResource.setId(commitPerformed.getId());
+      commitOnUpdatedResource.setAuthor(user);
+
+      var content= new Content();
+      content.setHtmlUrl(commitPerformed.getWebUrl());
+
+      return UpdatedResource.builder()
+          .updateStatus(UpdateStatus.UPDATE_OK)
+          .commit(commitOnUpdatedResource)
+          .content(content)
+          .build();
+
+    } catch (GitLabApiException e) {
+      throw new RemoteSourceControlAuthorizationException("problem while trying to commit content in branch "
+          +directCommit.getBranch()+" on repo "+repoFullName, e);
+    }
   }
 
   @Override
@@ -78,7 +121,11 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
       throws RemoteSourceControlAuthorizationException {
 
     try {
-      var gitLabMergeRequest=gitlabClient.getMergeRequestApi().createMergeRequest(repoFullName,newPr.getBase(),newPr.getHead(),newPr.getTitle(),"",null);
+      var gitLabMergeRequest=getReadWriteGitLabClient(oauthToken).getMergeRequestApi()
+          .createMergeRequest(repoFullName,
+                              newPr.getHead(),
+                              newPr.getBase(),
+                              newPr.getTitle(),"",null);
 
       var pullRequest=new PullRequest(gitLabMergeRequest.getId());
       pullRequest.setHtmlUrl(gitLabMergeRequest.getWebUrl());
@@ -97,7 +144,7 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
   public Reference fetchHeadReferenceFrom(String repoFullName, String branchName) {
 
     try {
-      var lastCommit=gitlabClient.getCommitsApi().getCommits(repoFullName, branchName,null,null).get(0);
+      var lastCommit=readOnlyGitlabClient.getCommitsApi().getCommits(repoFullName, branchName,null,null).get(0);
 
       return new Reference(
           REFS_HEADS + branchName, new Reference.ObjectReference("commit", lastCommit.getId()));
@@ -114,24 +161,33 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
       throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
     try {
-      var newBranch=gitlabClient.getRepositoryApi().createBranch(repoFullName,branchName,fromReferenceSha1);
+      var branch=readOnlyGitlabClient.getRepositoryApi().getOptionalBranch(repoFullName,branchName);
+
+      if(branch.isPresent()){
+        throw new BranchAlreadyExistsException("branch "+branchName+" already exists on repo "+repoFullName);
+      }
+
+    } catch (GitLabApiException e) {
+      throw new RemoteSourceControlAuthorizationException("problem while checking if branch "+branchName+" already exists on repo "+repoFullName,e);
+    }
+
+    try {
+      var newBranch=getReadWriteGitLabClient(oauthToken).getRepositoryApi().createBranch(repoFullName,branchName,fromReferenceSha1);
 
       return new Reference(
           REFS_HEADS + newBranch.getName(), new Reference.ObjectReference("commit", fromReferenceSha1));
 
-
     } catch (GitLabApiException e) {
-      log.error("problem while creating a branch",e);
+      throw new RemoteSourceControlAuthorizationException("problem while creating a branch",e);
     }
 
-    return null;
   }
 
   @Override
   public Optional<Repository> fetchRepository(String repoFullName) {
 
 
-    var optionalGitLabRepo=gitlabClient.getProjectApi().getOptionalProject(repoFullName);
+    var optionalGitLabRepo=readOnlyGitlabClient.getProjectApi().getOptionalProject(repoFullName);
 
     if(optionalGitLabRepo.isEmpty()){
       return Optional.empty();
@@ -152,7 +208,13 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
   public List<PullRequest> fetchOpenPullRequests(String repoFullName) {
 
     try {
-      List<MergeRequest> mergeRequests = gitlabClient.getMergeRequestApi().getMergeRequests(repoFullName);
+
+      var openMergeRequestOnThisRepoFilter=new MergeRequestFilter()
+          .withProjectId(readOnlyGitlabClient.getProjectApi().getProject(repoFullName).getId())
+          .withState(MergeRequestState.OPENED);
+
+      List<MergeRequest> mergeRequests = readOnlyGitlabClient.getMergeRequestApi()
+          .getMergeRequests(openMergeRequestOnThisRepoFilter);
 
       return mergeRequests.stream().map(RemoteForGitLabBulkActions::toPullRequest).collect(toList());
     }
@@ -165,6 +227,14 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
 
   @Override
   public User fetchCurrentUser(String oAuthToken) {
+
+    try {
+      var gitLabUser=getReadWriteGitLabClient(oAuthToken).getUserApi().getCurrentUser();
+      return new User(gitLabUser.getUsername(),gitLabUser.getEmail());
+    } catch (GitLabApiException e) {
+      log.warn("could not find GitLab user with provided apiKey",e);
+    }
+
     return null;
   }
 
@@ -175,11 +245,13 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
 
   private static PullRequest toPullRequest(MergeRequest mr) {
 
-    PullRequest pr=new PullRequest(mr.getId());
+    return new PullRequest(mr.getId(),mr.getSourceBranch());
+    //TODO map other fields if required.
 
-    //TODO map other fields.
+  }
 
-    return pr;
+  private GitLabApi getReadWriteGitLabClient(String apiKey){
+    return new GitLabApi(gitLabApiUrl,apiKey);
   }
 
 

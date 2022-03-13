@@ -10,14 +10,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import java.beans.ConstructorProperties;
+import java.time.LocalDateTime;
+import java.util.Map;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-
-import java.beans.ConstructorProperties;
-import java.time.LocalDateTime;
-import java.util.Map;
 
 @Data
 @Slf4j
@@ -64,6 +63,11 @@ public class PullRequest {
     @JsonCreator
     public PullRequest(int number) {
         this.number = number;
+    }
+
+    public PullRequest(int number, String onBranch) {
+        this.number = number;
+        this.branchName=onBranch;
     }
 
     public boolean doneOnBranch(String branch){

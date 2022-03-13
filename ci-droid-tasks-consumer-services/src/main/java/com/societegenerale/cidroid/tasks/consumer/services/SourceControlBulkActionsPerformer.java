@@ -34,6 +34,17 @@ public interface SourceControlBulkActionsPerformer extends RemoteSourceControl{
 
     Reference fetchHeadReferenceFrom(String repoFullName, String branchName);
 
+    /**
+     * It's important that implementations throw correctly the expected exceptions, especially BranchAlreadyExistsException, as we often rely on this to know if we should proceed :
+     * in the case of an action creating a pull request with several fails, it's normal that the branch already exists
+     * @param repoFullName
+     * @param branchName
+     * @param fromReferenceSha1
+     * @param oauthToken
+     * @return
+     * @throws BranchAlreadyExistsException
+     * @throws RemoteSourceControlAuthorizationException
+     */
     Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String oauthToken)
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException;
 
