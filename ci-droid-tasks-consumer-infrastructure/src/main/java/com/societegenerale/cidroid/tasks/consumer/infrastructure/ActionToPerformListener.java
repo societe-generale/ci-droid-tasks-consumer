@@ -62,7 +62,7 @@ public class ActionToPerformListener {
                 .commitMessage(actionToPerformCommand.getCommitMessage())
                 .gitHubInteraction(actionToPerformCommand.getGitHubInteractionType())
                 .resourcesToUpdate(actionToPerformCommand.getResourcesToUpdate())
-                .actionToReplicate(actionToPerformCommand.getUpdateAction())
+                .actionToReplicate((ActionToReplicate) actionToPerformCommand.getUpdateAction())
                 .build();
 
             actionToPerformService.perform(actionToPerform);
