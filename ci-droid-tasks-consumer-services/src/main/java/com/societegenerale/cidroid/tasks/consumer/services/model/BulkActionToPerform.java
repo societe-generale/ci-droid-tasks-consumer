@@ -15,7 +15,7 @@ import lombok.ToString;
 
 @Data
 @ToString(exclude = "sourceControlPersonalToken")
-@Builder
+@Builder(toBuilder = true)
 public class BulkActionToPerform {
 
     @NotEmpty

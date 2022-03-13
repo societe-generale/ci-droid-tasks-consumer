@@ -67,7 +67,6 @@ public class ActionToPerformListener {
         actionToReplicate.init(updateActionInfos);
 
         BulkActionToPerform actionToPerform = BulkActionToPerform.builder()
-            .userRequestingAction(remoteSourceControl.fetchCurrentUser(actionToPerformCommand.getGitHubOauthToken()))
             .sourceControlPersonalToken(actionToPerformCommand.getGitHubOauthToken())
             .email(actionToPerformCommand.getEmail())
             .commitMessage(actionToPerformCommand.getCommitMessage())

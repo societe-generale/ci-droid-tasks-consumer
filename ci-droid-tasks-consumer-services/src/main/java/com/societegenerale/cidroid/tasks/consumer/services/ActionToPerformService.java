@@ -45,28 +45,33 @@ public class ActionToPerformService {
 
         StopWatch stopWatchForMonitoring = StopWatch.createStarted();
 
+        var userRequestingAction=remoteSourceControl.fetchCurrentUser(action.getSourceControlPersonalToken());
+
+        var actionWithUser=action.toBuilder().userRequestingAction(userRequestingAction).build();
+
+
         //we're supposed to have only one element in list, but this may change in the future : we'll loop over them.
-        ResourceToUpdate resourceToUpdate = action.getResourcesToUpdate().get(0);
+        ResourceToUpdate resourceToUpdate = actionWithUser.getResourcesToUpdate().get(0);
 
         String repoFullName = resourceToUpdate.getRepoFullName();
 
         try {
 
-            if (action.getGitHubInteraction() instanceof DirectPushGitHubInteraction) {
+            if (actionWithUser.getGitHubInteraction() instanceof DirectPushGitHubInteraction) {
 
-                UpdatedResource updatedResource = updateRemoteResource(repoFullName, resourceToUpdate, action, resourceToUpdate.getBranchName());
+                UpdatedResource updatedResource = updateRemoteResource(repoFullName, resourceToUpdate, actionWithUser, resourceToUpdate.getBranchName());
 
-                actionNotificationService.handleNotificationsFor(action, resourceToUpdate, updatedResource);
+                actionNotificationService.handleNotificationsFor(actionWithUser, resourceToUpdate, updatedResource);
 
-            } else if (action.getGitHubInteraction() instanceof PullRequestGitHubInteraction) {
+            } else if (actionWithUser.getGitHubInteraction() instanceof PullRequestGitHubInteraction) {
 
-                PullRequestGitHubInteraction pullRequestAction = (PullRequestGitHubInteraction) action.getGitHubInteraction();
+                PullRequestGitHubInteraction pullRequestAction = (PullRequestGitHubInteraction) actionWithUser.getGitHubInteraction();
 
                 Optional<Repository> optionalImpactedRepo = remoteSourceControl.fetchRepository(repoFullName);
 
                 //if repo doesn't exist, notify
                 if(optionalImpactedRepo.isEmpty()){
-                    actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_REPO_DOESNT_EXIST));
+                    actionNotificationService.handleNotificationsFor(actionWithUser, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_REPO_DOESNT_EXIST));
                     return;
                 }
 
@@ -82,7 +87,7 @@ public class ActionToPerformService {
 
                 try {
                     branchToUseForPr = remoteSourceControl.createBranch(repoFullName, branchNameForPR, masterCommitReference.getObject().getSha(),
-                            action.getSourceControlPersonalToken());
+                        actionWithUser.getSourceControlPersonalToken());
                 } catch (BranchAlreadyExistsException e) {
 
                     log.warn("branch " + branchNameForPR + " already exists, reusing it");
@@ -98,30 +103,30 @@ public class ActionToPerformService {
                     updatedResource = UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_BRANCH_CREATION_ISSUE);
 
                 } else {
-                    updatedResource = updateRemoteResource(repoFullName, resourceToUpdate, action, branchNameForPR);
+                    updatedResource = updateRemoteResource(repoFullName, resourceToUpdate, actionWithUser, branchNameForPR);
 
                     if (updatedResource.hasBeenUpdated()) {
 
                         //branchFromWhichToCreatePrBranch is also the target for the PR to be merged to
-                        createPullRequest(action, impactedRepo, branchToUseForPr, branchFromWhichToCreatePrBranch, updatedResource);
+                        createPullRequest(actionWithUser, impactedRepo, branchToUseForPr, branchFromWhichToCreatePrBranch, updatedResource);
                     }
                 }
 
-                actionNotificationService.handleNotificationsFor(action, resourceToUpdate, updatedResource);
+                actionNotificationService.handleNotificationsFor(actionWithUser, resourceToUpdate, updatedResource);
             } else {
-                log.warn("unknown gitHub interaction type : {}", action.getGitHubInteraction());
+                log.warn("unknown gitHub interaction type : {}", actionWithUser.getGitHubInteraction());
             }
 
         } catch (RemoteSourceControlAuthorizationException e) {
-            log.warn("Github authorization problem while processing "+action,e);
-            actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_AUTHENTICATION_ISSUE));
+            log.warn("Github authorization problem while processing "+actionWithUser,e);
+            actionNotificationService.handleNotificationsFor(actionWithUser, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_AUTHENTICATION_ISSUE));
         }
         catch (Exception e) {
-            log.warn("problem while processing "+action,e);
-            actionNotificationService.handleNotificationsFor(action, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING));
+            log.warn("problem while processing "+actionWithUser,e);
+            actionNotificationService.handleNotificationsFor(actionWithUser, resourceToUpdate, UpdatedResource.notUpdatedResource(UpdatedResource.UpdateStatus.UPDATE_KO_UNEXPECTED_EXCEPTION_DURING_PROCESSING));
         }
         finally {
-            publishMonitoringEventForBulkActionProcessed(action, stopWatchForMonitoring, repoFullName);
+            publishMonitoringEventForBulkActionProcessed(actionWithUser, stopWatchForMonitoring, repoFullName);
         }
 
     }

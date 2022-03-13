@@ -75,6 +75,8 @@ class ActionToPerformServiceTest {
 
     private final String branchNameToCreateForPR = "myPrBranch";
 
+    private final User SOME_USER=new User(SOME_USER_NAME, SOME_EMAIL);
+
     private final TestAppender testAppender = new TestAppender();
 
 
@@ -112,7 +114,7 @@ class ActionToPerformServiceTest {
         testActionToPerform.setContinueIfResourceDoesntExist(true);
 
         bulkActionToPerformBuilder = BulkActionToPerform.builder()
-                .userRequestingAction(new User(SOME_USER_NAME, "someEmail)"))
+                .userRequestingAction(SOME_USER)
                 .sourceControlPersonalToken(SOME_OAUTH_TOKEN)
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)
@@ -128,6 +130,10 @@ class ActionToPerformServiceTest {
 
         when(mockRemoteSourceControl.updateContent(anyString(), anyString(), any(DirectCommit.class), anyString()))
                 .thenReturn(updatedResource); // lenient mocking - we're asserting in verify.
+
+        when(mockRemoteSourceControl.fetchCurrentUser(SOME_OAUTH_TOKEN))
+            .thenReturn(SOME_USER);
+
 
         LoggerContext logCtx = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger log = logCtx.getLogger("Main");
