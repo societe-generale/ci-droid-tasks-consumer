@@ -82,7 +82,7 @@ public class ActionToPerformService {
 
                 try {
                     branchToUseForPr = remoteSourceControl.createBranch(repoFullName, branchNameForPR, masterCommitReference.getObject().getSha(),
-                            action.getGitHubOauthToken());
+                            action.getSourceControlPersonalToken());
                 } catch (BranchAlreadyExistsException e) {
 
                     log.warn("branch " + branchNameForPR + " already exists, reusing it");
@@ -226,7 +226,7 @@ public class ActionToPerformService {
 
         UpdatedResource updatedResource = remoteSourceControl
                 .deleteContent(resourceToDelete.getRepoFullName(), resourceToDelete.getFilePathOnRepo(), directCommit,
-                        action.getGitHubOauthToken());
+                        action.getSourceControlPersonalToken());
 
         publishMonitoringEventForCommitPerformed(resourceToDelete, updatedResource);
 
@@ -276,7 +276,7 @@ public class ActionToPerformService {
 
         UpdatedResource updatedResource = remoteSourceControl
                 .updateContent(resourceToUpdate.getRepoFullName(), resourceToUpdate.getFilePathOnRepo(), directCommit,
-                        action.getGitHubOauthToken());
+                        action.getSourceControlPersonalToken());
 
         publishMonitoringEventForCommitPerformed(resourceToUpdate, updatedResource);
 
@@ -337,7 +337,7 @@ public class ActionToPerformService {
         newPr.setBody("performed on behalf of " + action.getUserRequestingAction().getLogin() + " by CI-droid\n\n" + action.getCommitMessage());
 
         try{
-            return Optional.of(remoteSourceControl.createPullRequest(impactedRepo.getFullName(), newPr, action.getGitHubOauthToken()));
+            return Optional.of(remoteSourceControl.createPullRequest(impactedRepo.getFullName(), newPr, action.getSourceControlPersonalToken()));
         }
         catch(RemoteSourceControlAuthorizationException e){
             log.warn("issue while creating the PR",e);

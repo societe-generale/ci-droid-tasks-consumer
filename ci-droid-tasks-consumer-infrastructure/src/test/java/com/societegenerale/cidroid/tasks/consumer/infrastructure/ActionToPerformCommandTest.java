@@ -1,13 +1,13 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.BulkUpdateCommand;
+import java.io.IOException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ActionToPerformCommandTest {
 
@@ -19,7 +19,7 @@ public class ActionToPerformCommandTest {
                                 .getResourceAsStream("incomingOverWriteStaticContentAction_withPullRequestInteraction.json"),
                         "UTF-8");
 
-        ActionToPerformCommand incomingCommand = new ObjectMapper().readValue(incomingCommandAsString, ActionToPerformCommand.class);
+        BulkUpdateCommand incomingCommand = new ObjectMapper().readValue(incomingCommandAsString, BulkUpdateCommand.class);
 
         assertThat(incomingCommand.getGitHubInteractionType()).isInstanceOf(PullRequestGitHubInteraction.class);
 

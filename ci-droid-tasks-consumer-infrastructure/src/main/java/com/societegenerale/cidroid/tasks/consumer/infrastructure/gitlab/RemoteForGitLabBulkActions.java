@@ -29,7 +29,17 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
 
   private final Logger gitLabLogger=Logger.getLogger(RemoteForGitLabBulkActions.class.toString());
 
+  private final String gitLabApiUrl;
+
   private GitLabApi gitlabClient;
+
+  public RemoteForGitLabBulkActions(String gitLabApiUrl) {
+
+    this.gitLabApiUrl=gitLabApiUrl;
+
+    //TODO
+    //gitlabClient=new GitLabApi();
+  }
 
   @Override
   public ResourceContent fetchContent(String repoFullName, String path, String branch) {

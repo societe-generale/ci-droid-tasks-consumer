@@ -113,7 +113,7 @@ class ActionToPerformServiceTest {
 
         bulkActionToPerformBuilder = BulkActionToPerform.builder()
                 .userRequestingAction(new User(SOME_USER_NAME, "someEmail)"))
-                .gitHubOauthToken(SOME_OAUTH_TOKEN)
+                .sourceControlPersonalToken(SOME_OAUTH_TOKEN)
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)
                 .resourcesToUpdate(List.of(resourceToUpdate))
@@ -392,7 +392,7 @@ class ActionToPerformServiceTest {
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction())
                                                                             .actionToReplicate(new DeleteResourceAction())
                                                                             .resourcesToUpdate(List.of(resourceToUpdate))
-                                                                            .gitHubOauthToken(SOME_OAUTH_TOKEN)
+                                                                            .sourceControlPersonalToken(SOME_OAUTH_TOKEN)
                                                                             .build();
 
         when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(sampleResourceContentBeforeUpdate);
