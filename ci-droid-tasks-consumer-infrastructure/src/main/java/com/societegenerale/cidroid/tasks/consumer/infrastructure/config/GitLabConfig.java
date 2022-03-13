@@ -2,6 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.GitLabEventDeserializer;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.RemoteForGitLabBulkActions;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.RemoteForGitLabEventsActions;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
@@ -33,10 +34,9 @@ public class GitLabConfig {
     }
 
     @Bean
-    public SourceControlBulkActionsPerformer gitLabClientForBulkActions()
+    public SourceControlBulkActionsPerformer gitLabClientForBulkActions(@Value("${source-control.url}") String gitLabApiUrl)
     {
-        //TODO implement it !
-        return null;
+        return new RemoteForGitLabBulkActions(gitLabApiUrl);
     }
 
 }
