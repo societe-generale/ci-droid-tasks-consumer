@@ -1,5 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
 
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GitHubConfig;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "GITHUB")
-@FeignClient(name = "github-forEvents", url = "${source-control.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
+@FeignClient(name = "github-forEvents", url = "${source-control.url}", decode404 = true, configuration = GitHubConfig.class)
 public interface FeignRemoteForGitHubEvents extends SourceControlEventsReactionPerformer {
 
     Map<String, String> bodyToClosePR = Collections.singletonMap("state", "closed");

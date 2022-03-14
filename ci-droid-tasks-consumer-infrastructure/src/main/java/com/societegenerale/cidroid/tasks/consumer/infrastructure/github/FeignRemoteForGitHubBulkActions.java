@@ -1,5 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
 
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GitHubConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GlobalProperties;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "GITHUB")
-@FeignClient(name = "github-forBulkActions", url = "${source-control.url}", decode404 = true, configuration = RemoteGitHubConfig.class)
+@FeignClient(name = "github-forBulkActions", url = "${source-control.url}", decode404 = true, configuration = GitHubConfig.class)
 public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkActionsPerformer {
 
     @GetMapping(value = "/repos/{repoFullName}/pulls?state=open",
