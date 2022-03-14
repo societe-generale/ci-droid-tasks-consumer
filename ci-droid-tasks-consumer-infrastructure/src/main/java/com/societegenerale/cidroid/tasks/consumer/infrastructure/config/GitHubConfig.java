@@ -26,8 +26,8 @@ public class GitHubConfig {
     }
 
     @Bean
-    RequestInterceptor sourceControlApiAccessKeyInterceptor(@Value("${source-control.oauthToken:#{null}}") String oauthToken) {
-        return new SourceControlApiAccessKeyInterceptor(oauthToken);
+    RequestInterceptor sourceControlApiAccessKeyInterceptor(@Value("${source-control.apiToken:#{null}}") String apiToken) {
+        return new SourceControlApiAccessKeyInterceptor(apiToken);
     }
 
     /**

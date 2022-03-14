@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class SourceControlConfig {
     private SourceControlType type;
     private String url;
-    private String oauthToken;
+    private String apiToken;
     private String login;
     private String password;
 }
