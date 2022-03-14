@@ -69,8 +69,8 @@ class ActionToPerformListenerTest {
 
         BulkActionToPerform actualBulkActionToPerform = bulkActionToPerformCaptor.getValue();
 
-        assertThat(actualBulkActionToPerform.getUserRequestingAction().getLogin()).isEqualTo("someUserName");
-        assertThat(actualBulkActionToPerform.getGitHubOauthToken()).isEqualTo("someToken");
+        //assertThat(actualBulkActionToPerform.getUserRequestingAction().getLogin()).isEqualTo("someUserName");
+        assertThat(actualBulkActionToPerform.getSourceControlPersonalToken()).isEqualTo("someToken");
         assertThat(actualBulkActionToPerform.getEmail()).isEqualTo("someEmail@someDomain.com");
 
         assertThat(actualBulkActionToPerform.getActionToReplicate()).isInstanceOf(OverwriteStaticFileAction.class);

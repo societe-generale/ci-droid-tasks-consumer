@@ -75,6 +75,8 @@ class ActionToPerformServiceTest {
 
     private final String branchNameToCreateForPR = "myPrBranch";
 
+    private final User SOME_USER=new User(SOME_USER_NAME, SOME_EMAIL);
+
     private final TestAppender testAppender = new TestAppender();
 
 
@@ -112,8 +114,8 @@ class ActionToPerformServiceTest {
         testActionToPerform.setContinueIfResourceDoesntExist(true);
 
         bulkActionToPerformBuilder = BulkActionToPerform.builder()
-                .userRequestingAction(new User(SOME_USER_NAME, "someEmail)"))
-                .gitHubOauthToken(SOME_OAUTH_TOKEN)
+                .userRequestingAction(SOME_USER)
+                .sourceControlPersonalToken(SOME_OAUTH_TOKEN)
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)
                 .resourcesToUpdate(List.of(resourceToUpdate))
@@ -128,6 +130,10 @@ class ActionToPerformServiceTest {
 
         when(mockRemoteSourceControl.updateContent(anyString(), anyString(), any(DirectCommit.class), anyString()))
                 .thenReturn(updatedResource); // lenient mocking - we're asserting in verify.
+
+        when(mockRemoteSourceControl.fetchCurrentUser(SOME_OAUTH_TOKEN))
+            .thenReturn(SOME_USER);
+
 
         LoggerContext logCtx = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger log = logCtx.getLogger("Main");
@@ -392,7 +398,7 @@ class ActionToPerformServiceTest {
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction())
                                                                             .actionToReplicate(new DeleteResourceAction())
                                                                             .resourcesToUpdate(List.of(resourceToUpdate))
-                                                                            .gitHubOauthToken(SOME_OAUTH_TOKEN)
+                                                                            .sourceControlPersonalToken(SOME_OAUTH_TOKEN)
                                                                             .build();
 
         when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(sampleResourceContentBeforeUpdate);
