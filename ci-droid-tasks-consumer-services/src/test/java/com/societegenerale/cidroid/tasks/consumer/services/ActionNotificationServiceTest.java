@@ -36,7 +36,7 @@ public class ActionNotificationServiceTest {
 
     private static final String SOME_USER_NAME = "someUserName";
 
-    private static final String SOME_OAUTH_TOKEN = "123456789abcdef";
+    private static final String SOME_API_ACCESS_TOKEN = "123456789abcdef";
 
     private static final String SOME_EMAIL = "someEmail@someDomain.com";
 
@@ -65,7 +65,7 @@ public class ActionNotificationServiceTest {
 
         bulkActionToPerformBuilder = BulkActionToPerform.builder()
                 .userRequestingAction(new User(SOME_USER_NAME, "someEmail)"))
-                .sourceControlPersonalToken(SOME_OAUTH_TOKEN)
+                .sourceControlPersonalToken(SOME_API_ACCESS_TOKEN)
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)
                 .resourcesToUpdate(singletonList(resourceToUpdate))

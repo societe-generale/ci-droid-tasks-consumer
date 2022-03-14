@@ -4,6 +4,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEv
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteForGitHubBulkActions;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteForGitHubEvents;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.GitHubEventDeserializer;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.SourceControlApiAccessKeyInterceptor;
 import feign.Client;
 import feign.Logger;
 import feign.RequestInterceptor;
@@ -25,8 +26,8 @@ public class GitHubConfig {
     }
 
     @Bean
-    RequestInterceptor oauthTokenSetterInterceptor(@Value("${gitHub.oauthToken:#{null}}") String oauthToken) {
-        return new OAuthInterceptor(oauthToken);
+    RequestInterceptor sourceControlApiAccessKeyInterceptor(@Value("${source-control.oauthToken:#{null}}") String oauthToken) {
+        return new SourceControlApiAccessKeyInterceptor(oauthToken);
     }
 
     /**

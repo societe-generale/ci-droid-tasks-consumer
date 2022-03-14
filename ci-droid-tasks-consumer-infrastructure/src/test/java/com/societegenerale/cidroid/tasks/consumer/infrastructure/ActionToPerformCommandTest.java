@@ -19,14 +19,14 @@ class ActionToPerformCommandTest {
     @Test
     void toActionForSingleResource() {
 
-        String someOauthToken = "someOauthToken";
+        String someSCMApiToken = "someSCMApiToken";
         String someEmail = "someEmail";
         String someCommitMessage = "some commit message";
         SimpleReplaceAction someActionToPerform = new SimpleReplaceAction("initialValue", "newValue");
         PullRequestGitHubInteraction someInteractionType = new PullRequestGitHubInteraction("branchName", "prTitle");
 
         ActionToPerformCommand commandFor2resources=ActionToPerformCommand.builder()
-            .sourceControlPersonalToken(someOauthToken)
+            .sourceControlPersonalToken(someSCMApiToken)
             .email(someEmail)
             .commitMessage(someCommitMessage)
             .updateAction(someActionToPerform)
@@ -39,7 +39,7 @@ class ActionToPerformCommandTest {
         ActionToPerformCommand actualAction = commandFor2resources.toActionForSingleResource(targetResource);
 
         assertThat(actualAction).isNotNull();
-        assertThat(actualAction.getSourceControlPersonalToken()).isEqualTo(someOauthToken);
+        assertThat(actualAction.getSourceControlPersonalToken()).isEqualTo(someSCMApiToken);
         assertThat(actualAction.getEmail()).isEqualTo(someEmail);
         assertThat(actualAction.getCommitMessage()).isEqualTo(someCommitMessage);
         assertThat(actualAction.getGitHubInteractionType()).isEqualTo(someInteractionType);

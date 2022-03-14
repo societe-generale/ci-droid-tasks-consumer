@@ -71,10 +71,10 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
 
 
   @Override
-  public UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
+  public UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlAccessToken)
       throws RemoteSourceControlAuthorizationException {
 
-    var user=fetchCurrentUser(oauthToken);
+    var user=fetchCurrentUser(sourceControlAccessToken);
 
     CommitAction commit=new CommitAction();
     commit.setContent(directCommit.getBase64EncodedContent());
@@ -94,7 +94,7 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
 
     try {
 
-      var commitPerformed=getReadWriteGitLabClient(oauthToken).getCommitsApi().createCommit(repoFullName,commitPayload);
+      var commitPerformed=getReadWriteGitLabClient(sourceControlAccessToken).getCommitsApi().createCommit(repoFullName,commitPayload);
 
       Commit commitOnUpdatedResource=new Commit();
       commitOnUpdatedResource.setId(commitPerformed.getId());
@@ -116,17 +116,17 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
   }
 
   @Override
-  public UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
+  public UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlAccessToken)
       throws RemoteSourceControlAuthorizationException {
     return null;
   }
 
   @Override
-  public PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String oauthToken)
+  public PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String sourceControlAccessToken)
       throws RemoteSourceControlAuthorizationException {
 
     try {
-      var gitLabMergeRequest=getReadWriteGitLabClient(oauthToken).getMergeRequestApi()
+      var gitLabMergeRequest=getReadWriteGitLabClient(sourceControlAccessToken).getMergeRequestApi()
           .createMergeRequest(repoFullName,
                               newPr.getHead(),
                               newPr.getBase(),
@@ -162,7 +162,7 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
 
 
   @Override
-  public Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String oauthToken)
+  public Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String sourceControlAccessToken)
       throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
     try {
@@ -177,7 +177,7 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
     }
 
     try {
-      var newBranch=getReadWriteGitLabClient(oauthToken).getRepositoryApi().createBranch(repoFullName,branchName,fromReferenceSha1);
+      var newBranch=getReadWriteGitLabClient(sourceControlAccessToken).getRepositoryApi().createBranch(repoFullName,branchName,fromReferenceSha1);
 
       return new Reference(
           REFS_HEADS + newBranch.getName(), new Reference.ObjectReference("commit", fromReferenceSha1));
@@ -230,10 +230,10 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
   }
 
   @Override
-  public User fetchCurrentUser(String oAuthToken) {
+  public User fetchCurrentUser(String sourceControlAccessToken) {
 
     try {
-      var gitLabUser=getReadWriteGitLabClient(oAuthToken).getUserApi().getCurrentUser();
+      var gitLabUser=getReadWriteGitLabClient(sourceControlAccessToken).getUserApi().getCurrentUser();
       return new User(gitLabUser.getUsername(),gitLabUser.getEmail());
     } catch (GitLabApiException e) {
       log.warn("could not find GitLab user with provided apiKey",e);

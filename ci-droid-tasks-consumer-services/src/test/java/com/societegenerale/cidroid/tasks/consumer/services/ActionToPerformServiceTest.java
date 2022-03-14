@@ -63,7 +63,7 @@ class ActionToPerformServiceTest {
 
     private final String SOME_USER_NAME = "someUserName";
 
-    private final String SOME_OAUTH_TOKEN = "abcdefghij12345";
+    private final String SOME_API_ACCESS_TOKEN = "abcdefghij12345";
 
     private final String SOME_EMAIL = "someEmail@someDomain.com";
 
@@ -115,7 +115,7 @@ class ActionToPerformServiceTest {
 
         bulkActionToPerformBuilder = BulkActionToPerform.builder()
                 .userRequestingAction(SOME_USER)
-                .sourceControlPersonalToken(SOME_OAUTH_TOKEN)
+                .sourceControlPersonalToken(SOME_API_ACCESS_TOKEN)
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)
                 .resourcesToUpdate(List.of(resourceToUpdate))
@@ -131,7 +131,7 @@ class ActionToPerformServiceTest {
         when(mockRemoteSourceControl.updateContent(anyString(), anyString(), any(DirectCommit.class), anyString()))
                 .thenReturn(updatedResource); // lenient mocking - we're asserting in verify.
 
-        when(mockRemoteSourceControl.fetchCurrentUser(SOME_OAUTH_TOKEN))
+        when(mockRemoteSourceControl.fetchCurrentUser(SOME_API_ACCESS_TOKEN))
             .thenReturn(SOME_USER);
 
 
@@ -398,19 +398,19 @@ class ActionToPerformServiceTest {
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new DirectPushGitHubInteraction())
                                                                             .actionToReplicate(new DeleteResourceAction())
                                                                             .resourcesToUpdate(List.of(resourceToUpdate))
-                                                                            .sourceControlPersonalToken(SOME_OAUTH_TOKEN)
+                                                                            .sourceControlPersonalToken(SOME_API_ACCESS_TOKEN)
                                                                             .build();
 
         when(mockRemoteSourceControl.fetchContent(REPO_FULL_NAME, "someFile.txt", MASTER_BRANCH)).thenReturn(sampleResourceContentBeforeUpdate);
 
-        when(mockRemoteSourceControl.deleteContent(eq(REPO_FULL_NAME), eq("someFile.txt"),any(DirectCommit.class),eq(SOME_OAUTH_TOKEN))).thenReturn(updatedResource);
+        when(mockRemoteSourceControl.deleteContent(eq(REPO_FULL_NAME), eq("someFile.txt"),any(DirectCommit.class),eq(SOME_API_ACCESS_TOKEN))).thenReturn(updatedResource);
 
         actionToPerformService.perform(bulkActionToPerform);
 
         verify(mockRemoteSourceControl, times(1)).deleteContent(eq(REPO_FULL_NAME),
                 eq(resourceToUpdate.getFilePathOnRepo()),
                 directCommitCaptor.capture(),
-                eq(SOME_OAUTH_TOKEN));
+                eq(SOME_API_ACCESS_TOKEN));
 
         DirectCommit actualCommit = directCommitCaptor.getValue();
 
@@ -434,7 +434,7 @@ class ActionToPerformServiceTest {
         when(mockRemoteSourceControl.fetchHeadReferenceFrom(REPO_FULL_NAME, branchNameToCreateForPR)).thenReturn(new Reference(
                 REFS_HEADS + branchNameToCreateForPR, mock(Reference.ObjectReference.class)));
 
-        when(mockRemoteSourceControl.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_OAUTH_TOKEN))
+        when(mockRemoteSourceControl.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_API_ACCESS_TOKEN))
                 .thenThrow(new BranchAlreadyExistsException("branch already exists"));
 
         when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), any(PullRequestToCreate.class), anyString())).thenReturn(samplePullRequest);
@@ -516,7 +516,7 @@ class ActionToPerformServiceTest {
 
         BulkActionToPerform bulkActionToPerform = doApullRequestAction();
 
-        when(mockRemoteSourceControl.fetchRepository(eq(REPO_FULL_NAME)))
+        when(mockRemoteSourceControl.fetchRepository(REPO_FULL_NAME))
                 .thenReturn(Optional.empty());
 
         actionToPerformService.perform(bulkActionToPerform);
@@ -542,7 +542,7 @@ class ActionToPerformServiceTest {
 
         verify(mockRemoteSourceControl, times(1)).createPullRequest(eq(REPO_FULL_NAME),
                 newPrCaptor.capture(),
-                eq(SOME_OAUTH_TOKEN));
+                eq(SOME_API_ACCESS_TOKEN));
 
         assertThat(newPrCaptor.getValue().getTitle()).isEqualTo("new feature branch");
     }
@@ -559,7 +559,7 @@ class ActionToPerformServiceTest {
 
         verify(mockRemoteSourceControl, times(1)).createPullRequest(eq(REPO_FULL_NAME),
                 newPrCaptor.capture(),
-                eq(SOME_OAUTH_TOKEN));
+                eq(SOME_API_ACCESS_TOKEN));
 
         assertThat(newPrCaptor.getValue().getTitle()).isEqualTo(branchNameToCreateForPR);
 
@@ -581,7 +581,7 @@ class ActionToPerformServiceTest {
 
         when(mockRemoteSourceControl.fetchHeadReferenceFrom(REPO_FULL_NAME, sourceBranchForPr)).thenReturn(dummyHeadOnSomeBranchReference);
 
-        when(mockRemoteSourceControl.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnSomeBranch, SOME_OAUTH_TOKEN))
+        when(mockRemoteSourceControl.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnSomeBranch, SOME_API_ACCESS_TOKEN))
                 .thenReturn(new Reference(REFS_HEADS + branchNameToCreateForPR, mock(Reference.ObjectReference.class)));
 
         when(mockRemoteSourceControl.createPullRequest(eq(REPO_FULL_NAME), newPrCaptor.capture(), anyString())).thenReturn(samplePullRequest);
@@ -589,7 +589,7 @@ class ActionToPerformServiceTest {
 
         actionToPerformService.perform(bulkActionToPerform);
 
-        verify(mockRemoteSourceControl, times(1)).createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnSomeBranch, SOME_OAUTH_TOKEN);
+        verify(mockRemoteSourceControl, times(1)).createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnSomeBranch, SOME_API_ACCESS_TOKEN);
 
         PullRequestToCreate pr = newPrCaptor.getValue();
         assertThat(pr.getHead()).isEqualTo(branchNameToCreateForPR);
@@ -607,7 +607,7 @@ class ActionToPerformServiceTest {
         PullRequest openPRonBranch1 = new PullRequest(prNumber);
         openPRonBranch1.setBranchName(branchNameToCreateForPR);
 
-        when(mockRemoteSourceControl.fetchOpenPullRequests(eq(REPO_FULL_NAME))).thenReturn(singletonList(openPRonBranch1));
+        when(mockRemoteSourceControl.fetchOpenPullRequests(REPO_FULL_NAME)).thenReturn(singletonList(openPRonBranch1));
 
         BulkActionToPerform bulkActionToPerform = bulkActionToPerformBuilder.gitHubInteraction(new PullRequestGitHubInteraction(branchNameToCreateForPR, null)).build();
 
@@ -665,7 +665,7 @@ class ActionToPerformServiceTest {
         verify(mockRemoteSourceControl, times(1)).updateContent(eq(REPO_FULL_NAME),
                 eq("someFile.txt"),
                 directCommitCaptor.capture(),
-                eq(SOME_OAUTH_TOKEN));
+                eq(SOME_API_ACCESS_TOKEN));
 
         DirectCommit actualCommit = directCommitCaptor.getValue();
 
@@ -693,7 +693,7 @@ class ActionToPerformServiceTest {
         Reference dummyHeadOnMasterReference = new Reference(REFS_HEADS + MASTER_BRANCH, new Reference.ObjectReference("commit", sha1ForHeadOnMaster));
         when(mockRemoteSourceControl.fetchHeadReferenceFrom(REPO_FULL_NAME, MASTER_BRANCH)).thenReturn(dummyHeadOnMasterReference);
 
-        when(mockRemoteSourceControl.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_OAUTH_TOKEN))
+        when(mockRemoteSourceControl.createBranch(REPO_FULL_NAME, branchNameToCreateForPR, sha1ForHeadOnMaster, SOME_API_ACCESS_TOKEN))
                 .thenReturn(new Reference(REFS_HEADS + branchNameToCreateForPR, mock(Reference.ObjectReference.class)));
     }
 
