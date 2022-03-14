@@ -21,13 +21,26 @@ import lombok.extern.slf4j.Slf4j;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "gitHubOauthToken")
+@ToString(exclude = "sourceControlPersonalToken")
 @Slf4j
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ActionToPerformCommand {
 
     @NotEmpty
-    private String gitHubOauthToken;
+    private String sourceControlPersonalToken;
+
+
+    /**
+     * in previous version, the field 'sourceControlPersonalToken' was called 'gitHubOauthToken', so some clients may relay on this
+     * However, we should not use it anymore
+     * @param legacyNameForSourceControlPersonalToken
+     * @deprecated incoming payloads should not have the field 'gitHubOauthToken' anymore, but 'sourceControlPersonalToken' instead
+     */
+    @Deprecated
+    public void setGitHubOauthToken(String legacyNameForSourceControlPersonalToken) {
+        this.sourceControlPersonalToken=legacyNameForSourceControlPersonalToken;
+    }
+
 
     @Email
     private String email;
@@ -57,7 +70,7 @@ public class ActionToPerformCommand {
     public ActionToPerformCommand toActionForSingleResource(ResourceToUpdate resourceToUpdate) {
 
         ActionToPerformCommand action=new ActionToPerformCommand();
-        action.setGitHubOauthToken(gitHubOauthToken);
+        action.setSourceControlPersonalToken(sourceControlPersonalToken);
         action.setEmail(email);
         action.setCommitMessage(commitMessage);
         action.setGitHubInteractionType(gitHubInteractionType);

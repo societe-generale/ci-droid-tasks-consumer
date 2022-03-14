@@ -23,13 +23,13 @@ public interface SourceControlBulkActionsPerformer extends RemoteSourceControl{
 
     ResourceContent fetchContent(String repoFullName, String path, String branch);
 
-    UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
+    UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlAccessToken)
             throws RemoteSourceControlAuthorizationException;
 
-    UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
+    UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlAccessToken)
             throws RemoteSourceControlAuthorizationException;
 
-    PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String oauthToken)
+    PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String sourceControlAccessToken)
             throws RemoteSourceControlAuthorizationException;
 
     Reference fetchHeadReferenceFrom(String repoFullName, String branchName);
@@ -40,12 +40,12 @@ public interface SourceControlBulkActionsPerformer extends RemoteSourceControl{
      * @param repoFullName
      * @param branchName
      * @param fromReferenceSha1
-     * @param oauthToken
+     * @param sourceControlAccessToken
      * @return
      * @throws BranchAlreadyExistsException
      * @throws RemoteSourceControlAuthorizationException
      */
-    Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String oauthToken)
+    Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String sourceControlAccessToken)
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException;
 
     Optional<Repository> fetchRepository(String repoFullName);
@@ -53,7 +53,7 @@ public interface SourceControlBulkActionsPerformer extends RemoteSourceControl{
     @Nonnull
     List<PullRequest> fetchOpenPullRequests(String repoFullName);
 
-    User fetchCurrentUser(String oAuthToken);
+    User fetchCurrentUser(String sourceControlAccessToken);
 
 }
 

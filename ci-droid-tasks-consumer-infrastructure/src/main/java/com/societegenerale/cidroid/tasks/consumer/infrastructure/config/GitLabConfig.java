@@ -27,10 +27,10 @@ public class GitLabConfig {
     @Bean
     public SourceControlEventsReactionPerformer gitLabClient(
         @Value("${source-control.url}") String url,
-        @Value("${source-control.oauthToken:#{null}}") String oauthToken)
+        @Value("${source-control.apiToken:#{null}}") String apiToken)
     {
 
-        return  new RemoteForGitLabEventsActions(url,oauthToken);
+        return  new RemoteForGitLabEventsActions(url,apiToken);
     }
 
     @Bean

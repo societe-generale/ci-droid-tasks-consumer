@@ -18,6 +18,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPer
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
@@ -39,10 +40,9 @@ class ActionToPerformListenerTest {
 
     private ActionToPerformListener actionToPerformListener = new ActionToPerformListener(mockActionToPerformService,
                                                                                             Arrays.asList(overWriteStaticContentAction, mockSomeOtherAction),
-            mockRemoteSourceControl,
                                                                                             mockNotifier);
 
-    private ArgumentCaptor<BulkActionToPerform> bulkActionToPerformCaptor = ArgumentCaptor.forClass(BulkActionToPerform.class);
+    private final ArgumentCaptor<BulkActionToPerform> bulkActionToPerformCaptor = ArgumentCaptor.forClass(BulkActionToPerform.class);
 
     private ActionToPerformCommand incomingCommand;
 
@@ -51,7 +51,7 @@ class ActionToPerformListenerTest {
 
         String incomingCommandAsString = IOUtils
                 .toString(ActionToPerformListenerTest.class.getClassLoader().getResourceAsStream("incomingOverWriteStaticContentAction.json"),
-                        "UTF-8");
+                        StandardCharsets.UTF_8);
         incomingCommand = new ObjectMapper().readValue(incomingCommandAsString, ActionToPerformCommand.class);
 
         when(mockRemoteSourceControl.fetchCurrentUser("someToken")).thenReturn(new User("someUserName","someEmail"));
@@ -87,7 +87,7 @@ class ActionToPerformListenerTest {
         ArgumentCaptor<String> notificationBodyCaptor = ArgumentCaptor.forClass(String.class);
 
         //only one action registered, not matching the one
-        actionToPerformListener = new ActionToPerformListener(mockActionToPerformService, List.of(mockSomeOtherAction), mockRemoteSourceControl,mockNotifier);
+        actionToPerformListener = new ActionToPerformListener(mockActionToPerformService, List.of(mockSomeOtherAction), mockNotifier);
 
         actionToPerformListener.registerActionsToReplicate();
 

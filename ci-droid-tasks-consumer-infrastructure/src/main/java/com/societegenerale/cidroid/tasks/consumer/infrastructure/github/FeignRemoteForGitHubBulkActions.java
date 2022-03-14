@@ -41,10 +41,10 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
     List<PullRequest> fetchOpenPullRequests(@PathVariable("repoFullName") String repoFullName);
 
     @Override
-    default UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken)
+    default UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlPersonalToken)
             throws RemoteSourceControlAuthorizationException {
 
-        return buildContentClient(repoFullName, path, oauthToken).deleteResource(directCommit);
+        return buildContentClient(repoFullName, path, sourceControlPersonalToken).deleteResource(directCommit);
     }
 
 
@@ -58,20 +58,20 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
 
 
     @Override
-    default UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String oauthToken) throws
+    default UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlPersonalToken) throws
             RemoteSourceControlAuthorizationException {
 
-        return buildContentClient(repoFullName, path, oauthToken).updateContent(directCommit);
+        return buildContentClient(repoFullName, path, sourceControlPersonalToken).updateContent(directCommit);
 
     }
 
-    static ContentClient buildContentClient(String repoFullName, String path, String oauthToken) {
+    static ContentClient buildContentClient(String repoFullName, String path, String sourceControlPersonalToken) {
         return Feign.builder()
                 .logger(new Slf4jLogger(ContentClient.class))
                 .encoder(new JacksonEncoder())
                 .decoder(new JacksonDecoder())
                 .errorDecoder(new UpdateContentErrorDecoder())
-                .requestInterceptor(new OAuthInterceptor(oauthToken))
+                .requestInterceptor(new SourceControlApiAccessKeyInterceptor(sourceControlPersonalToken))
                 .logLevel(Logger.Level.FULL)
                 .target(ContentClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/contents/" + path);
     }
@@ -89,19 +89,19 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
     Reference fetchHeadReferenceFrom(@PathVariable("repoFullName") String repoFullNameString, @PathVariable("branchName") String branchName);
 
     @Override
-    default Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String oauthToken)
+    default Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String sourceControlPersonalToken)
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
-        GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(oauthToken)
+        GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(sourceControlPersonalToken)
                 .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/git/refs");
 
         return gitReferenceClient.createBranch(new InputRef("refs/heads/" + branchName, fromReferenceSha1));
     }
 
     @Override
-    default User fetchCurrentUser(String oAuthToken) {
+    default User fetchCurrentUser(String sourceControlPersonalToken) {
 
-        GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(oAuthToken)
+        GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(sourceControlPersonalToken)
                 .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/user");
 
         return gitReferenceClient.getCurrentUser();
@@ -109,10 +109,10 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
     }
 
     @Override
-    default PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String oauthToken)
+    default PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String sourceControlPersonalToken)
             throws RemoteSourceControlAuthorizationException {
 
-        GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(oauthToken)
+        GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(sourceControlPersonalToken)
                 .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/pulls");
 
         return gitReferenceClient.createPullRequest(newPr);

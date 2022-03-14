@@ -28,13 +28,13 @@ interface GitReferenceClient {
   @Headers("Content-Type: application/json")
   User getCurrentUser();
 
-  static Feign.Builder buildGitReferenceClient(String oauthToken) {
+  static Feign.Builder buildGitReferenceClient(String sourceControlPersonalToken) {
     return Feign.builder()
         .logger(new Slf4jLogger(GitReferenceClient.class))
         .encoder(new JacksonEncoder())
         .decoder(new JacksonDecoder())
         .errorDecoder(new BranchCreationErrorDecoder())
-        .requestInterceptor(new OAuthInterceptor(oauthToken))
+        .requestInterceptor(new SourceControlApiAccessKeyInterceptor(sourceControlPersonalToken))
         .logLevel(Logger.Level.FULL);
   }
 }

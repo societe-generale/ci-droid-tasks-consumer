@@ -7,6 +7,7 @@ import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAction;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -18,14 +19,14 @@ class ActionToPerformCommandTest {
     @Test
     void toActionForSingleResource() {
 
-        String someOauthToken = "someOauthToken";
+        String someSCMApiToken = "someSCMApiToken";
         String someEmail = "someEmail";
         String someCommitMessage = "some commit message";
         SimpleReplaceAction someActionToPerform = new SimpleReplaceAction("initialValue", "newValue");
         PullRequestGitHubInteraction someInteractionType = new PullRequestGitHubInteraction("branchName", "prTitle");
 
         ActionToPerformCommand commandFor2resources=ActionToPerformCommand.builder()
-            .gitHubOauthToken(someOauthToken)
+            .sourceControlPersonalToken(someSCMApiToken)
             .email(someEmail)
             .commitMessage(someCommitMessage)
             .updateAction(someActionToPerform)
@@ -38,7 +39,7 @@ class ActionToPerformCommandTest {
         ActionToPerformCommand actualAction = commandFor2resources.toActionForSingleResource(targetResource);
 
         assertThat(actualAction).isNotNull();
-        assertThat(actualAction.getGitHubOauthToken()).isEqualTo(someOauthToken);
+        assertThat(actualAction.getSourceControlPersonalToken()).isEqualTo(someSCMApiToken);
         assertThat(actualAction.getEmail()).isEqualTo(someEmail);
         assertThat(actualAction.getCommitMessage()).isEqualTo(someCommitMessage);
         assertThat(actualAction.getGitHubInteractionType()).isEqualTo(someInteractionType);
@@ -53,7 +54,7 @@ class ActionToPerformCommandTest {
         String incomingCommandAsString = IOUtils
                 .toString(ActionToPerformCommandTest.class.getClassLoader()
                                 .getResourceAsStream("incomingOverWriteStaticContentAction_withPullRequestInteraction.json"),
-                        "UTF-8");
+                        StandardCharsets.UTF_8);
 
         ActionToPerformCommand incomingCommand = new ObjectMapper().readValue(incomingCommandAsString, ActionToPerformCommand.class);
 

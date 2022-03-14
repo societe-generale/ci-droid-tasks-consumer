@@ -6,12 +6,18 @@ spring:
 
 spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 
+synchronous-mode: true
+
 source-control:
   type: "GITLAB"
-  url: "http://api.github.com"
+  url: "http://gitlab.it.gefa.de"
   login: "yourLogin"
   password: "yourPassword"
-  oauthToken: "token"
+  apiToken: "ppr1znVKgzSTJaCwKHTw"
+
+cidroid-behavior:
+  bestPracticeNotifier:
+    enabled: false
 
 server:
   port: 8081

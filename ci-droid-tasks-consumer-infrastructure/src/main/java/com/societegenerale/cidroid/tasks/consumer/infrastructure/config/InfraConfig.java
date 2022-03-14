@@ -90,9 +90,9 @@ public class InfraConfig {
     @Bean
     public ActionToPerformListener actionToPerformListener(ActionToPerformService actionToPerformService,
                                                            List<ActionToReplicate> actionsToReplicate,
-                                                           SourceControlBulkActionsPerformer remoteSourceControl, ActionNotifier actionNotifier) {
+                                                           ActionNotifier actionNotifier) {
 
-        return new ActionToPerformListener(actionToPerformService, actionsToReplicate, remoteSourceControl,actionNotifier);
+        return new ActionToPerformListener(actionToPerformService, actionsToReplicate,actionNotifier);
     }
 
 
