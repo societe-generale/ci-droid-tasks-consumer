@@ -2,12 +2,12 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
-import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -21,19 +21,15 @@ public class ActionToPerformListener {
 
     private final List<ActionToReplicate> actionsToReplicate;
 
-    private final SourceControlBulkActionsPerformer remoteSourceControl;
-
     private final ActionNotifier notifier;
 
     private Map<String, Class<? extends ActionToReplicate>> registeredActionsToReplicate;
 
     public ActionToPerformListener(ActionToPerformService actionToPerformService,
                                    List<ActionToReplicate> actionsToReplicate,
-                                   SourceControlBulkActionsPerformer remoteSourceControl,
                                    ActionNotifier notifier) {
         this.actionToPerformService = actionToPerformService;
         this.actionsToReplicate = actionsToReplicate;
-        this.remoteSourceControl = remoteSourceControl;
         this.notifier=notifier;
     }
 
@@ -67,7 +63,7 @@ public class ActionToPerformListener {
         actionToReplicate.init(updateActionInfos);
 
         BulkActionToPerform actionToPerform = BulkActionToPerform.builder()
-            .sourceControlPersonalToken(actionToPerformCommand.getGitHubOauthToken())
+            .sourceControlPersonalToken(actionToPerformCommand.getSourceControlPersonalToken())
             .email(actionToPerformCommand.getEmail())
             .commitMessage(actionToPerformCommand.getCommitMessage())
             .gitHubInteraction(actionToPerformCommand.getGitHubInteractionType())
@@ -97,18 +93,17 @@ public class ActionToPerformListener {
     }
 
 
+
     private Class<? extends ActionToReplicate> findActualActionToPerform(String actionToReplicateClass) {
 
-        for( String registeredAction : registeredActionsToReplicate.keySet()){
+        for( Entry<String, Class<? extends ActionToReplicate>> registeredAction : registeredActionsToReplicate.entrySet()){
 
-            if(StringUtils.containsIgnoreCase(actionToReplicateClass,registeredAction)){
-                return registeredActionsToReplicate.get(registeredAction);
+            if(StringUtils.containsIgnoreCase(actionToReplicateClass,registeredAction.getKey())){
+                return registeredAction.getValue();
             }
 
         }
-
         return null;
-
     }
 
 }
