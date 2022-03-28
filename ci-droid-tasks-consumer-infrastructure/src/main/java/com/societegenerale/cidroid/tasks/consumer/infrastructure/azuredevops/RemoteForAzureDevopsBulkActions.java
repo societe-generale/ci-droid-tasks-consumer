@@ -142,6 +142,34 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
   @Override
   public Optional<Repository> fetchRepository(String repoFullName) {
+
+    String repositoryUrl=azureDevopsUrl+"/"+azureOrg+"/"+azureProject+"/_apis/git/repositories/"+repoFullName+"?"+AZURE_DEVOPS_API_VERSION;
+
+    Request request = readOnlyRequestTemplate.url(repositoryUrl).build();
+
+    try {
+      var repositoryResponse = httpClient.newCall(request).execute();
+
+      if(repositoryResponse.isSuccessful()) {
+
+        var repo= objectMapper.readValue(repositoryResponse.body().string(), AzureDevopsRepository.class);
+
+        return Optional.of(Repository.builder()
+            .url(repo.getUrl())
+            .name(repo.getName())
+            .fullName(repo.getName())
+            .defaultBranch((repo.getDefaultBranch()))
+            .build()
+        );
+      }
+      else{
+        log.warn("no repository found for : "+repoFullName);
+      }
+
+    } catch (IOException e) {
+      log.error("problem while fetching repo details for "+repoFullName,e);
+    }
+
     return Optional.empty();
   }
 
