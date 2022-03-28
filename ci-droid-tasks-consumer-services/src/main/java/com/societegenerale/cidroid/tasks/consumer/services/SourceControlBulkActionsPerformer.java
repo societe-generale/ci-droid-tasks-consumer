@@ -53,7 +53,14 @@ public interface SourceControlBulkActionsPerformer extends RemoteSourceControl{
     @Nonnull
     List<PullRequest> fetchOpenPullRequests(String repoFullName);
 
-    User fetchCurrentUser(String sourceControlAccessToken);
+    /**
+     * in most cases, providing the personal access token is enough.. but some providers (like Azure devops) don't allow to retrieve the user details from the token.
+     * In that case, we'll use the email address to build the User we need.     *
+     * @param sourceControlAccessToken
+     * @param emailAddress
+     * @return
+     */
+    User fetchCurrentUser(String sourceControlAccessToken, String emailAddress);
 
 }
 

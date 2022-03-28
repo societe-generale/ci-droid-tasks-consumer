@@ -152,13 +152,17 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
   }
 
   @Override
-  public User fetchCurrentUser(String sourceControlAccessToken) {
+  public User fetchCurrentUser(String sourceControlAccessToken, String emailAddress) {
 
     //AzureDevops doesn't allow to retrieve a user details from the personal token
     //it needs to go through Oauth2 :
     // https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/manage-personal-access-tokens-via-api?view=azure-devops#authenticate-with-azure-active-directory-azure-ad-tokens
 
 
-    return null;
+    return User.builder().email(emailAddress).login(extractUsernameFrom(emailAddress)).build();
+  }
+
+  private String extractUsernameFrom(String emailAddress) {
+    return emailAddress.substring(0, emailAddress.lastIndexOf("@"));
   }
 }

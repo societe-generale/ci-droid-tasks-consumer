@@ -131,7 +131,7 @@ class ActionToPerformServiceTest {
         when(mockRemoteSourceControl.updateContent(anyString(), anyString(), any(DirectCommit.class), anyString()))
                 .thenReturn(updatedResource); // lenient mocking - we're asserting in verify.
 
-        when(mockRemoteSourceControl.fetchCurrentUser(SOME_API_ACCESS_TOKEN))
+        when(mockRemoteSourceControl.fetchCurrentUser(SOME_API_ACCESS_TOKEN,null))
             .thenReturn(SOME_USER);
 
 

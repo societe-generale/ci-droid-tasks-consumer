@@ -45,7 +45,7 @@ public class ActionToPerformService {
 
         StopWatch stopWatchForMonitoring = StopWatch.createStarted();
 
-        var userRequestingAction=remoteSourceControl.fetchCurrentUser(action.getSourceControlPersonalToken());
+        var userRequestingAction=remoteSourceControl.fetchCurrentUser(action.getSourceControlPersonalToken(),action.getEmail());
 
         var actionWithUser=action.toBuilder().userRequestingAction(userRequestingAction).build();
 
