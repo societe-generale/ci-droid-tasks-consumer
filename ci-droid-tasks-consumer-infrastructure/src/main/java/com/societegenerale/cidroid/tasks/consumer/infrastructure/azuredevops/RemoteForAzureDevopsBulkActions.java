@@ -1,5 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
 
+import static java.util.Collections.emptyList;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
@@ -9,30 +11,37 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCo
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference.ObjectReference;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Request.Builder;
+import okhttp3.RequestBody;
+import org.apache.http.HttpStatus;
 import org.bouncycastle.util.encoders.Base64;
 
 
 @Slf4j
 public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActionsPerformer {
 
+  public static final String APPLICATION_JSON = "application/json";
   private final OkHttpClient httpClient;
 
-  private final String AZURE_DEVOPS_URL = "https://dev.azure.com/";
+  private static final String AZURE_DEVOPS_URL = "https://dev.azure.com/";
 
-  private final String AZURE_DEVOPS_API_VERSION = "api-version=7.1-preview.1";
+  private static final String AZURE_DEVOPS_API_VERSION = "api-version=7.1-preview.1";
 
   private final String azureDevopsUrl;
 
@@ -63,7 +72,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
     String basicReadOnlyAuthentCredentials = Credentials.basic("", apiKeyForReadOnlyAccess);
 
     readOnlyRequestTemplate = new Request.Builder()
-        .header("Content-Type", "application/json")
+        .header("Content-Type", APPLICATION_JSON)
         .header("Authorization", basicReadOnlyAuthentCredentials);
 
   }
@@ -92,7 +101,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
         var fileContentResponse = httpClient.newCall(readOnlyRequestTemplate.url(fileMetadata.getUrl()).build()).execute();
 
         var fileContent = new ResourceContent();
-        fileContent.setBase64EncodedContent(Base64.encode(fileContentResponse.body().bytes()).toString());
+        fileContent.setBase64EncodedContent(Arrays.toString(Base64.encode(fileContentResponse.body().bytes())));
         fileContent.setSha(fileMetadata.getCommitId());
         return fileContent;
       }
@@ -126,24 +135,113 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
   @Override
   public PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String sourceControlAccessToken)
       throws RemoteSourceControlAuthorizationException {
+
+    String createPrUrl=azureDevopsUrl+azureOrg+"/"+azureProject+"/_apis/git/repositories/"+repoFullName+"/pullrequests?"+AZURE_DEVOPS_API_VERSION;
+
+
+
+
     return null;
   }
 
   @Override
   public Reference fetchHeadReferenceFrom(String repoFullName, String branchName) {
+
+    String escapedRefName="heads%2F"+branchName;
+
+    String getBranchRefUrl=azureDevopsUrl+azureOrg+"/"+azureProject+"/_apis/git/repositories/"+repoFullName+"/refs?filter="+escapedRefName+"&"+AZURE_DEVOPS_API_VERSION;
+
+    Request request = readOnlyRequestTemplate.url(getBranchRefUrl).build();
+
+    try {
+      var refResponse = httpClient.newCall(request).execute();
+
+      var refs= objectMapper.readValue(refResponse.body().string(), AzureDevopsRefs.class);
+
+      if(refs.getValue().isEmpty()){
+        log.warn("no reference found on branch "+branchName+" for repo "+repoFullName+" - branch doesn't exist ?");
+        return null;
+      }
+      else{
+
+        if(refs.getValue().size()>=2){
+          log.warn("more than one reference found.. taking the first one");
+        }
+
+        AzureDevopsRef ref=refs.getValue().get(0);
+
+        ObjectReference objectReference=new ObjectReference("",ref.getObjectId());
+
+        return new Reference(ref.getName(),objectReference);
+      }
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+
     return null;
   }
 
   @Override
   public Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String sourceControlAccessToken)
       throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
+
+    String createBranchUrl=azureDevopsUrl+azureOrg+"/"+azureProject+"/_apis/git/repositories/"+repoFullName+"/refs?"+AZURE_DEVOPS_API_VERSION;
+
+    var newRef=AzureDevopsRefCreation.builder()
+        .name("refs/heads/"+branchName)
+        .oldObjectId("0000000000000000000000000000000000000000")
+        .newObjectId(fromReferenceSha1)
+        .build();
+
+    try {
+
+      RequestBody newRefBody = RequestBody.create(
+          MediaType.parse(APPLICATION_JSON), objectMapper.writeValueAsString(List.of(newRef)));
+
+      Request request = buildWriteRequestTemplateWith(sourceControlAccessToken)
+          .url(createBranchUrl)
+          .post(newRefBody)
+          .build();
+
+      var branchCreationResponse = httpClient.newCall(request).execute();
+
+      if(!branchCreationResponse.isSuccessful()){
+
+        String errorMessage="problem while creating branch "+branchName+" on repo "+repoFullName+". status code : "+branchCreationResponse.code();
+
+        log.warn(errorMessage);
+
+        if(branchCreationResponse.code() == HttpStatus.SC_UNAUTHORIZED){
+          throw new RemoteSourceControlAuthorizationException(errorMessage);
+        }
+
+        return null;
+      }
+
+      return new Reference(newRef.getName(),new ObjectReference("",fromReferenceSha1));
+
+    } catch (IOException e) {
+      log.warn("problem while creating branch "+branchName+" on repo "+repoFullName,e);
+    }
+
     return null;
+  }
+
+  private Builder buildWriteRequestTemplateWith(String sourceControlAccessToken) {
+
+    String basicRWAuthentCredentials = Credentials.basic("", sourceControlAccessToken);
+
+    return new Request.Builder()
+        .header("Content-Type", APPLICATION_JSON)
+        .header("Authorization", basicRWAuthentCredentials);
   }
 
   @Override
   public Optional<Repository> fetchRepository(String repoFullName) {
 
-    String repositoryUrl=azureDevopsUrl+"/"+azureOrg+"/"+azureProject+"/_apis/git/repositories/"+repoFullName+"?"+AZURE_DEVOPS_API_VERSION;
+    String repositoryUrl=azureDevopsUrl+azureOrg+"/"+azureProject+"/_apis/git/repositories/"+repoFullName+"?"+AZURE_DEVOPS_API_VERSION;
 
     Request request = readOnlyRequestTemplate.url(repositoryUrl).build();
 
@@ -176,7 +274,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
   @Nonnull
   @Override
   public List<PullRequest> fetchOpenPullRequests(String repoFullName) {
-    return null;
+    return emptyList();
   }
 
   @Override

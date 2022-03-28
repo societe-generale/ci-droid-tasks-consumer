@@ -23,7 +23,7 @@ class RemoteForAzureDevopsBulkActionsTest {
           .port(AZUREDEVOPS_SERVER_PORT_FOR_TESTS)
           .usingFilesUnderDirectory("src/test/resources/azureDevops"));
 
-  private final RemoteForAzureDevopsBulkActions remote=new RemoteForAzureDevopsBulkActions("http://localhost:"+AZUREDEVOPS_SERVER_PORT_FOR_TESTS,
+  private final RemoteForAzureDevopsBulkActions remote=new RemoteForAzureDevopsBulkActions("http://localhost:"+AZUREDEVOPS_SERVER_PORT_FOR_TESTS+"/",
       "someApiKey","platform#platform-projects");
 
   @BeforeEach
@@ -32,16 +32,13 @@ class RemoteForAzureDevopsBulkActionsTest {
     configureFor(AZUREDEVOPS_SERVER_PORT_FOR_TESTS);
   }
 
-
   @AfterEach
   void cleanup(){
     wm.stop();
   }
 
-
   @Test
   void shouldFindRepository(){
-
 
     stubFor(WireMock.get(urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart"))
         .willReturn(aResponse()
@@ -53,7 +50,5 @@ class RemoteForAzureDevopsBulkActionsTest {
     assertThat(repo.get().getFullName()).isEqualTo("helm-chart");
 
   }
-
-
 
 }

@@ -1,0 +1,14 @@
+{
+  "value": [
+    {
+      "name": "refs/heads/main",
+      "objectId": "123ad1337042bff3f5f4170608498cff1c6e1090",
+      "creator": {
+        "displayName": "vincent.fuchs"
+
+      },
+      "url": "https://dev.azure.com/platform/234567c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/12e34167-29e6-4194-8570-32173ac09ca3/refs?filter=heads%2Fmain"
+    }
+  ],
+  "count": 1
+}
