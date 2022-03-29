@@ -1,6 +1,13 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
 
-import static java.util.Collections.emptyList;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,13 +26,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedR
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.Content;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
@@ -35,6 +35,8 @@ import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
 import org.apache.http.HttpStatus;
 import org.bouncycastle.util.encoders.Base64;
+
+import static java.util.Collections.emptyList;
 
 
 @Slf4j
@@ -262,7 +264,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
       }
 
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("problem while fetching the head reference of "+branchName+" on "+repoFullName,e);
     }
 
 
