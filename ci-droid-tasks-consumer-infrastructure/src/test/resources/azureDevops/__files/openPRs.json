@@ -1,0 +1,100 @@
+{
+  "value": [
+    {
+      "repository": {
+        "id": "23b45678-65c4-46bf-ae64-5a0db3166c35",
+        "name": "calculation-service",
+        "url": "https://dev.azure.com/platform/123456c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/23b45678-65c4-46bf-ae64-5a0db3166c35",
+        "project": {
+          "id": "123456c0-ff82-4e2c-8b71-fbca48f259eb",
+          "name": "platform-projects",
+          "state": "unchanged",
+          "visibility": "unchanged",
+          "lastUpdateTime": "0001-01-01T00:00:00"
+        }
+      },
+      "pullRequestId": 6468,
+      "codeReviewId": 6468,
+      "status": "completed",
+      "createdBy": {
+        "displayName": "firstName.lastName",
+        "url": "https://spsprodweu1.vssps.visualstudio.com/B34ad56789-83ee-4485-b283-3e18dae1932e/_apis/Identities/567d8910-dc2f-6c5c-8caa-dfc086275192",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/platform/_apis/GraphProfile/MemberAvatars/aad.NDM4ZDk4MzAtZGMyZi03YzVjLThjYWEtZGZjMDg2Mjc1MTky"
+          }
+        },
+        "id": "567d8910-dc2f-6c5c-8caa-dfc086275192",
+        "uniqueName": "firstName.lastName@cloud.io",
+        "imageUrl": "https://dev.azure.com/platform/_api/_common/identityImage?id=567d8910-dc2f-6c5c-8caa-dfc086275192",
+        "descriptor": "aad.NDM4ZDk4MzAtZGMyZi03YzVjLThjYWEtZGZjMDg2Mjc1MTky"
+      },
+      "creationDate": "2022-03-11T08:30:23.3713152Z",
+      "closedDate": "2022-03-28T05:23:26.8181585Z",
+      "title": "chore: configure app insights",
+      "description": "## Description",
+      "sourceRefName": "refs/heads/technical/fix-503",
+      "targetRefName": "refs/heads/main",
+      "mergeStatus": "succeeded",
+      "isDraft": false,
+      "mergeId": "f0125def-022c-4210-afd8-3e5b5596f250",
+      "lastMergeSourceCommit": {
+        "commitId": "08940581ceedbf04adc35c539247f9b2394749ae",
+        "url": "https://dev.azure.com/platform/123456c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/23b45678-65c4-46bf-ae64-5a0db3166c35/commits/08940581ceedbf04adc35c539247f9b2394749ae"
+      },
+      "lastMergeTargetCommit": {
+        "commitId": "75ee0c9422ed27e700f269a3d744f0881b31c537",
+        "url": "https://dev.azure.com/platform/123456c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/23b45678-65c4-46bf-ae64-5a0db3166c35/commits/75ee0c9422ed27e700f269a3d744f0881b31c537"
+      },
+      "lastMergeCommit": {
+        "commitId": "c1613953dcd7b3d14674fa06b347a394c86524c9",
+        "url": "https://dev.azure.com/platform/123456c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/23b45678-65c4-46bf-ae64-5a0db3166c35/commits/c1613953dcd7b3d14674fa06b347a394c86524c9"
+      },
+      "reviewers": [
+        {
+          "reviewerUrl": "https://dev.azure.com/platform/123456c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/23b45678-65c4-46bf-ae64-5a0db3166c35/pullRequests/6468/reviewers/b987f654-8c80-647f-9e39-0947ac2cafd2",
+          "vote": 0,
+          "hasDeclined": false,
+          "isFlagged": false,
+          "displayName": "FirstName1 Lastname1",
+          "url": "https://spsprodweu1.vssps.visualstudio.com/B34ad56789-83ee-4485-b283-3e18dae1932e/_apis/Identities/b987f654-8c80-647f-9e39-0947ac2cafd2",
+          "_links": {
+            "avatar": {
+              "href": "https://dev.azure.com/platform/_apis/GraphProfile/MemberAvatars/aad.YTE3OGQ1NzMtOGM4MC03NDdmLTllMzktMDk0N2FjMmNhZmQy"
+            }
+          },
+          "id": "b987f654-8c80-647f-9e39-0947ac2cafd2",
+          "uniqueName": "FirstName1.Lastname1@cloud.io",
+          "imageUrl": "https://dev.azure.com/platform/_api/_common/identityImage?id=b987f654-8c80-647f-9e39-0947ac2cafd2"
+        },
+        {
+          "reviewerUrl": "https://dev.azure.com/platform/123456c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/23b45678-65c4-46bf-ae64-5a0db3166c35/pullRequests/6468/reviewers/567d8910-dc2f-6c5c-8caa-dfc086275192",
+          "vote": 10,
+          "hasDeclined": false,
+          "isFlagged": false,
+          "displayName": "firstName.lastName",
+          "url": "https://spsprodweu1.vssps.visualstudio.com/B34ad56789-83ee-4485-b283-3e18dae1932e/_apis/Identities/567d8910-dc2f-6c5c-8caa-dfc086275192",
+          "_links": {
+            "avatar": {
+              "href": "https://dev.azure.com/platform/_apis/GraphProfile/MemberAvatars/aad.NDM4ZDk4MzAtZGMyZi03YzVjLThjYWEtZGZjMDg2Mjc1MTky"
+            }
+          },
+          "id": "567d8910-dc2f-6c5c-8caa-dfc086275192",
+          "uniqueName": "firstName.lastName@cloud.io",
+          "imageUrl": "https://dev.azure.com/platform/_api/_common/identityImage?id=567d8910-dc2f-6c5c-8caa-dfc086275192"
+        }
+      ],
+      "url": "https://dev.azure.com/platform/123456c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/23b45678-65c4-46bf-ae64-5a0db3166c35/pullRequests/6468",
+      "completionOptions": {
+        "mergeCommitMessage": "Merged PR 6468: chore: configure app insights\n\n## Description",
+        "deleteSourceBranch": true,
+        "squashMerge": true,
+        "mergeStrategy": "squash",
+        "autoCompleteIgnoreConfigIds": []
+      },
+      "supportsIterations": true,
+      "completionQueueTime": "2022-03-28T05:23:25.743357Z"
+    }
+  ],
+  "count": 1
+}
