@@ -1,0 +1,84 @@
+{
+  "commits": [
+    {
+      "treeId": "cf2b976d76688f2578b6a824abce2335ef69ac14",
+      "commitId": "2c82af21272bd766667c6bdb15fbbefa004154a8",
+      "author": {
+        "name": "vincent.fuchs",
+        "email": "vincent.fuchs@gefa.de",
+        "date": "2022-03-28T21:19:06Z"
+      },
+      "committer": {
+        "name": "vincent.fuchs",
+        "email": "vincent.fuchs@gefa.de",
+        "date": "2022-03-28T21:19:06Z"
+      },
+      "comment": "updating gradle version performed on behalf of vincent.fuchs by CI-droid",
+      "parents": [
+        "668ad1337042bff3f5f4170608498cff1c6e1090"
+      ],
+      "url": "https://dev.azure.com/platform/123456c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/23e45678-29e6-4194-8570-32173ac09ca3/commits/2c82af21272bd766667c6bdb15fbbefa004154a8"
+    }
+  ],
+  "refUpdates": [
+    {
+      "repositoryId": "23e45678-29e6-4194-8570-32173ac09ca3",
+      "name": "refs/heads/testVincent20220217",
+      "oldObjectId": "668ad1337042bff3f5f4170608498cff1c6e1090",
+      "newObjectId": "2c82af21272bd766667c6bdb15fbbefa004154a8"
+    }
+  ],
+  "repository": {
+    "id": "23e45678-29e6-4194-8570-32173ac09ca3",
+    "name": "my-versions-dashboard-service",
+    "url": "https://dev.azure.com/platform/123456c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/23e45678-29e6-4194-8570-32173ac09ca3",
+    "project": {
+      "id": "123456c0-ff82-4e2c-8b71-fbca48f259eb",
+      "name": "platform-projects",
+      "description": "Projects developed",
+      "url": "https://dev.azure.com/platform/_apis/projects/123456c0-ff82-4e2c-8b71-fbca48f259eb",
+      "state": "wellFormed",
+      "revision": 34,
+      "visibility": "private",
+      "lastUpdateTime": "2021-09-16T05:04:19.307Z"
+    },
+    "size": 113158,
+    "remoteUrl": "https://platform@dev.azure.com/platform/platform-projects/_git/my-versions-dashboard-service",
+    "sshUrl": "git@ssh.dev.azure.com:v3/platform/platform-projects/my-versions-dashboard-service",
+    "webUrl": "https://dev.azure.com/platform/platform-projects/_git/my-versions-dashboard-service",
+    "isDisabled": false
+  },
+  "pushedBy": {
+    "displayName": "vincent.fuchs",
+    "url": "https://spsprodweu1.vssps.visualstudio.com/A49bf34c6-83ee-4485-b283-3e18dae1932e/_apis/Identities/67890123-ae6c-6e56-9df1-684d10089ebe",
+    "_links": {
+      "avatar": {
+        "href": "https://dev.azure.com/platform/_apis/GraphProfile/MemberAvatars/aad.NDU5MTQ2NjItYWU2Yy03ZTU2LTlkZjEtNjg0ZDEwMDg5ZWJl"
+      }
+    },
+    "id": "67890123-ae6c-6e56-9df1-684d10089ebe",
+    "uniqueName": "vincent.fuchs@cloud.io",
+    "imageUrl": "https://dev.azure.com/platform/_api/_common/identityImage?id=67890123-ae6c-6e56-9df1-684d10089ebe",
+    "descriptor": "aad.NDU5MTQ2NjItYWU2Yy03ZTU2LTlkZjEtNjg0ZDEwMDg5ZWJl"
+  },
+  "pushId": 78172,
+  "date": "2022-03-28T21:19:07.2290581Z",
+  "url": "https://dev.azure.com/platform/platform-projects/_apis/git/repositories/23e45678-29e6-4194-8570-32173ac09ca3/pushes/78172",
+  "_links": {
+    "self": {
+      "href": "https://dev.azure.com/platform/platform-projects/_apis/git/repositories/23e45678-29e6-4194-8570-32173ac09ca3/pushes/78172"
+    },
+    "repository": {
+      "href": "https://dev.azure.com/platform/123456c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/23e45678-29e6-4194-8570-32173ac09ca3"
+    },
+    "commits": {
+      "href": "https://dev.azure.com/platform/_apis/git/repositories/23e45678-29e6-4194-8570-32173ac09ca3/pushes/78172/commits"
+    },
+    "pusher": {
+      "href": "https://spsprodweu1.vssps.visualstudio.com/A49bf34c6-83ee-4485-b283-3e18dae1932e/_apis/Identities/67890123-ae6c-6e56-9df1-684d10089ebe"
+    },
+    "refs": {
+      "href": "https://dev.azure.com/platform/123456c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/23e45678-29e6-4194-8570-32173ac09ca3/refs/heads/testVincent20220217"
+    }
+  }
+}

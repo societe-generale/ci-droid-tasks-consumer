@@ -3,7 +3,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
 import lombok.Builder;
 
 @Builder
-public class AzureDevopsPullRequestCreation {
+class PullRequestCreation {
 
   private final String sourceRefName;
 

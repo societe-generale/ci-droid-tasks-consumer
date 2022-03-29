@@ -7,14 +7,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference.ObjectReference;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import java.io.IOException;
 import java.util.Arrays;
@@ -41,7 +42,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
   private static final String AZURE_DEVOPS_URL = "https://dev.azure.com/";
 
-  private static final String AZURE_DEVOPS_API_VERSION = "api-version=7.1-preview.1";
+  private static final String AZURE_DEVOPS_API_VERSION = "api-version=6.0";
 
   private final String azureDevopsUrl;
 
@@ -79,7 +80,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
 
   @Override
-  public ResourceContent fetchContent(String repoFullName, String branchName, String fileToFetch) {
+  public ResourceContent fetchContent(String repoFullName, String fileToFetch, String branchName) {
 
     String fileContentUrl = azureDevopsUrl + azureOrg + "/" + azureProject + "/_apis/git/repositories/" + repoFullName + "/items?" +
         "path=" + fileToFetch +
@@ -123,6 +124,60 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
   @Override
   public UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlAccessToken)
       throws RemoteSourceControlAuthorizationException {
+
+    String newContent=Arrays.toString(Base64.decode(directCommit.getBase64EncodedContent()));
+
+    FileChange change= FileChange.builder()
+        .item(new Item(path))
+        .newContent(new NewContent(newContent,"rawText"))
+        .build();
+
+    AzureDevopsCommit commit= AzureDevopsCommit.builder()
+        .comment(directCommit.getCommitMessage())
+        .changes(List.of(change))
+        .build();
+
+    ContentUpdate contentUpdate= ContentUpdate.builder()
+        .refUpdates(List.of(new UpdateRef("refs/heads/"+directCommit.getBranch(),directCommit.getPreviousVersionSha1())))
+        .commits(List.of(commit))
+        .build();
+
+    String updateContentUrl=azureDevopsUrl+azureOrg+"/"+azureProject+"/_apis/git/repositories/"+repoFullName+"/pushes?"+AZURE_DEVOPS_API_VERSION;
+
+    try {
+      RequestBody contentUpdateBody = RequestBody.create(
+          MediaType.parse(APPLICATION_JSON), objectMapper.writeValueAsString(contentUpdate));
+
+      Request request = buildWriteRequestTemplateWith(sourceControlAccessToken)
+          .url(updateContentUrl)
+          .post(contentUpdateBody)
+          .build();
+
+      var updateContentResponse = httpClient.newCall(request).execute();
+
+      if(updateContentResponse.code() == HttpStatus.SC_UNAUTHORIZED){
+        throw new RemoteSourceControlAuthorizationException("could not update "+path+" on "+repoFullName+" in branch "+directCommit.getBranch());
+      }
+
+      log.info("pushed a commit for "+path+" on "+repoFullName+" in branch "+directCommit.getBranch());
+
+      var successfulPush= objectMapper.readValue(updateContentResponse.body().string(), SuccessfulPush.class);
+      var commitInPush=successfulPush.getCommits().get(0);
+
+      Commit postPushCommit=new Commit();
+      postPushCommit.setId(commitInPush.getCommitId());
+      postPushCommit.setUrl(commitInPush.getUrl());
+
+      return UpdatedResource.builder()
+          .commit(postPushCommit)
+          .updateStatus(UpdateStatus.UPDATE_OK)
+          .build();
+
+
+    } catch (IOException e) {
+     log.warn("problem while pushing an update for "+path+" on "+repoFullName+" in branch "+directCommit.getBranch(),e);
+    }
+
     return null;
   }
 
@@ -156,7 +211,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
     try {
       var refResponse = httpClient.newCall(request).execute();
 
-      var refs= objectMapper.readValue(refResponse.body().string(), AzureDevopsRefs.class);
+      var refs= objectMapper.readValue(refResponse.body().string(), Refs.class);
 
       if(refs.getValue().isEmpty()){
         log.warn("no reference found on branch "+branchName+" for repo "+repoFullName+" - branch doesn't exist ?");
@@ -168,7 +223,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
           log.warn("more than one reference found.. taking the first one");
         }
 
-        AzureDevopsRef ref=refs.getValue().get(0);
+        Ref ref=refs.getValue().get(0);
 
         ObjectReference objectReference=new ObjectReference("",ref.getObjectId());
 
@@ -189,7 +244,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
     String createBranchUrl=azureDevopsUrl+azureOrg+"/"+azureProject+"/_apis/git/repositories/"+repoFullName+"/refs?"+AZURE_DEVOPS_API_VERSION;
 
-    var newRef=AzureDevopsRefCreation.builder()
+    var newRef= RefCreation.builder()
         .name("refs/heads/"+branchName)
         .oldObjectId("0000000000000000000000000000000000000000")
         .newObjectId(fromReferenceSha1)
@@ -239,7 +294,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
   }
 
   @Override
-  public Optional<Repository> fetchRepository(String repoFullName) {
+  public Optional<com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository> fetchRepository(String repoFullName) {
 
     String repositoryUrl=azureDevopsUrl+azureOrg+"/"+azureProject+"/_apis/git/repositories/"+repoFullName+"?"+AZURE_DEVOPS_API_VERSION;
 
@@ -250,9 +305,9 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
       if(repositoryResponse.isSuccessful()) {
 
-        var repo= objectMapper.readValue(repositoryResponse.body().string(), AzureDevopsRepository.class);
+        var repo= objectMapper.readValue(repositoryResponse.body().string(), Repository.class);
 
-        return Optional.of(Repository.builder()
+        return Optional.of(com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository.builder()
             .url(repo.getUrl())
             .name(repo.getName())
             .fullName(repo.getName())

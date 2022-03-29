@@ -6,12 +6,12 @@ import javax.annotation.Nonnull;
 import lombok.Data;
 
 @Data
-public class AzureDevopsRefs {
+class Refs {
 
-  private List<AzureDevopsRef> value;
+  private List<Ref> value;
 
   @Nonnull
-  public List<AzureDevopsRef> getValue() {
+  public List<Ref> getValue() {
     return value == null ? Collections.emptyList() : value ;
   }
 

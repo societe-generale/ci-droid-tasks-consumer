@@ -1,11 +1,12 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
 
+import java.util.List;
 import lombok.Data;
 
 @Data
-class FileMetadata {
+class SuccessfulPush {
 
-  private String commitId;
+  private List<PushedCommit> commits;
 
-  private String url;
+
 }

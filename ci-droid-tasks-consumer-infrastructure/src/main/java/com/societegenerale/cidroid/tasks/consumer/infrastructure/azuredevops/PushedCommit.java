@@ -3,9 +3,9 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
 import lombok.Data;
 
 @Data
-public class AzureDevopsRef {
+class PushedCommit {
 
-  private String name;
-  private String objectId ;
+  private String commitId;
+  private String url;
 
 }

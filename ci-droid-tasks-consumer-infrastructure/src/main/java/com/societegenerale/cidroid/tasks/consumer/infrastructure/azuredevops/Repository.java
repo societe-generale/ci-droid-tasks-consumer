@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class AzureDevopsRepository {
+class Repository {
 
   private String name;
 
