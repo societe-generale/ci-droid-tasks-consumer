@@ -12,6 +12,7 @@ import com.societegenerale.cidroid.extensions.actionToReplicate.TemplateBasedCon
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.LogNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.ActionToReplicateController;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.SourceControlEventController;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionNotificationService;
@@ -26,6 +27,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEve
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
@@ -146,10 +148,18 @@ public class InfraConfig {
     }
 
     @Bean
+    @ConditionalOnExpression("#{'${spring.mail.host}' != ''}")
     public ActionNotifier emailActionNotifier(MailSender javaMailSender,
             @Value("${spring.mail.sender}") String mailSender) {
 
         return new EMailActionNotifier(javaMailSender, mailSender);
+    }
+
+    @Bean
+    @ConditionalOnExpression("#{'${spring.mail.host}' == ''}")
+    public ActionNotifier logNotifier() {
+
+        return new LogNotifier();
     }
 
 
