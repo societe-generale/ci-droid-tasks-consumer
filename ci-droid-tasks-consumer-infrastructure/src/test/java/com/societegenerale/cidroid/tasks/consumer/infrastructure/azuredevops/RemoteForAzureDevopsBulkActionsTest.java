@@ -1,5 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
 
+import java.util.Base64;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.AfterEach;
@@ -85,5 +87,38 @@ class RemoteForAzureDevopsBulkActionsTest {
     assertThat(openPrs.get(0).getBranchName()).isEqualTo("refs/heads/technical/fix-503");
 
   }
+
+  @Test
+  void shouldGetFileCOntent(){
+
+    stubFor(WireMock.get(
+                    urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/items"))
+            .withQueryParam("path",equalTo("pom.xml"))
+            .withQueryParam("versionDescriptor.versionType",equalTo("branch"))
+            .withQueryParam("versionDescriptor.version",equalTo("main"))
+            .withQueryParam("$format",equalTo("json"))
+            .willReturn(aResponse()
+                    .withBodyFile("fileMetadata.json")
+                    .withStatus(200)));
+
+    stubFor(WireMock.get(
+                    urlPathEqualTo("/platform/111114c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/444dcb4d-dbf5-457b-9edc-7fa86bf22561/items"))
+            .withQueryParam("path",equalTo("/pom.xml"))
+            .withQueryParam("versionType",equalTo("Branch"))
+            .withQueryParam("version",equalTo("main"))
+            .withQueryParam("versionOptions",equalTo("None"))
+            .willReturn(aResponse()
+                    .withBodyFile("samplePom.xml")
+                    .withStatus(200)));
+
+    var resourceContent=remote.fetchContent("helm-chart","pom.xml","main");
+
+    assertThat(resourceContent).isNotNull();
+    assertThat(resourceContent.getSha()).isEqualTo("66333e270bd1f037f727511cb60fc7feb04a96e9");
+
+    var decodedContent= new String(Base64.getDecoder().decode(resourceContent.getBase64EncodedContent()));
+    assertThat(decodedContent).contains("<project xmlns=\"http://maven.apache.org/POM/4.0.0");
+  }
+
 
 }

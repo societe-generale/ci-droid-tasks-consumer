@@ -1,7 +1,9 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,7 +36,6 @@ import okhttp3.Request;
 import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
 import org.apache.http.HttpStatus;
-import org.bouncycastle.util.encoders.Base64;
 
 import static java.util.Collections.emptyList;
 
@@ -105,7 +106,8 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
         var fileContentResponse = httpClient.newCall(readOnlyRequestTemplate.url(fileMetadata.getUrl()).build()).execute();
 
         var fileContent = new ResourceContent();
-        fileContent.setBase64EncodedContent(Arrays.toString(Base64.encode(fileContentResponse.body().bytes())));
+
+        fileContent.setBase64EncodedContent(Base64.getEncoder().encodeToString(fileContentResponse.body().string().getBytes(StandardCharsets.UTF_8)));
         fileContent.setSha(fileMetadata.getCommitId());
         return fileContent;
       }
@@ -128,7 +130,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
   public UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlAccessToken)
       throws RemoteSourceControlAuthorizationException {
 
-    String newContent=Arrays.toString(Base64.decode(directCommit.getBase64EncodedContent()));
+    String newContent=Arrays.toString(Base64.getDecoder().decode(directCommit.getBase64EncodedContent()));
 
     FileChange change= FileChange.builder()
         .item(new Item(path))

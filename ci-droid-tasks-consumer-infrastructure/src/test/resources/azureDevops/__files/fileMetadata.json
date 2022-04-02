@@ -3,16 +3,16 @@
   "gitObjectType": "blob",
   "commitId": "66333e270bd1f037f727511cb60fc7feb04a96e9",
   "path": "/pom.xml",
-  "url": "https://dev.azure.com/my-platform/111114c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/444dcb4d-dbf5-457b-9edc-7fa86bf22561/items?path=%2Fpom.xml&versionType=Branch&version=main&versionOptions=None",
+  "url": "http://localhost:9902/platform/111114c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/444dcb4d-dbf5-457b-9edc-7fa86bf22561/items?path=%2Fpom.xml&versionType=Branch&version=main&versionOptions=None",
   "_links": {
     "self": {
-      "href": "https://dev.azure.com/my-platform/111114c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/444dcb4d-dbf5-457b-9edc-7fa86bf22561/items?path=%2Fpom.xml&versionType=Branch&version=main&versionOptions=None"
+      "href": "https://dev.azure.com/platform/111114c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/444dcb4d-dbf5-457b-9edc-7fa86bf22561/items?path=%2Fpom.xml&versionType=Branch&version=main&versionOptions=None"
     },
     "repository": {
-      "href": "https://dev.azure.com/my-platform/111114c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/444dcb4d-dbf5-457b-9edc-7fa86bf22561"
+      "href": "https://dev.azure.com/platform/111114c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/444dcb4d-dbf5-457b-9edc-7fa86bf22561"
     },
     "blob": {
-      "href": "https://dev.azure.com/my-platform/111114c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/444dcb4d-dbf5-457b-9edc-7fa86bf22561/blobs/3294928eeef8ca29757d8cb8cc6ada1209b37e57"
+      "href": "https://dev.azure.com/platform/111114c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/444dcb4d-dbf5-457b-9edc-7fa86bf22561/blobs/3294928eeef8ca29757d8cb8cc6ada1209b37e57"
     }
   }
 }
