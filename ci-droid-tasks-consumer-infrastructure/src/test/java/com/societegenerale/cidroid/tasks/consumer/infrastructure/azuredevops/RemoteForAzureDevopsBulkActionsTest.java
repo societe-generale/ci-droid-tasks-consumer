@@ -68,4 +68,22 @@ class RemoteForAzureDevopsBulkActionsTest {
     assertThat(reference.getRef()).isEqualTo("refs/heads/main");
   }
 
+  @Test
+  void shouldGetOpenPrs(){
+
+    stubFor(WireMock.get(
+                    urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/pullrequests"))
+            .withQueryParam("searchCriteria.status",equalTo("active"))
+            .willReturn(aResponse()
+                    .withBodyFile("openPRs.json")
+                    .withStatus(200)));
+
+    var openPrs=remote.fetchOpenPullRequests("helm-chart");
+
+    assertThat(openPrs).hasSize(1);
+    assertThat(openPrs.get(0).getNumber()).isEqualTo(6468);
+    assertThat(openPrs.get(0).getBranchName()).isEqualTo("refs/heads/technical/fix-503");
+
+  }
+
 }

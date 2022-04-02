@@ -3,7 +3,7 @@
     {
       "repository": {
         "id": "23b45678-65c4-46bf-ae64-5a0db3166c35",
-        "name": "calculation-service",
+        "name": "helm-chart",
         "url": "https://dev.azure.com/platform/123456c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/23b45678-65c4-46bf-ae64-5a0db3166c35",
         "project": {
           "id": "123456c0-ff82-4e2c-8b71-fbca48f259eb",
