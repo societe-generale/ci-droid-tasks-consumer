@@ -1,6 +1,6 @@
 {
   "gitLogin": "vincent.fuchs",
-  "gitHubOauthToken": "abcdfeflijhhs4834edqfwg",
+  "sourceControlPersonalToken": "abcdfeflijhhs4834edqfwg",
   "email": "vincent.fuchs@sgcib.com",
 
   "commitMessage" : "adding lombok exclusion config",

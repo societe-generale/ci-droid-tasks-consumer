@@ -1,6 +1,6 @@
 {
   "gitLogin": "someUserName",
-  "gitHubOauthToken": "somePassword",
+  "sourceControlPersonalToken": "somePassword",
   "email": "someEmail@someDomain.com",
   "updateAction": {
     "@type": "someUnknownActionType",
