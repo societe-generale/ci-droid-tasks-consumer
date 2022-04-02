@@ -99,7 +99,7 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
     }
 
     @Override
-    default User fetchCurrentUser(String sourceControlPersonalToken) {
+    default User fetchCurrentUser(String sourceControlPersonalToken, String emailAddress) {
 
         GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(sourceControlPersonalToken)
                 .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/user");

@@ -1,0 +1,20 @@
+{
+  "id": "123456ab-8680-4f78-8255-0167a40bf5a8",
+  "name": "helm-chart",
+  "url": "https://dev.azure.com/platform/123456cd-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/123456ab-8680-4f78-8255-0167a40bf5a8",
+  "project": {
+    "id": "123456cd-ff82-4e2c-8b71-fbca48f259eb",
+    "name": "platform-projects",
+    "url": "https://dev.azure.com/platform/_apis/projects/123456cd-ff82-4e2c-8b71-fbca48f259eb",
+    "state": "wellFormed",
+    "revision": 34,
+    "visibility": "private",
+    "lastUpdateTime": "2021-09-16T05:04:19.307Z"
+  },
+  "defaultBranch": "refs/heads/master",
+  "size": 79584,
+  "remoteUrl": "https://platform@dev.azure.com/platform/platform-projects/_git/helm-chart",
+  "sshUrl": "git@ssh.dev.azure.com:v3/platform/platform-projects/helm-chart",
+  "webUrl": "https://dev.azure.com/platform/platform-projects/_git/helm-chart",
+  "isDisabled": false
+}

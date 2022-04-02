@@ -10,8 +10,6 @@ public class ResourceContent {
 
     private String sha;
 
-    private String encoding;
-
     @JsonProperty("content")
     private String base64EncodedContent;
 
