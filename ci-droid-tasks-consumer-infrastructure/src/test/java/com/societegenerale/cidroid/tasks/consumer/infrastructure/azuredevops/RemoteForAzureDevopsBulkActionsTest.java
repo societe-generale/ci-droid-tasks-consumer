@@ -1,17 +1,18 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 class RemoteForAzureDevopsBulkActionsTest {
@@ -49,6 +50,22 @@ class RemoteForAzureDevopsBulkActionsTest {
 
     assertThat(repo.get().getFullName()).isEqualTo("helm-chart");
 
+  }
+
+  @Test
+  void shouldFindRefs(){
+
+    stubFor(WireMock.get(
+            urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/refs"))
+              .withQueryParam("filter",equalTo("heads/main"))
+            .willReturn(aResponse()
+                    .withBodyFile("refs.json")
+                    .withStatus(200)));
+
+    var reference=remote.fetchHeadReferenceFrom("helm-chart","main");
+
+    assertThat(reference.getObject().getSha()).isEqualTo("123ad1337042bff3f5f4170608498cff1c6e1090");
+    assertThat(reference.getRef()).isEqualTo("refs/heads/main");
   }
 
 }
