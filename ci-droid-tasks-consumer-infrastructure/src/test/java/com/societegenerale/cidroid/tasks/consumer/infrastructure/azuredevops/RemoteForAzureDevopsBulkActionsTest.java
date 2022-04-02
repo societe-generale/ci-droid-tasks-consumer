@@ -1,9 +1,13 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -89,7 +93,7 @@ class RemoteForAzureDevopsBulkActionsTest {
   }
 
   @Test
-  void shouldGetFileCOntent(){
+  void shouldGetFileContent(){
 
     stubFor(WireMock.get(
                     urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/items"))
@@ -119,6 +123,24 @@ class RemoteForAzureDevopsBulkActionsTest {
     var decodedContent= new String(Base64.getDecoder().decode(resourceContent.getBase64EncodedContent()));
     assertThat(decodedContent).contains("<project xmlns=\"http://maven.apache.org/POM/4.0.0");
   }
+
+  @Test
+  void shouldUpdateFile() throws RemoteSourceControlAuthorizationException {
+
+    stubFor(WireMock.post(
+                    urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/pushes"))
+            .willReturn(aResponse()
+                    .withBodyFile("contentUpdatedSuccessfully.json")
+                    .withStatus(201)));
+
+    var someBase64content=Base64.getEncoder().encodeToString("someContent".getBytes(StandardCharsets.UTF_8));
+    var commitToPush=new DirectCommit();
+    commitToPush.setBase64EncodedContent(someBase64content);
+
+    var updatedResource=remote.updateContent("helm-chart","pom.xml",commitToPush,"someToken");
+
+    assertThat(updatedResource.getUpdateStatus()).isEqualTo(UpdatedResource.UpdateStatus.UPDATE_OK);
+    }
 
 
 }
