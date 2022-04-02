@@ -1,6 +1,6 @@
 {
   "gitLogin": "vincent-fuchs",
-  "gitHubOauthToken": "abcdef1234569687kugfwkugfewha",
+  "sourceControlPersonalToken": "abcdef1234569687kugfwkugfewha",
   "email": "vincent.fuchs@gmail.com",
 
   "commitMessage": "updating Jenkinsfile with latest java image for build",
