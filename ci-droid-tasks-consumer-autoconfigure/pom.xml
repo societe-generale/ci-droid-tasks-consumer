@@ -38,6 +38,21 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
+            <artifactId>ci-droid-tasks-consumer-github-adapter</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
+            <artifactId>ci-droid-tasks-consumer-azure-devops-adapter</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- both required to get an HTTP healthcheck -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

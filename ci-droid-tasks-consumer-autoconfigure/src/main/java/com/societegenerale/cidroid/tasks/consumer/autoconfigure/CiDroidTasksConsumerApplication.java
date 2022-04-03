@@ -1,6 +1,5 @@
 package com.societegenerale.cidroid.tasks.consumer.autoconfigure;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.AsyncConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;

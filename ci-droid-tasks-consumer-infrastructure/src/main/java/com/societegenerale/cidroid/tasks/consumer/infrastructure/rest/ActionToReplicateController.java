@@ -1,10 +1,10 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.rest;
 
-import com.societegenerale.cidroid.api.ResourceToUpdate;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformCommand;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
 import javax.validation.Valid;
 
+import com.societegenerale.cidroid.api.ResourceToUpdate;
+import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformCommand;
+import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformListener;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;

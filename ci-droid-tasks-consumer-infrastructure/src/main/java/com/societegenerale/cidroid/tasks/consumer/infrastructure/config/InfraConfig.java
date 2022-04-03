@@ -11,17 +11,15 @@ import com.societegenerale.cidroid.extensions.actionToReplicate.RemoveXmlElement
 import com.societegenerale.cidroid.extensions.actionToReplicate.ReplaceMavenProfileAction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.TemplateBasedContentAction;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.LogNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.ActionToReplicateController;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.SourceControlEventController;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionNotificationService;
+import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformListener;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
-import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
@@ -38,7 +36,7 @@ import org.springframework.mail.MailSender;
 
 @Configuration
 @ComponentScan
-public class InfraConfig {
+public class  InfraConfig {
 
 
     @Bean
@@ -98,13 +96,6 @@ public class InfraConfig {
         return new ActionToPerformListener(actionToPerformService, actionsToReplicate,actionNotifier);
     }
 
-
-    @Bean
-    @ConditionalOnProperty(name = "synchronous-mode", havingValue = "true")
-    public SourceControlEventController sourceControlEventController(PullRequestEventService pullRequestEventService, PushEventService pushEventService,SourceControlEventMapper sourceControlEventMapper) {
-
-        return new SourceControlEventController(pullRequestEventService, pushEventService,sourceControlEventMapper);
-    }
 
     @Bean
     @ConditionalOnProperty(name = "synchronous-mode", havingValue = "true")

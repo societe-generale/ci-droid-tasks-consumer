@@ -122,6 +122,7 @@
         <module>ci-droid-tasks-consumer-infrastructure</module>
         <module>ci-droid-tasks-consumer-gitlab-adapter</module>
         <module>ci-droid-tasks-consumer-azure-devops-adapter</module>
+        <module>ci-droid-tasks-consumer-github-adapter</module>
         <module>ci-droid-tasks-consumer-autoconfigure</module>
         <module>ci-droid-tasks-consumer-starter</module>
     </modules>

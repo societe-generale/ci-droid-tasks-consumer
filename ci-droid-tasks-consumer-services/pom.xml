@@ -55,6 +55,16 @@
         </dependency>
 
         <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>io.github.azagniotov</groupId>
             <artifactId>ant-style-path-matcher</artifactId>
         </dependency>

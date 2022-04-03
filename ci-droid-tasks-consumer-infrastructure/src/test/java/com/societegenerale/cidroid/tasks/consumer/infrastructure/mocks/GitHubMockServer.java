@@ -1,5 +1,9 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
@@ -8,10 +12,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.Resource
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.mockserver.model.HttpResponse;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Objects;
 
 import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.NOT_MERGEABLE;
 import static org.mockserver.model.HttpRequest.request;
