@@ -14,14 +14,16 @@ public class TestPushEvent implements PushEvent {
 
     private final Repository repository;
 
+    private String ref;
+
     @Override
     public String getRef() {
-        return null;
+        return ref;
     }
 
     @Override
     public void setRef(String ref) {
-
+        this.ref=ref;
     }
 
     @Override
