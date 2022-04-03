@@ -1,20 +1,22 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PUSH_EVENT_TO_PROCESS;
-import static java.util.stream.Collectors.toList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
-import java.util.List;
-import javax.annotation.Nonnull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
+
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.PUSH_EVENT_TO_PROCESS;
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 public class PushEventService {

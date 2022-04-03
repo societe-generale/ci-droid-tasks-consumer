@@ -1,8 +1,8 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
 
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.UpdatedResource;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
 import feign.Headers;
 import feign.RequestLine;
 

@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.github;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,5 +17,11 @@ public class PullRequestComment {
 
     @JsonProperty("user")
     private User author;
+
+    public com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment toStandardPullRequestComment(){
+
+        return new com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment(comment,author.toStandardUser());
+
+    }
 
 }

@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.RebaseHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -56,7 +56,7 @@ class RebaseHandlerLIVETest {
     @Test
     void manualTest() {
 
-        rebaseHandler.handle(pushEvent, List.of(singlePr));
+        rebaseHandler.handle(pushEvent, List.of(singlePr.toStandardPullRequest()));
     }
 
 }

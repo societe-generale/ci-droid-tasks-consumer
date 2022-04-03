@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.github;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GitHubPullRequestEvent extends PullRequestEvent {
+public class GitHubPullRequestEvent implements PullRequestEvent {
 
     private String action;
 
@@ -20,10 +20,13 @@ public class GitHubPullRequestEvent extends PullRequestEvent {
     @JsonProperty("number")
     private int prNumber;
 
-    public GitHubPullRequestEvent(String action, int prNumber, Repository repository) {
-        this.action=action;
-        this.prNumber=prNumber;
-        this.repository=repository;
+    @Override
+    public com.societegenerale.cidroid.tasks.consumer.services.model.Repository getRepository(){
+        return repository.toStandardRepo().get();
     }
 
+    @Override
+    public void setRawEvent(String rawEvent) {
+
+    }
 }

@@ -6,17 +6,16 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.config.GitHubConfig;
-import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.PullRequestToCreate;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.Reference;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.Repository;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.ResourceContent;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.User;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import feign.Feign;
 import feign.Logger;
 import feign.jackson.JacksonDecoder;
@@ -32,16 +31,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "GITHUB")
 @FeignClient(name = "github-forBulkActions", url = "${source-control.url}", decode404 = true, configuration = GitHubConfig.class)
-public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkActionsPerformer {
+public interface FeignRemoteForGitHubBulkActions {
 
     @GetMapping(value = "/repos/{repoFullName}/pulls?state=open",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    @Override
     @Nonnull
     List<PullRequest> fetchOpenPullRequests(@PathVariable("repoFullName") String repoFullName);
 
-    @Override
     default UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlPersonalToken)
             throws RemoteSourceControlAuthorizationException {
 
@@ -52,13 +49,10 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
     @GetMapping(value = "/repos/{repoFullName}/contents/{path}?ref={branch}",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    @Override
     ResourceContent fetchContent(@PathVariable("repoFullName") String repoFullName,
                                  @PathVariable("path") String path,
                                  @PathVariable("branch") String branch);
 
-
-    @Override
     default UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlPersonalToken) throws
             RemoteSourceControlAuthorizationException {
 
@@ -80,16 +74,13 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
     @GetMapping(value = "/repos/{repoFullName}",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    @Override
     Optional<Repository> fetchRepository(@PathVariable("repoFullName") String repoFullName);
 
     @GetMapping(value = "/repos/{repoFullName}/git/refs/heads/{branchName}",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    @Override
     Reference fetchHeadReferenceFrom(@PathVariable("repoFullName") String repoFullNameString, @PathVariable("branchName") String branchName);
 
-    @Override
     default Reference createBranch(String repoFullName, String branchName, String fromReferenceSha1, String sourceControlPersonalToken)
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
@@ -99,7 +90,6 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
         return gitReferenceClient.createBranch(new InputRef("refs/heads/" + branchName, fromReferenceSha1));
     }
 
-    @Override
     default User fetchCurrentUser(String sourceControlPersonalToken, String emailAddress) {
 
         GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(sourceControlPersonalToken)
@@ -109,7 +99,6 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
 
     }
 
-    @Override
     default PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String sourceControlPersonalToken)
             throws RemoteSourceControlAuthorizationException {
 

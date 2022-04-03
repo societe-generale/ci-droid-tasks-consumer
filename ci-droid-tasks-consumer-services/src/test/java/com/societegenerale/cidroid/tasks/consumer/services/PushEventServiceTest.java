@@ -1,8 +1,28 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+
 import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
-import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.NOT_MERGEABLE;
-import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.UNKNOWN;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus.NOT_MERGEABLE;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus.UNKNOWN;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -18,26 +38,6 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 class PushEventServiceTest {
 
@@ -69,7 +69,7 @@ class PushEventServiceTest {
         pushOnDefaultBranchService = new PushEventService(mockRemoteSourceControl, pushEventHandlers,false,null);
 
         String pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
-        pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
+        pushEvent = objectMapper.readValue(pushEventPayload, PushEvent.class);
 
 
         String openPrsOnRepoAsString = readFromInputStream(getClass().getResourceAsStream("/pullRequests.json"));

@@ -1,8 +1,8 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.github;
-
-import lombok.Getter;
+package com.societegenerale.cidroid.tasks.consumer.services.model;
 
 import java.util.Map;
+
+import lombok.Getter;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;

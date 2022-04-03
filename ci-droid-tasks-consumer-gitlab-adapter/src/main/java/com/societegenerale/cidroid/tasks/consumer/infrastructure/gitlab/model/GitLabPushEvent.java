@@ -8,15 +8,15 @@ import javax.annotation.Nonnull;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Commit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Repository;
 import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(converter = GitLabPushEventSanitizer.class)
-public class GitLabPushEvent extends PushEvent implements GitLabEvent {
+public class GitLabPushEvent implements PushEvent,GitLabEvent {
 
     private GitLabProject project;
 
@@ -35,6 +35,8 @@ public class GitLabPushEvent extends PushEvent implements GitLabEvent {
 
     private Repository repository;
 
+    private String rawEvent;
+
     @Override
     public Commit getHeadCommit() {
         throw new UnsupportedOperationException("headCommit is not implemented yet for GitLab");
@@ -48,6 +50,11 @@ public class GitLabPushEvent extends PushEvent implements GitLabEvent {
         }
 
         return commits;
+    }
+
+    @Override
+    public void setRawEvent(String rawEvent) {
+        this.rawEvent=rawEvent;
     }
 
 }

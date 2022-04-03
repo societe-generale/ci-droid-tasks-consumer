@@ -2,12 +2,12 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.live;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteForGitHubBulkActions;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteForGitHubEvents;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.Comment;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.ResourceContent;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.UpdatedResource;
 import com.societegenerale.cidroid.tasks.consumer.services.GitHubContentBase64codec;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

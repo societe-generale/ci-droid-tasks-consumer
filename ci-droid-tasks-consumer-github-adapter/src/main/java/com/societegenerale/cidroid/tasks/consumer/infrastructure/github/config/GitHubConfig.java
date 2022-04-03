@@ -3,10 +3,12 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.config;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteForGitHubBulkActions;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteForGitHubEvents;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.GitHubEventDeserializer;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.RemoteForGitHubBulkActionsWrapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.SourceControlApiAccessKeyInterceptor;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.rest.GitHubSourceControlEventController;
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import feign.Client;
 import feign.Logger;
@@ -40,6 +42,11 @@ public class GitHubConfig {
         return gitHubUrl;
     }
 
+    @Bean
+    public SourceControlBulkActionsPerformer remoteForGitHubBulkActionsWrapper(FeignRemoteForGitHubBulkActions feignRemoteForGitHubBulkActions) {
+
+        return new RemoteForGitHubBulkActionsWrapper(feignRemoteForGitHubBulkActions);
+    }
 
     @Bean
     Logger.Level feignLoggerLevel() {

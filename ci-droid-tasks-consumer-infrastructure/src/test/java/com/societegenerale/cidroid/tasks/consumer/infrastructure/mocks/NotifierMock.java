@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.ImmutablePair;

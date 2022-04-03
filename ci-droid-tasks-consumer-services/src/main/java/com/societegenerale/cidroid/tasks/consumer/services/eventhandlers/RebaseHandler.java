@@ -1,18 +1,19 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import java.util.List;
+import java.util.Map;
 
 import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Comment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+
+import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Slf4j
 public class RebaseHandler implements PushEventHandler {

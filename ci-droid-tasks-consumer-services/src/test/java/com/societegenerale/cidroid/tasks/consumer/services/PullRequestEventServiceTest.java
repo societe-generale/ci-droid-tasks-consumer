@@ -1,17 +1,15 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPullRequestEvent;
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.mockito.Mockito.*;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class PullRequestEventServiceTest {
@@ -20,22 +18,19 @@ public class PullRequestEventServiceTest {
 
     PullRequestEventHandler mockHandler = mock(PullRequestEventHandler.class);
 
-    PullRequestEvent pullRequestEvent;
+    TestPullRequestEvent.TestPullRequestEventBuilder pullRequestEventBuilder=TestPullRequestEvent.builder();
 
     @BeforeEach
     public void setUp() throws IOException {
 
         pullRequestEventService = new PullRequestEventService(Arrays.asList(mockHandler));
 
-        String pullRequestEventPayload = IOUtils
-                .toString(PullRequestEventServiceTest.class.getClassLoader().getResourceAsStream("pullRequestEvent.json"), "UTF-8");
-
-        pullRequestEvent = new ObjectMapper().readValue(pullRequestEventPayload, GitHubPullRequestEvent.class);
-
     }
 
     @Test
     public void shouldProcessPullRequestEventsThatAre_Opened() {
+
+        var pullRequestEvent=pullRequestEventBuilder.build();
 
         pullRequestEventService.onPullRequestEvent(pullRequestEvent);
 
@@ -46,7 +41,8 @@ public class PullRequestEventServiceTest {
     @Test
     public void shouldProcessPullRequestEventsThatAre_Synchronize() {
 
-        pullRequestEvent.setAction("synchronize");
+        var pullRequestEvent=pullRequestEventBuilder
+                .action("synchronize").build();
 
         pullRequestEventService.onPullRequestEvent(pullRequestEvent);
 
@@ -57,7 +53,8 @@ public class PullRequestEventServiceTest {
     @Test
     public void should_NOT_ProcessPullRequestEventsThatAre_Assigned() {
 
-        pullRequestEvent.setAction("assigned");
+        var pullRequestEvent=pullRequestEventBuilder
+                .action("assigned").build();
 
         pullRequestEventService.onPullRequestEvent(pullRequestEvent);
 

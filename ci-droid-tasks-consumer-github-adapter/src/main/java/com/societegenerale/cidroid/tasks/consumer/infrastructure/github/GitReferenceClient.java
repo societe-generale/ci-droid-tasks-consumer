@@ -1,11 +1,11 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
 
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.PullRequestToCreate;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.Reference;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.User;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import feign.Feign;
 import feign.Headers;
 import feign.Logger;

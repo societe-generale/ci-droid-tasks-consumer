@@ -1,11 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.DURATION;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.BULK_ACTION_COMMIT_PERFORMED;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.BULK_ACTION_PROCESSED;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.BULK_ACTION_PR_CREATED;
+import java.util.List;
+import java.util.Optional;
 
 import com.societegenerale.cidroid.api.IssueProvidingContentException;
 import com.societegenerale.cidroid.api.ResourceToUpdate;
@@ -16,18 +12,24 @@ import com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAc
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.BulkActionToPerform;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.services.model.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestToCreate;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Reference;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Repository;
+import com.societegenerale.cidroid.tasks.consumer.services.model.ResourceContent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
-import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
+
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.DURATION;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.BULK_ACTION_COMMIT_PERFORMED;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.BULK_ACTION_PROCESSED;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.BULK_ACTION_PR_CREATED;
 
 @Slf4j
 public class ActionToPerformService {
@@ -45,7 +47,7 @@ public class ActionToPerformService {
 
         StopWatch stopWatchForMonitoring = StopWatch.createStarted();
 
-        var userRequestingAction=remoteSourceControl.fetchCurrentUser(action.getSourceControlPersonalToken(),action.getEmail());
+        User userRequestingAction=remoteSourceControl.fetchCurrentUser(action.getSourceControlPersonalToken(),action.getEmail());
 
         var actionWithUser=action.toBuilder().userRequestingAction(userRequestingAction).build();
 
@@ -330,9 +332,10 @@ public class ActionToPerformService {
 
     private Optional<PullRequest> createPrOnBranch(Repository impactedRepo, Reference prBranch,String targetBranchForPr, BulkActionToPerform action) {
 
-        PullRequestToCreate newPr = new PullRequestToCreate();
-        newPr.setHead(prBranch.getBranchName());
-        newPr.setBase(targetBranchForPr);
+        PullRequestToCreate newPr = PullRequestToCreate.builder()
+                .head(prBranch.getBranchName())
+                .base(targetBranchForPr)
+                .build();
 
         PullRequestGitHubInteraction pullRequestGitHubInteraction=(PullRequestGitHubInteraction)action.getGitHubInteraction();
 

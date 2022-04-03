@@ -35,6 +35,8 @@ import static org.mockito.Mockito.mock;
 @EnableAutoConfiguration
 public class TestConfig {
 
+
+
     @Bean
     public Rebaser mockRebaser() {
 

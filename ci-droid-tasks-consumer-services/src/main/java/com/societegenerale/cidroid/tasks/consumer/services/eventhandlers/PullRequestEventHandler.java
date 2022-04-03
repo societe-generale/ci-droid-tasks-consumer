@@ -1,14 +1,14 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
+import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 
 import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
 
@@ -22,7 +22,7 @@ public interface PullRequestEventHandler {
             additionalInfosForNotification.put(PULL_REQUEST, pullRequest);
 
             notifiers.stream().forEach(
-                    n -> n.notify(new User(), new Message(bestPracticesWarnings.toString()), additionalInfosForNotification));
+                    n -> n.notify(User.builder().build(), new Message(bestPracticesWarnings.toString()), additionalInfosForNotification));
         }
     }
 

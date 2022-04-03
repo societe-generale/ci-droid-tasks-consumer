@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.TestUtils;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Commit;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,4 +1,8 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.github;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model;
+
+import java.beans.ConstructorProperties;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,9 +14,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import java.beans.ConstructorProperties;
-import java.time.LocalDateTime;
-import java.util.Map;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -65,20 +66,26 @@ public class PullRequest {
         this.number = number;
     }
 
-    public PullRequest(int number, String onBranch) {
-        this.number = number;
-        this.branchName=onBranch;
+
+    public com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest toStandardPullRequest(){
+
+        return com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest.builder()
+                .number(this.number)
+                .baseBranchName(this.baseBranchName)
+                .branchName(this.branchName)
+                .creationDate(this.creationDate)
+                .htmlUrl(this.htmlUrl)
+                .mergeable(this.mergeable)
+                .url(this.url)
+                .branchStartedFromCommit(this.branchStartedFromCommit)
+                .repo(this.repo.toStandardRepo().get())
+                .user(this.user.toStandardUser())
+                .build();
+
+
     }
 
-    public boolean doneOnBranch(String branch){
-        return branchName.equals(branch);
-    }
 
-    public PRmergeableStatus getMergeStatus(){
-
-        return PRmergeableStatus.mapping.get(mergeable);
-
-    }
 
     @JsonProperty("base")
     private void unpackNestedBaseProperty(Map<String,Object> base) {

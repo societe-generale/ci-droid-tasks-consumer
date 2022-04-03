@@ -1,10 +1,10 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.List;
+
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class DummyPushEventHandler implements PushEventHandler {

@@ -1,43 +1,30 @@
 package com.societegenerale.cidroid.tasks.consumer.services.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
-
-import javax.annotation.Nonnull;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 
-public abstract class PushEvent implements SourceControlEvent {
 
-    public abstract String getRef();
+public interface PushEvent extends SourceControlEvent {
 
-    public abstract void setRef(String ref);
+    String getRef();
 
-    public abstract String getUserEmail();
+    void setRef(String ref);
 
-    public abstract String getUserName();
+    String getUserEmail();
 
-    public abstract Commit getHeadCommit();
+    String getUserName();
 
-    public abstract int getNbCommits();
+    Commit getHeadCommit();
+
+    int getNbCommits();
 
     @Nonnull
-    public abstract List<Commit> getCommits();
+    List<Commit> getCommits();
 
-    public boolean happenedOnDefaultBranch(){
+    default boolean happenedOnDefaultBranch(){
         return getRef().endsWith(getRepository().getDefaultBranch());
     }
 
-    @JsonIgnore
-    private String rawEvent;
-
-    @Override
-    public String getRawEvent() {
-        return rawEvent;
-    }
-
-    @Override
-    public void setRawEvent(String rawEvent) {
-        this.rawEvent = rawEvent;
-    }
+    void setRawEvent(String rawEvent);
 }

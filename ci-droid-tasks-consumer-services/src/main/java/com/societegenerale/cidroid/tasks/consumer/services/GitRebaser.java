@@ -15,7 +15,7 @@ import java.util.stream.StreamSupport;
 
 import javax.annotation.Nonnull;
 
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -301,7 +301,7 @@ public class GitRebaser implements Rebaser {
 
     private Git initRepoOnDefaultBranch(PullRequest pr) throws IOException, GitAPIException {
 
-        com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository repo = pr.getRepo();
+        com.societegenerale.cidroid.tasks.consumer.services.model.Repository repo = pr.getRepo();
 
         Path localRepoDirectory = createRepoDirectoryIfRequired(repo.getName());
 

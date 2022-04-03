@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.github;
+package com.societegenerale.cidroid.tasks.consumer.services.model;
 
 import java.util.List;
 import java.util.Set;
@@ -6,15 +6,14 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class Commit {
 
     private String id;
@@ -23,15 +22,11 @@ public class Commit {
 
     private User author;
 
-    @JsonProperty("added")
     private List<String> addedFiles;
 
-    @JsonProperty("modified")
     private List<String> modifiedFiles;
 
-    @JsonProperty("removed")
     private List<String> removedFiles;
-
 
     @Nonnull
     public List<String> getAddedFiles() {

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidBehavior;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
@@ -43,11 +42,12 @@ public class TestConfig {
         return new NotifierMock();
     }
 
+    /*
     @Bean
     public GitHubMockServer gitHubMockServer() {
         return new GitHubMockServer();
     }
-
+*/
     @Bean
     public PushEventHandler rebaseHandler(Rebaser rebaser, SourceControlEventsReactionPerformer remoteSourceControl) {
 

@@ -12,7 +12,7 @@ import java.util.stream.StreamSupport;
 
 import javax.annotation.Nonnull;
 
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.eclipse.jgit.api.CheckoutCommand;

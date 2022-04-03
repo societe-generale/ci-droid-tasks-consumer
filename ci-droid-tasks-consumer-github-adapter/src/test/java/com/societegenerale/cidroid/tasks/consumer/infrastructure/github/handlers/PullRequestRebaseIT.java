@@ -2,16 +2,16 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.handler
 
 import java.util.List;
 
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.mockserver.verify.VerificationTimes;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.MERGEABLE;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus.MERGEABLE;
 import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
@@ -29,7 +29,8 @@ class PullRequestRebaseIT extends SourceControlEventHandlerIT {
     @Test
     void shouldRebaseMergeablePullRequest() {
         PullRequest expectedPullRequest = argThat(pr -> pr.getNumber() == PULL_REQUEST_ID);
-        when(mockRebaser.rebase(expectedPullRequest)).thenReturn(getRebaseResult());
+        when(mockRebaser.rebase(expectedPullRequest.toStandardPullRequest()))
+                .thenReturn(getRebaseResult());
 
         githubMockServer.updatePullRequestMergeabilityStatus(MERGEABLE);
 
@@ -47,9 +48,9 @@ class PullRequestRebaseIT extends SourceControlEventHandlerIT {
         );
     }
 
-    private Pair<PullRequest, List<GitCommit>> getRebaseResult() {
+    private Pair<com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest, List<GitCommit>> getRebaseResult() {
         GitCommit rebasedCommit = new GitCommit(COMMIT_ID, COMMIT_MESSAGE);
-        return new ImmutablePair<>(pullRequest, singletonList(rebasedCommit));
+        return new ImmutablePair<>(pullRequest.toStandardPullRequest(), singletonList(rebasedCommit));
     }
 
 }

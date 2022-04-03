@@ -1,5 +1,19 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
+import java.io.IOException;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
+import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+
 import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
 import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
 import static java.util.Collections.singletonList;
@@ -11,20 +25,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
-import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import java.io.IOException;
-import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 class NotificationsHandlerTest {
 
@@ -51,7 +51,7 @@ class NotificationsHandlerTest {
         singlePr = objectMapper.readValue(prAsString, PullRequest.class);
 
         String pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
-        pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
+        pushEvent = objectMapper.readValue(pushEventPayload, PushEvent.class);
 
         when(mockRemoteSourceControl.fetchUser("octocat")).thenReturn(new User("octocat", "octocat@github.com"));
 

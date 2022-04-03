@@ -2,11 +2,11 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.GitHubPullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.GitHubPushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPullRequestEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 
 public class GitHubEventDeserializer implements SourceControlEventMapper {
 

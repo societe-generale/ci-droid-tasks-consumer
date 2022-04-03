@@ -1,12 +1,14 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.github;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model;
+
+import java.io.IOException;
+import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.TestUtils;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.TestUtils;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import java.io.IOException;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

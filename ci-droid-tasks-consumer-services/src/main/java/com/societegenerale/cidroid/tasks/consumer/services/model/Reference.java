@@ -1,15 +1,12 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.github;
+package com.societegenerale.cidroid.tasks.consumer.services.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class Reference {
 
     private String ref;
@@ -18,8 +15,6 @@ public class Reference {
 
     @Data
     @AllArgsConstructor
-    @NoArgsConstructor
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ObjectReference {
 
         private String type;
@@ -28,7 +23,6 @@ public class Reference {
 
     }
 
-    @JsonIgnore
     public String getBranchName(){
         return ref.substring(ref.lastIndexOf("/")+1);
     }

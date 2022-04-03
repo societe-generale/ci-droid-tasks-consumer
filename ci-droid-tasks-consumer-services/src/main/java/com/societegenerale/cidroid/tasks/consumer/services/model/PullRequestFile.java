@@ -1,10 +1,10 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.github;
+package com.societegenerale.cidroid.tasks.consumer.services.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class PullRequestFile {
 
     private String sha;
@@ -18,5 +18,4 @@ public class PullRequestFile {
     private int deletions;
 
     private int changes;
-
 }

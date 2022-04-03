@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.github;
+package com.societegenerale.cidroid.tasks.consumer.services.model;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -12,10 +12,11 @@ class CommitTest {
     @Test
     void collectImpactedFiles(){
 
-        Commit commit=new Commit();
-        commit.setAddedFiles(Arrays.asList("file1", "file2"));
-        commit.setRemovedFiles(Arrays.asList("file3", "file4","file5"));
-        commit.setModifiedFiles(Arrays.asList("file6"));
+        Commit commit=Commit.builder()
+                .addedFiles(Arrays.asList("file1", "file2"))
+                .removedFiles(Arrays.asList("file3", "file4","file5"))
+                .modifiedFiles(Arrays.asList("file6"))
+                .build();
 
         Set<String> impactedFiles=commit.getImpactedFiles();
 
@@ -25,7 +26,7 @@ class CommitTest {
     @Test
     void impactedFilesListIsEmptyByDefault(){
 
-        Commit commit=new Commit();
+        Commit commit=Commit.builder().build();
 
         assertThat(commit.getImpactedFiles()).isEmpty();
     }

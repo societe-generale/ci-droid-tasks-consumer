@@ -1,5 +1,6 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.github;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model;
 
+import com.societegenerale.cidroid.tasks.consumer.services.model.UpdatedResource;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

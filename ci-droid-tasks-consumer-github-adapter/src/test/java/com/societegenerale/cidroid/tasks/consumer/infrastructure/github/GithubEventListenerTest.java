@@ -3,13 +3,13 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.GitHubPullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.GitHubPushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventListener;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPullRequestEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

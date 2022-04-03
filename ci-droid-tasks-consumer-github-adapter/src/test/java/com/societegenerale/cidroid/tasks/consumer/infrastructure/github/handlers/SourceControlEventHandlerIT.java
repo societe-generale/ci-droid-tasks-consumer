@@ -8,10 +8,10 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.InfraCon
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.TestConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.config.GitHubConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.mocks.GitHubMockServer;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.GitHubPushEvent;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventListener;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

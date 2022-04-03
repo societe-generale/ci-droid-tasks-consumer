@@ -1,26 +1,9 @@
 package com.societegenerale.cidroid.tasks.consumer.services.model;
 
+public interface PullRequestEvent extends SourceControlEvent {
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+    String getAction();
 
-public abstract class PullRequestEvent implements SourceControlEvent {
+    int getPrNumber();
 
-    public abstract String getAction();
-
-    public abstract void setAction(String actions);
-
-    public abstract int getPrNumber();
-
-    @JsonIgnore
-    private String rawEvent;
-
-    @Override
-    public String getRawEvent() {
-        return rawEvent;
-    }
-
-    @Override
-    public void setRawEvent(String rawEvent) {
-        this.rawEvent = rawEvent;
-    }
 }

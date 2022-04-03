@@ -1,5 +1,22 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
+import java.io.IOException;
+import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
+import com.societegenerale.cidroid.tasks.consumer.services.PullRequestMatcher;
+import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Comment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+
 import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -12,23 +29,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
-import com.societegenerale.cidroid.tasks.consumer.services.PullRequestMatcher;
-import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import java.io.IOException;
-import java.util.List;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 class RebaseHandlerTest {
 
@@ -54,7 +54,7 @@ class RebaseHandlerTest {
         singlePr = objectMapper.readValue(prAsString, PullRequest.class);
 
         String pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
-        pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
+        pushEvent = objectMapper.readValue(pushEventPayload, PushEvent.class);
 
         rebaseHandler = new RebaseHandler(mockRebaser, mockRemoteSourceControl);
     }

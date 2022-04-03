@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.config.GitHubConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,7 @@ import org.springframework.test.context.ContextConfiguration;
 class FeignRemoteSourceControlTest {
 
     @Autowired
-    private FeignRemoteForGitHubBulkActions feignRemoteGitHub;
+    private RemoteForGitHubBulkActionsWrapper remoteForGitHubBulkActionsWrapper;
 
     @Autowired
     private GitHubMockServer githubMockServer;
@@ -55,14 +54,15 @@ class FeignRemoteSourceControlTest {
     @Test
     void PRtitleShouldBeReceivedAsSent() throws RemoteSourceControlAuthorizationException, JsonProcessingException {
 
-        PullRequestToCreate prToCreate= new PullRequestToCreate();
-        prToCreate.setBase("master");
-        prToCreate.setHead("refs/heads/someFeatureBranch");
-        prToCreate.setTitle("title containing a forward slash / that should be escaped");
-        prToCreate.setBody("Content of the PR");
+        com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestToCreate prToCreate =
+                com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestToCreate.builder()
+                .base("master")
+                .head("refs/heads/someFeatureBranch")
+                .title("title containing a forward slash / that should be escaped")
+                .body("Content of the PR")
+                .build();
 
-
-        feignRemoteGitHub.createPullRequest("baxterthehacker/public-repo", prToCreate, "someToken");
+        remoteForGitHubBulkActionsWrapper.createPullRequest("baxterthehacker/public-repo", prToCreate, "someToken");
 
         gitHubMockClient.verify(
                 HttpRequest.request()

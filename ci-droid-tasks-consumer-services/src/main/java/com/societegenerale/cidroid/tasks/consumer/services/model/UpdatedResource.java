@@ -1,27 +1,20 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.github;
+package com.societegenerale.cidroid.tasks.consumer.services.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus.UPDATE_KO_NO_REASON;
-
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class UpdatedResource {
 
     private Content content;
 
     private Commit commit;
 
-    @JsonIgnore
     @Builder.Default
-    private UpdateStatus updateStatus = UPDATE_KO_NO_REASON;
+    private UpdateStatus updateStatus = UpdateStatus.UPDATE_KO_NO_REASON;
 
     public static UpdatedResource notUpdatedResource(UpdateStatus updateStatus, String htmlUrl) {
 
@@ -54,7 +47,6 @@ public class UpdatedResource {
 
         private String path;
 
-        @JsonProperty("html_url")
         private String htmlUrl;
 
     }

@@ -1,15 +1,15 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.handlers;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.mocks.NotifierMock;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.User;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import org.apache.commons.lang3.tuple.Pair;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.NOT_MERGEABLE;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus.NOT_MERGEABLE;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 

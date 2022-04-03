@@ -1,17 +1,18 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
-import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.OLD_PR_CLOSED;
-
-import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
-import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Supplier;
+
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
+import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.OLD_PR_CLOSED;
 
 @Slf4j
 public class PullRequestCleaningHandler implements PushEventHandler {

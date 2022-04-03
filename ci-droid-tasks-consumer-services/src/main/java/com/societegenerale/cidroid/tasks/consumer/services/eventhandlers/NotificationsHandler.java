@@ -1,22 +1,23 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
+import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
+import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
+import lombok.extern.slf4j.Slf4j;
+
 import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.PR_NUMBER;
 import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringAttributes.REPO;
 import static com.societegenerale.cidroid.tasks.consumer.services.monitoring.MonitoringEvents.NOTIFICATION_FOR_NON_MERGEABLE_PR;
 import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
-
-import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
-import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import com.societegenerale.cidroid.tasks.consumer.services.monitoring.Event;
-import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class NotificationsHandler implements PushEventHandler {

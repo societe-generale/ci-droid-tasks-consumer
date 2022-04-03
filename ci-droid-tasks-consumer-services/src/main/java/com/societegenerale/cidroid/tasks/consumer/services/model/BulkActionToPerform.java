@@ -1,14 +1,15 @@
 package com.societegenerale.cidroid.tasks.consumer.services.model;
 
-import com.societegenerale.cidroid.api.ResourceToUpdate;
-import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
-import com.societegenerale.cidroid.api.gitHubInteractions.AbstractGitHubInteraction;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
 import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+
+import com.societegenerale.cidroid.api.ResourceToUpdate;
+import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
+import com.societegenerale.cidroid.api.gitHubInteractions.AbstractGitHubInteraction;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;

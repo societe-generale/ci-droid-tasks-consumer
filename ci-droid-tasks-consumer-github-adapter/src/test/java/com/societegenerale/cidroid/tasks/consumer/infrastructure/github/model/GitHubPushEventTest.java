@@ -1,11 +1,11 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.github;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model;
 
 import java.io.IOException;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.TestUtils;
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GitHubPushEventTest {
@@ -13,7 +13,7 @@ class GitHubPushEventTest {
     @Test
     void canDeserialize() throws IOException {
 
-        String  pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
+        String  pushEventPayload = TestUtils.readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
 
         GitHubPushEvent pushEvent = new ObjectMapper().readValue(pushEventPayload, GitHubPushEvent.class);
 
