@@ -6,7 +6,6 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.config.GitHubConfig;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.config.GlobalProperties;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
@@ -75,7 +74,7 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
                 .errorDecoder(new UpdateContentErrorDecoder())
                 .requestInterceptor(new SourceControlApiAccessKeyInterceptor(sourceControlPersonalToken))
                 .logLevel(Logger.Level.FULL)
-                .target(ContentClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/contents/" + path);
+                .target(ContentClient.class, GitHubConfig.getGitHubApiUrl() + "/repos/" + repoFullName + "/contents/" + path);
     }
 
     @GetMapping(value = "/repos/{repoFullName}",
@@ -95,7 +94,7 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(sourceControlPersonalToken)
-                .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/git/refs");
+                .target(GitReferenceClient.class, GitHubConfig.getGitHubApiUrl() + "/repos/" + repoFullName + "/git/refs");
 
         return gitReferenceClient.createBranch(new InputRef("refs/heads/" + branchName, fromReferenceSha1));
     }
@@ -104,7 +103,7 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
     default User fetchCurrentUser(String sourceControlPersonalToken, String emailAddress) {
 
         GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(sourceControlPersonalToken)
-                .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/user");
+                .target(GitReferenceClient.class, GitHubConfig.getGitHubApiUrl() + "/user");
 
         return gitReferenceClient.getCurrentUser();
 
@@ -115,7 +114,7 @@ public interface FeignRemoteForGitHubBulkActions extends SourceControlBulkAction
             throws RemoteSourceControlAuthorizationException {
 
         GitReferenceClient gitReferenceClient = GitReferenceClient.buildGitReferenceClient(sourceControlPersonalToken)
-                .target(GitReferenceClient.class, GlobalProperties.getGitHubApiUrl() + "/repos/" + repoFullName + "/pulls");
+                .target(GitReferenceClient.class, GitHubConfig.getGitHubApiUrl() + "/repos/" + repoFullName + "/pulls");
 
         return gitReferenceClient.createPullRequest(newPr);
     }

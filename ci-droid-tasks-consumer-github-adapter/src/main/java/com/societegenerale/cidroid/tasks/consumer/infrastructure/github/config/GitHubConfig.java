@@ -12,6 +12,7 @@ import feign.Client;
 import feign.Logger;
 import feign.RequestInterceptor;
 import feign.httpclient.ApacheHttpClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -21,7 +22,24 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "GITHUB")
 @EnableFeignClients(clients = { FeignRemoteForGitHubEvents.class, FeignRemoteForGitHubBulkActions.class})
+@Slf4j
 public class GitHubConfig {
+
+    @Value("${source-control.url}")
+    private String internalGitHubUrl;
+
+    @Value("${source-control.url}")
+    public void setInternalGitHubUrl(String gitHubApiUrl){
+        log.info("Initiating GitHub API URL : {}", gitHubApiUrl);
+        gitHubUrl = gitHubApiUrl;
+    }
+
+    private static String gitHubUrl;
+
+    public static String getGitHubApiUrl() {
+        return gitHubUrl;
+    }
+
 
     @Bean
     Logger.Level feignLoggerLevel() {
