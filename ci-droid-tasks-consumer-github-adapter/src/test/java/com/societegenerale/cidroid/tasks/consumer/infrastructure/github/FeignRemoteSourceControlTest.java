@@ -2,26 +2,25 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.config.GitHubConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.JsonBody;
 import org.mockserver.verify.VerificationTimes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes={TestConfig.class})
-//@ContextConfiguration(classes={ InfraConfig.class,TestConfig.class}, initializers = YamlFileApplicationContextInitializer.class)
-@TestPropertySource("/application-test.yml")
+@SpringBootTest
+@ContextConfiguration(classes={ InfraConfig.class,TestConfig.class, GitHubConfig.class})
+@ActiveProfiles("test")
 /**
  * We're not supposed to have too much business logic in the class under test, but this can be useful to verify the payload received on remote github server side,
  * and/or how the feign client behaves depending on various response codes

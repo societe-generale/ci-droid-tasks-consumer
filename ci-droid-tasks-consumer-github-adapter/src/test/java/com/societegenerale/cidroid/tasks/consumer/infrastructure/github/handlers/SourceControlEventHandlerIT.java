@@ -1,8 +1,12 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.handlers;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.InfraConfig;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.TestConfig;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.config.GitHubConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventListener;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
@@ -14,14 +18,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockserver.client.MockServerClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import static com.societegenerale.cidroid.tasks.consumer.infrastructure.github.mocks.GitHubMockServer.GITHUB_MOCK_PORT;
 
 @SpringBootTest
-/*
-@ContextConfiguration(classes = { InfraConfig.class, AsyncConfig.class,TestConfig.class },
-        initializers = YamlFileApplicationContextInitializer.class)
-*/
+@ContextConfiguration(classes = { InfraConfig.class, TestConfig.class, GitHubConfig.class })
+@ActiveProfiles("test")
 public abstract class SourceControlEventHandlerIT {
 
 
@@ -39,7 +43,7 @@ public abstract class SourceControlEventHandlerIT {
     PushEvent pushEvent;
     PullRequest pullRequest;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -63,7 +67,7 @@ public abstract class SourceControlEventHandlerIT {
     private String readFile(String filename ) throws IOException {
 
         return IOUtils
-                .toString(SourceControlEventHandlerIT.class.getClassLoader().getResourceAsStream(filename), "UTF-8");
+                .toString(SourceControlEventHandlerIT.class.getClassLoader().getResourceAsStream(filename), StandardCharsets.UTF_8);
     }
 
     private Object getObjectFromJson(String fileName, Class<?> clazz) throws IOException {

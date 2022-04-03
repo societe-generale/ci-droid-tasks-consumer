@@ -27,7 +27,8 @@ public class LiveTestConfig {
     }
 
     @Bean
-    public Rebaser rebaser(@Value("${gitHub.login}") String gitLogin, @Value("${gitHub.password}") String gitPassword) {
+    public Rebaser rebaser(@Value("${source-control.login}") String gitLogin,
+                           @Value("${source-control.password}") String gitPassword) {
         return new GitRebaser(gitLogin, gitPassword, new GitWrapper());
     }
 

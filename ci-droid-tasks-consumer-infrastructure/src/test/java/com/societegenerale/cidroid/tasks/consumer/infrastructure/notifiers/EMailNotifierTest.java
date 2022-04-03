@@ -1,21 +1,25 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import java.io.IOException;
-import java.util.*;
 
 import static com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier.PULL_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,7 +73,7 @@ public class EMailNotifierTest {
         Message msg = new Message(messageContent);
 
         PullRequest pr = new ObjectMapper().readValue(
-                getClass().getClassLoader().getResourceAsStream("singlePullRequest.json"),
+                getClass().getClassLoader().getResourceAsStream("src/test/resources/singlePullRequest.json"),
                 PullRequest.class);
 
         Map<String, Object> additionalInfos = new HashMap<>();

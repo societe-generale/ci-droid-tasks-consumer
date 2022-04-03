@@ -1,25 +1,26 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PullRequestTest {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private PullRequest pullRequest;
 
     @BeforeEach
     public void setUp() throws Exception {
         String pullRequestAsString = IOUtils.toString(
-                getClass().getClassLoader().getResourceAsStream("singlePullRequest.json"), "UTF-8");
+                getClass().getClassLoader().getResourceAsStream("src/test/resources/singlePullRequest.json"), StandardCharsets.UTF_8);
 
         pullRequest = objectMapper.readValue(pullRequestAsString, PullRequest.class);
     }

@@ -2,6 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,7 +24,7 @@ public class GitHubMockServer extends MockServer {
     public static final int GITHUB_MOCK_PORT = 9900;
 
     private PRmergeableStatus pullRequestMergeableStatus;
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     public GitHubMockServer() {
         super(GITHUB_MOCK_PORT);
@@ -110,7 +111,7 @@ public class GitHubMockServer extends MockServer {
 
     private HttpResponse getOpenPullRequests() {
         return response()
-                .withBody(readFromFile("pullRequests.json"))
+                .withBody(readFromFile("src/test/resources/pullRequests.json"))
                 .withHeader("Content-Type", "application/json");
     }
 
@@ -125,7 +126,7 @@ public class GitHubMockServer extends MockServer {
     private String getPullRequestWithMergeabilityStatus() {
         try {
             PullRequest pullRequest = objectMapper.readValue(
-                    getClass().getClassLoader().getResourceAsStream("singlePullRequest.json"),
+                    getClass().getClassLoader().getResourceAsStream("src/test/resources/singlePullRequest.json"),
                     PullRequest.class);
 
             pullRequest.setMergeable(pullRequestMergeableStatus.getValue());
@@ -139,7 +140,7 @@ public class GitHubMockServer extends MockServer {
 
     private HttpResponse getUser() {
         return response()
-                .withBody(readFromFile("user.json"))
+                .withBody(readFromFile("src/test/resources/user.json"))
                 .withHeader("Content-Type", "application/json");
     }
 
@@ -152,7 +153,7 @@ public class GitHubMockServer extends MockServer {
     private String readFromFile(String fileName) {
         InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(fileName);
         try {
-            return IOUtils.toString(Objects.requireNonNull(resourceAsStream), "UTF-8");
+            return IOUtils.toString(Objects.requireNonNull(resourceAsStream), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(String.format("The file %s does not exist", fileName));
         }
