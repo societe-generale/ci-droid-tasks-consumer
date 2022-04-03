@@ -38,7 +38,10 @@ public class TestPushEvent implements PushEvent {
 
     @Override
     public Commit getHeadCommit() {
-        return null;
+
+        return Commit.builder()
+                .url("someUrl")
+                .build();
     }
 
     @Override
