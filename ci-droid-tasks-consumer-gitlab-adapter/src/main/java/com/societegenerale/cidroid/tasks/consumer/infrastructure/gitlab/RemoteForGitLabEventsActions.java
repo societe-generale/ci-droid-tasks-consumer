@@ -7,11 +7,11 @@ import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestFile;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Comment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestFile;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
