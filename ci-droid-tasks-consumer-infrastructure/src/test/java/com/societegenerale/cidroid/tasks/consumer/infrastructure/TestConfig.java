@@ -1,11 +1,14 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
-import static org.mockito.Mockito.mock;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidBehavior;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.BestPracticeNotifierHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.NotificationsHandler;
@@ -16,9 +19,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEve
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.RebaseHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -26,6 +26,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
+
+import static org.mockito.Mockito.mock;
 
 @Configuration
 @EnableAutoConfiguration
@@ -88,6 +90,16 @@ public class TestConfig {
 
         return mock(MailSender.class);
 
+    }
+
+    @Bean
+    public SourceControlBulkActionsPerformer mockSourceControlBulkActionsPerformer() {
+        return mock(SourceControlBulkActionsPerformer.class);
+    }
+
+    @Bean
+    public SourceControlEventsReactionPerformer mockSourceControlEventsReactionPerformer() {
+        return mock(SourceControlEventsReactionPerformer.class);
     }
 
     @Bean
