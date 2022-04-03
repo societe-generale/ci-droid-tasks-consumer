@@ -1,5 +1,7 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.live;
 
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteForGitHubBulkActions;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteForGitHubEvents;
 import com.societegenerale.cidroid.tasks.consumer.services.GitHubContentBase64codec;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Comment;

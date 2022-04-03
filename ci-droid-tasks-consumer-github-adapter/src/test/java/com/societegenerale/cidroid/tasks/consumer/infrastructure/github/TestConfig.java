@@ -8,6 +8,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.RestTemplateRes
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidBehavior;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.mocks.GitHubMockServer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.mocks.NotifierMock;
+import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.BestPracticeNotifierHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.NotificationsHandler;
@@ -16,6 +17,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullReq
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestSizeCheckHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.RebaseHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -34,8 +36,25 @@ import static org.mockito.Mockito.mock;
 public class TestConfig {
 
     @Bean
+    public Rebaser mockRebaser() {
+
+        return mock(Rebaser.class);
+    }
+
+    @Bean
+    public NotifierMock mockNotifier() {
+        return new NotifierMock();
+    }
+
+    @Bean
     public GitHubMockServer gitHubMockServer() {
         return new GitHubMockServer();
+    }
+
+    @Bean
+    public PushEventHandler rebaseHandler(Rebaser rebaser, SourceControlEventsReactionPerformer remoteSourceControl) {
+
+        return new RebaseHandler(rebaser, remoteSourceControl);
     }
 
     @Bean

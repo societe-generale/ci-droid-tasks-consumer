@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.live;
 
 import java.io.IOException;
 import java.util.List;

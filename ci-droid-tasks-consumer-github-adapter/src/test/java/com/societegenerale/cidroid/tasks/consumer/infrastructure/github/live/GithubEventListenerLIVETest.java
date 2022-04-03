@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure.github;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.live;
 
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventListener;
 import org.apache.commons.io.IOUtils;
