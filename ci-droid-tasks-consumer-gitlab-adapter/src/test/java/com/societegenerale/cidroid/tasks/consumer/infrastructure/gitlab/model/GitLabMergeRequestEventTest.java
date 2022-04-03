@@ -1,11 +1,11 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.gitlab;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.model;
 
 import java.io.IOException;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.TestUtils;
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GitLabMergeRequestEventTest {
@@ -13,7 +13,7 @@ class GitLabMergeRequestEventTest {
     @Test
     void canDeserialize() throws IOException {
 
-        String  pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/gitLab/mergeRequestEventGitLab.json"));
+        String  pushEventPayload = TestUtils.readFromInputStream(getClass().getResourceAsStream("/mergeRequestEventGitLab.json"));
 
         GitLabMergeRequestEvent mergeRequestEvent = new ObjectMapper().readValue(pushEventPayload, GitLabMergeRequestEvent.class);
 

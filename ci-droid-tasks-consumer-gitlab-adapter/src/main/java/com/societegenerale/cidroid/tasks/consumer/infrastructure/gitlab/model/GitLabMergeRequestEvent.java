@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.gitlab;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.model;
 
 import java.util.Map;
 

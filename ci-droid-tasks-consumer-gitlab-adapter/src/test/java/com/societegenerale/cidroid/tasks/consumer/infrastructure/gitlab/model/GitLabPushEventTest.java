@@ -1,12 +1,12 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.gitlab;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
-import org.junit.jupiter.api.Test;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.model;
 
 import java.io.IOException;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.TestUtils;
+import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GitLabPushEventTest {
@@ -14,7 +14,7 @@ class GitLabPushEventTest {
     @Test
     void canDeserialize() throws IOException {
 
-        String  pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/gitLab/pushEventGitLab_fromWebsite.json"));
+        String  pushEventPayload = TestUtils.readFromInputStream(getClass().getResourceAsStream("/pushEventGitLab_fromWebsite.json"));
 
         GitLabPushEvent pushEvent = new ObjectMapper().readValue(pushEventPayload, GitLabPushEvent.class);
 
@@ -48,7 +48,7 @@ class GitLabPushEventTest {
     @Test
     void canDeserializeTestEvent() throws IOException {
 
-        String  pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/gitLab/pushEventGitLab_test.json"));
+        String  pushEventPayload = TestUtils.readFromInputStream(getClass().getResourceAsStream("/pushEventGitLab_test.json"));
 
         GitLabPushEvent pushEvent = new ObjectMapper().readValue(pushEventPayload, GitLabPushEvent.class);
 

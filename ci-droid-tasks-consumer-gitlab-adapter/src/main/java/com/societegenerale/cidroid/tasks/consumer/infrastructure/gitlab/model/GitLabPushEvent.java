@@ -1,4 +1,9 @@
-package com.societegenerale.cidroid.tasks.consumer.services.model.gitlab;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.model;
+
+import java.util.Collections;
+import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,10 +12,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
 import lombok.Data;
-
-import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
