@@ -19,6 +19,7 @@ public class PullRequestEventServiceTest {
 
 
     TestPullRequestEvent.TestPullRequestEventBuilder pullRequestEventBuilder=TestPullRequestEvent.builder()
+            .action("synchronize")
             .repository(repo);
 
     PullRequestEventService pullRequestEventService= new PullRequestEventService(Arrays.asList(mockHandler));
@@ -38,8 +39,7 @@ public class PullRequestEventServiceTest {
     @Test
     public void shouldProcessPullRequestEventsThatAre_Synchronize() {
 
-        var pullRequestEvent=pullRequestEventBuilder
-                .action("synchronize").build();
+        var pullRequestEvent=pullRequestEventBuilder.build();
 
         pullRequestEventService.onPullRequestEvent(pullRequestEvent);
 
