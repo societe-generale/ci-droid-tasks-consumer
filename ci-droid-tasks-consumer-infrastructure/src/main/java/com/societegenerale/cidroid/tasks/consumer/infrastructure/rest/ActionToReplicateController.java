@@ -3,9 +3,10 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.rest;
 import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformCommand;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import javax.validation.Valid;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +31,9 @@ public class ActionToReplicateController {
     @PostMapping(path = "bulkUpdates")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Perform an action in bulk, ie replicate it in all the resources mentioned in the command")
+    @Operation(description = "Perform an action in bulk, ie replicate it in all the resources mentioned in the command")
     public ResponseEntity<?> onBulkUpdateRequest(@RequestBody @Valid
-    @ApiParam(value = "The command describing the action to perform in bulk", required = true)
+    @Parameter(description = "The command describing the action to perform in bulk", required = true)
             ActionToPerformCommand bulkUpdateCommand) {
 
         log.info("received a bulkUpdateCommand {}", bulkUpdateCommand);
