@@ -73,7 +73,7 @@ public class EMailNotifierTest {
         Message msg = new Message(messageContent);
 
         PullRequest pr = new ObjectMapper().readValue(
-                getClass().getClassLoader().getResourceAsStream("src/test/resources/singlePullRequest.json"),
+                getClass().getClassLoader().getResourceAsStream("singlePullRequest.json"),
                 PullRequest.class);
 
         Map<String, Object> additionalInfos = new HashMap<>();
