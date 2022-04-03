@@ -19,7 +19,7 @@ public class PushEventTest {
     public void fieldsAreDeserialized() throws IOException {
 
         String pushEventAsString = IOUtils
-                .toString(PushEventTest.class.getClassLoader().getResourceAsStream("src/test/resources/pushEvent.json"), StandardCharsets.UTF_8);
+                . toString(PushEventTest.class.getClassLoader().getResourceAsStream("pushEvent.json"), StandardCharsets.UTF_8);
 
         PushEvent pushEvent = objectMapper.readValue(pushEventAsString, GitHubPushEvent.class);
 

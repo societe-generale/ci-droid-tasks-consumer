@@ -20,7 +20,7 @@ public class PullRequestTest {
     @BeforeEach
     public void setUp() throws Exception {
         String pullRequestAsString = IOUtils.toString(
-                getClass().getClassLoader().getResourceAsStream("src/test/resources/singlePullRequest.json"), StandardCharsets.UTF_8);
+                getClass().getClassLoader().getResourceAsStream("singlePullRequest.json"), StandardCharsets.UTF_8);
 
         pullRequest = objectMapper.readValue(pullRequestAsString, PullRequest.class);
     }
