@@ -1,16 +1,12 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure.rest;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.rest;
 
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.GitLabEventDeserializer;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.mockito.Mockito.mock;
-
 @SpringBootApplication
-/**
- * Needed for SourceControlEventControllerTest
- */
 public class TestApplication {
 
     @Configuration
@@ -18,7 +14,7 @@ public class TestApplication {
 
         @Bean
         public SourceControlEventMapper gitLabEventDeserializer() {
-            return mock(SourceControlEventMapper.class);
+            return new GitLabEventDeserializer();
         }
 
     }

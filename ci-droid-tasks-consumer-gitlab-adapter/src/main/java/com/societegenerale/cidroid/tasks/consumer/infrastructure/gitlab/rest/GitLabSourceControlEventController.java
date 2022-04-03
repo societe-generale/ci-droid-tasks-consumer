@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure.rest;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.rest;
 
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
@@ -6,6 +6,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMap
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/cidroid-sync-webhook")
 @Slf4j
-public class SourceControlEventController {
+public class GitLabSourceControlEventController {
 
     private final PushEventService pushEventService;
 
@@ -26,20 +28,18 @@ public class SourceControlEventController {
 
     private final SourceControlEventMapper sourceControlEventMapper;
 
-    public SourceControlEventController(PullRequestEventService pullRequestEventService, PushEventService pushEventService, SourceControlEventMapper sourceControlEventMapper) {
+    public GitLabSourceControlEventController(PullRequestEventService pullRequestEventService, PushEventService pushEventService, SourceControlEventMapper sourceControlEventMapper) {
         this.pullRequestEventService = pullRequestEventService;
         this.pushEventService = pushEventService;
         this.sourceControlEventMapper=sourceControlEventMapper;
     }
 
-
-    @PostMapping(value="/github",headers = "X-Github-Event=push")
+    @PostMapping(value="/gitlab", headers = "X-Gitlab-Event=Push Hook")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> onGitHubPushEvent(HttpEntity<String> rawPushEvent) {
+    public ResponseEntity<?> onGitLabPushEvent(HttpEntity<String> rawPushEvent) {
         return processPushEvent(rawPushEvent);
     }
-
 
     private ResponseEntity<?> processPushEvent(HttpEntity<String> rawPushEvent) {
         PushEvent pushEvent=null;
@@ -64,15 +64,16 @@ public class SourceControlEventController {
         }
     }
 
-    @PostMapping(path="/github",headers = "X-Github-Event=pull_request")
+    @PostMapping(path="/gitlab",headers = "X-Gitlab-Event=Merge Request Hook")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> onGitHubPullRequestEvent(HttpEntity<String> rawPullRequestEvent) {
+    public ResponseEntity<?> onGitLabPullRequestEvent(HttpEntity<String> rawPullRequestEvent) {
 
         return processPullRequestEvent(rawPullRequestEvent);
     }
 
     private ResponseEntity<?> processPullRequestEvent(HttpEntity<String> rawPullRequestEvent) {
+
 
         PullRequestEvent pullRequestEvent=null;
 
@@ -91,5 +92,26 @@ public class SourceControlEventController {
         }
     }
 
+    @PostMapping(value="/gitlab", headers = "X-Gitlab-Event=System Hook")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> onGitLabSystemEvent(HttpEntity<String> rawSystemEvent) throws JSONException {
+
+        JSONObject systemEvent = new JSONObject(rawSystemEvent.getBody());
+
+        if(hasFieldWithValue(systemEvent,"event_name","push")){
+            return processPushEvent(rawSystemEvent);
+        }
+        else if(hasFieldWithValue(systemEvent,"object_kind","merge_request")){
+            return processPullRequestEvent(rawSystemEvent);
+        }
+        else{
+            return new ResponseEntity("Unknown event type for this system event : "+rawSystemEvent.getBody(),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private boolean hasFieldWithValue(JSONObject systemEvent,String fieldName, String fieldValue) throws JSONException {
+        return (systemEvent.has(fieldName) && systemEvent.getString(fieldName).equals(fieldValue));
+    }
 
 }

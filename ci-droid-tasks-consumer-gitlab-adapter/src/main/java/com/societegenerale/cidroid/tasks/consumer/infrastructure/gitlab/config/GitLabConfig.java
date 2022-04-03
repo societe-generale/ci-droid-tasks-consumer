@@ -1,7 +1,11 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.config;
+
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.GitLabEventDeserializer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.RemoteForGitLabBulkActions;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.RemoteForGitLabEventsActions;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.rest.GitLabSourceControlEventController;
+import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
+import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
@@ -15,13 +19,19 @@ import org.springframework.context.annotation.Configuration;
 public class GitLabConfig {
 
     @Bean
-    public SourceControlEventMapper gitLabEventMapper()
+    public GitLabSourceControlEventController gitLabSourceControlEventController(
+            PullRequestEventService pullRequestEventService,
+            PushEventService pushEventService,
+            SourceControlEventMapper gitLabEventMapper)
     {
-
-        return new GitLabEventDeserializer();
+        return new GitLabSourceControlEventController(pullRequestEventService,pushEventService,gitLabEventMapper);
     }
 
-
+    @Bean
+    public SourceControlEventMapper gitLabEventMapper()
+    {
+        return new GitLabEventDeserializer();
+    }
 
     @Bean
     public SourceControlEventsReactionPerformer gitLabClient(
