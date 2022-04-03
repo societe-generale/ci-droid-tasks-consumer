@@ -5,6 +5,7 @@ import java.util.Base64;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
@@ -12,12 +13,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -26,9 +21,8 @@ class RemoteForAzureDevopsBulkActionsTest {
   private final static int AZUREDEVOPS_SERVER_PORT_FOR_TESTS=9902;
 
   private final WireMockServer wm = new WireMockServer(
-      options()
-          .port(AZUREDEVOPS_SERVER_PORT_FOR_TESTS)
-          .usingFilesUnderDirectory("src/test/resources/azureDevops"));
+      WireMockConfiguration.options()
+          .port(AZUREDEVOPS_SERVER_PORT_FOR_TESTS));
 
   private final RemoteForAzureDevopsBulkActions remote=new RemoteForAzureDevopsBulkActions("http://localhost:"+AZUREDEVOPS_SERVER_PORT_FOR_TESTS+"/",
       "someApiKey","platform#platform-projects");
@@ -36,7 +30,7 @@ class RemoteForAzureDevopsBulkActionsTest {
   @BeforeEach
   void setup(){
     wm.start();
-    configureFor(AZUREDEVOPS_SERVER_PORT_FOR_TESTS);
+    WireMock.configureFor(AZUREDEVOPS_SERVER_PORT_FOR_TESTS);
   }
 
   @AfterEach
@@ -47,8 +41,8 @@ class RemoteForAzureDevopsBulkActionsTest {
   @Test
   void shouldFindRepository(){
 
-    stubFor(WireMock.get(urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart"))
-        .willReturn(aResponse()
+    WireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart"))
+        .willReturn(WireMock.aResponse()
             .withBodyFile("repositoryDetails.json")
             .withStatus(200)));
 
@@ -61,10 +55,10 @@ class RemoteForAzureDevopsBulkActionsTest {
   @Test
   void shouldFindRefs(){
 
-    stubFor(WireMock.get(
-            urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/refs"))
-              .withQueryParam("filter",equalTo("heads/main"))
-            .willReturn(aResponse()
+    WireMock.stubFor(WireMock.get(
+            WireMock.urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/refs"))
+              .withQueryParam("filter", WireMock.equalTo("heads/main"))
+            .willReturn(WireMock.aResponse()
                     .withBodyFile("refs.json")
                     .withStatus(200)));
 
@@ -77,10 +71,10 @@ class RemoteForAzureDevopsBulkActionsTest {
   @Test
   void shouldGetOpenPrs(){
 
-    stubFor(WireMock.get(
-                    urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/pullrequests"))
-            .withQueryParam("searchCriteria.status",equalTo("active"))
-            .willReturn(aResponse()
+    WireMock.stubFor(WireMock.get(
+                    WireMock.urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/pullrequests"))
+            .withQueryParam("searchCriteria.status", WireMock.equalTo("active"))
+            .willReturn(WireMock.aResponse()
                     .withBodyFile("openPRs.json")
                     .withStatus(200)));
 
@@ -95,23 +89,23 @@ class RemoteForAzureDevopsBulkActionsTest {
   @Test
   void shouldGetFileContent(){
 
-    stubFor(WireMock.get(
-                    urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/items"))
-            .withQueryParam("path",equalTo("pom.xml"))
-            .withQueryParam("versionDescriptor.versionType",equalTo("branch"))
-            .withQueryParam("versionDescriptor.version",equalTo("main"))
-            .withQueryParam("$format",equalTo("json"))
-            .willReturn(aResponse()
+    WireMock.stubFor(WireMock.get(
+                    WireMock.urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/items"))
+            .withQueryParam("path", WireMock.equalTo("pom.xml"))
+            .withQueryParam("versionDescriptor.versionType", WireMock.equalTo("branch"))
+            .withQueryParam("versionDescriptor.version", WireMock.equalTo("main"))
+            .withQueryParam("$format", WireMock.equalTo("json"))
+            .willReturn(WireMock.aResponse()
                     .withBodyFile("fileMetadata.json")
                     .withStatus(200)));
 
-    stubFor(WireMock.get(
-                    urlPathEqualTo("/platform/111114c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/444dcb4d-dbf5-457b-9edc-7fa86bf22561/items"))
-            .withQueryParam("path",equalTo("/pom.xml"))
-            .withQueryParam("versionType",equalTo("Branch"))
-            .withQueryParam("version",equalTo("main"))
-            .withQueryParam("versionOptions",equalTo("None"))
-            .willReturn(aResponse()
+    WireMock.stubFor(WireMock.get(
+                    WireMock.urlPathEqualTo("/platform/111114c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/444dcb4d-dbf5-457b-9edc-7fa86bf22561/items"))
+            .withQueryParam("path", WireMock.equalTo("/pom.xml"))
+            .withQueryParam("versionType", WireMock.equalTo("Branch"))
+            .withQueryParam("version", WireMock.equalTo("main"))
+            .withQueryParam("versionOptions", WireMock.equalTo("None"))
+            .willReturn(WireMock.aResponse()
                     .withBodyFile("samplePom.xml")
                     .withStatus(200)));
 
@@ -127,9 +121,9 @@ class RemoteForAzureDevopsBulkActionsTest {
   @Test
   void shouldUpdateFile() throws RemoteSourceControlAuthorizationException {
 
-    stubFor(WireMock.post(
-                    urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/pushes"))
-            .willReturn(aResponse()
+    WireMock.stubFor(WireMock.post(
+                    WireMock.urlPathEqualTo("/platform/platform-projects/_apis/git/repositories/helm-chart/pushes"))
+            .willReturn(WireMock.aResponse()
                     .withBodyFile("contentUpdatedSuccessfully.json")
                     .withStatus(201)));
 

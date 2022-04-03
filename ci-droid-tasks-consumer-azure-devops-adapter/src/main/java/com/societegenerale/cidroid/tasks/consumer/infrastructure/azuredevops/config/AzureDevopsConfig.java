@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.config;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.RemoteForAzureDevopsBulkActions;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
@@ -23,13 +23,14 @@ public class AzureDevopsConfig {
     @Bean
     public SourceControlEventsReactionPerformer azureDevopsClientForEventsReaction()
     {
+        //TODO implement one
         return null;
     }
 
     @Bean
     public SourceControlEventMapper gitLabEventMapper()
     {
-        //TODO set an Azuredevops one
+        //TODO set an Azuredevops one, if required
         return null;
     }
 

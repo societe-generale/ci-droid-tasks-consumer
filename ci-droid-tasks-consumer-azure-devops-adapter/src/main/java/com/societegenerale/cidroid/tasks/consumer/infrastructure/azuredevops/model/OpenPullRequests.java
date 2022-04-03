@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import lombok.Data;
 import static java.util.Collections.emptyList;
 
 @Data
+public
 class OpenPullRequests {
 
   private List<OpenPullRequest> value;

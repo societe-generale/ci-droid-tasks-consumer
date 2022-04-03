@@ -1,10 +1,11 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
+public
 class NewContent {
 
   private final String content;

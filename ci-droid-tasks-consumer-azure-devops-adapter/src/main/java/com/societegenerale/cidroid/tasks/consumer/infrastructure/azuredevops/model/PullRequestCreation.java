@@ -1,10 +1,11 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Builder
 @Data
+public
 class PullRequestCreation {
 
   private final String sourceRefName;

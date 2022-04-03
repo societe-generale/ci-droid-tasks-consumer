@@ -13,6 +13,22 @@ import javax.annotation.Nonnull;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.AzureDevopsCommit;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.AzureDevopsRepository;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.ContentUpdate;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.FileChange;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.FileMetadata;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.Item;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.NewContent;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.OpenPullRequests;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.PullRequestCreated;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.PullRequestCreation;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.PushedCommit;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.Ref;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.RefCreation;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.Refs;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.SuccessfulPush;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.UpdateRef;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
@@ -35,7 +51,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
-import org.apache.http.HttpStatus;
+import org.springframework.http.HttpStatus;
 
 import static java.util.Collections.emptyList;
 
@@ -160,14 +176,14 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
       var updateContentResponse = httpClient.newCall(request).execute();
 
-      if(updateContentResponse.code() == HttpStatus.SC_UNAUTHORIZED){
+      if(updateContentResponse.code() == HttpStatus.UNAUTHORIZED.value()){
         throw new RemoteSourceControlAuthorizationException("could not update "+path+" on "+repoFullName+" in branch "+directCommit.getBranch());
       }
 
       log.info("pushed a commit for "+path+" on "+repoFullName+" in branch "+directCommit.getBranch());
 
       var successfulPush= objectMapper.readValue(updateContentResponse.body().string(), SuccessfulPush.class);
-      var commitInPush=successfulPush.getCommits().get(0);
+      PushedCommit commitInPush=successfulPush.getCommits().get(0);
 
       Commit postPushCommit=new Commit();
       postPushCommit.setId(commitInPush.getCommitId());
@@ -197,7 +213,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
   public PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String sourceControlAccessToken)
       throws RemoteSourceControlAuthorizationException {
 
-    var pullRequestCreation=PullRequestCreation.builder()
+    var pullRequestCreation= PullRequestCreation.builder()
         .sourceRefName(REFS_HEADS + newPr.getHead())
         .targetRefName(REFS_HEADS + newPr.getBase())
         .title(newPr.getTitle())
@@ -217,7 +233,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
       var prCreationResponse = httpClient.newCall(request).execute();
 
-      if(prCreationResponse.code()==HttpStatus.SC_UNAUTHORIZED){
+      if(prCreationResponse.code()==HttpStatus.UNAUTHORIZED.value()){
         throw new RemoteSourceControlAuthorizationException("user permission issue to create a PR on "+repoFullName);
       }
 
@@ -303,7 +319,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
         log.warn(errorMessage);
 
-        if(branchCreationResponse.code() == HttpStatus.SC_UNAUTHORIZED){
+        if(branchCreationResponse.code() == HttpStatus.UNAUTHORIZED.value()){
           throw new RemoteSourceControlAuthorizationException(errorMessage);
         }
 

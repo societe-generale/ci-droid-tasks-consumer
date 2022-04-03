@@ -1,4 +1,4 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import static java.util.Collections.emptyList;
 
 @Builder
 @Getter
-class AzureDevopsCommit {
+public class AzureDevopsCommit {
 
   private final String comment;
   private final List<FileChange> changes;
