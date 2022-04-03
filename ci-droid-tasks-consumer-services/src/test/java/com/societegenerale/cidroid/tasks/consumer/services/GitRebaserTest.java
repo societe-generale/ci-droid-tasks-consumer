@@ -8,11 +8,9 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
 import lombok.val;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CreateBranchCommand;
 import org.eclipse.jgit.api.Git;
@@ -57,7 +55,23 @@ public class GitRebaserTest {
 
     Rebaser rebaser = new GitRebaser("gitLogin","gitPassword",mockGitWrapper);
 
-    PullRequest pr;
+    private final com.societegenerale.cidroid.tasks.consumer.services.model.Repository repo=
+            com.societegenerale.cidroid.tasks.consumer.services.model.Repository.builder()
+                    .url("someUrl")
+                    .name("someName")
+                    .cloneUrl("someCloneUrl")
+                    //.fullName(FULL_REPO_NAME)
+                    .defaultBranch("main")
+                    .build();
+
+    PullRequest pr =PullRequest.builder()
+            .number(12365)
+            .repo(repo)
+            .baseBranchName("main")
+            .branchName("testBestPractices")
+            .mergeable(false)
+            .isMadeFromForkedRepo(false)
+            .build();
 
     File localRepoDirectory;
 
@@ -73,11 +87,6 @@ public class GitRebaserTest {
     public void setUp() throws IOException, GitAPIException {
 
         File tmpDirectory = createWorkingDirIfRequired();
-
-        String prAsString = IOUtils
-                .toString(GitRebaserTest.class.getClassLoader().getResourceAsStream("mergeablePullRequest.json"), "UTF-8");
-
-        pr = new ObjectMapper().readValue(prAsString, PullRequest.class);
 
         when(mockRepo.getRepositoryState()).thenReturn(RepositoryState.SAFE);
 
@@ -181,8 +190,8 @@ public class GitRebaserTest {
         RevCommit commitInBothBranches=buildRevCommit("testFile1.txt", "in both branches");
         RevCommit commitInRemoteBranchOnly=buildRevCommit("testFile2.txt", "in remote only");
 
-        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"master","remotes/origin/testBestPractices")).thenReturn(asList(commitInBothBranches,commitInRemoteBranchOnly));
-        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"master","testBestPractices")).thenReturn(asList(commitInBothBranches));
+        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"main","remotes/origin/testBestPractices")).thenReturn(asList(commitInBothBranches,commitInRemoteBranchOnly));
+        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"main","testBestPractices")).thenReturn(asList(commitInBothBranches));
 
         when(mockGitWrapper.pull(mockGit)).thenReturn(mock(PullResult.class));
 
@@ -198,8 +207,8 @@ public class GitRebaserTest {
         RevCommit commit1InBothBranches=buildRevCommit("testFile1.txt", "in both branches 1");
         RevCommit commit2InRBothBranches=buildRevCommit("testFile2.txt", "in both branches 2");
 
-        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"master","remotes/origin/testBestPractices")).thenReturn(asList(commit1InBothBranches,commit2InRBothBranches));
-        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"master","testBestPractices")).thenReturn(asList(commit1InBothBranches,commit2InRBothBranches));
+        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"main","remotes/origin/testBestPractices")).thenReturn(asList(commit1InBothBranches,commit2InRBothBranches));
+        when(mockGitWrapper.getCommitsInBranchOnly(mockGit,"main","testBestPractices")).thenReturn(asList(commit1InBothBranches,commit2InRBothBranches));
 
         rebaser.rebase(pr);
 
@@ -222,7 +231,7 @@ public class GitRebaserTest {
 
         verify(mockGitWrapper, times(1)).openRepository(localRepoDirectory);
 
-        verify(mockGitWrapper, times(1)).checkoutBranch(mockGit, "master", false);
+        verify(mockGitWrapper, times(1)).checkoutBranch(mockGit, "main", false);
         verify(mockGitWrapper, times(1)).pull(mockGit);
 
         assertSwitchToBranch();
@@ -239,7 +248,7 @@ public class GitRebaserTest {
 
         verify(mockGitWrapper, times(1)).openRepository(localRepoDirectory);
 
-        verify(mockGitWrapper, times(1)).checkoutBranch(mockGit, "master", false);
+        verify(mockGitWrapper, times(1)).checkoutBranch(mockGit, "main", false);
         verify(mockGitWrapper, times(1)).pull(mockGit);
 
         verify(mockGitWrapper, never()).createBranch(mockGit, "testBestPractices");
@@ -257,7 +266,7 @@ public class GitRebaserTest {
 
         rebaser.rebase(pr);
 
-        verify(mockGitWrapper, times(1)).abortRebase(mockGit, "master");
+        verify(mockGitWrapper, times(1)).abortRebase(mockGit, "main");
 
     }
 
@@ -334,7 +343,7 @@ public class GitRebaserTest {
         when(mockGitWrapper.getCommitsOnWhichBranchIsLateComparedToBaseBranch(mockGit, pr)).thenReturn(asList(dummyRevCommit));
 
         RebaseResult mockRebaseResult = mock(RebaseResult.class);
-        when(mockGitWrapper.rebaseFrom(mockGit, "master")).thenReturn(mockRebaseResult);
+        when(mockGitWrapper.rebaseFrom(mockGit, "main")).thenReturn(mockRebaseResult);
         when(mockRebaseResult.getStatus()).thenReturn(RebaseResult.Status.OK);
 
         val rebaseResult = rebaser.rebase(pr);

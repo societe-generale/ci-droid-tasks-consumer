@@ -7,7 +7,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus;
@@ -67,11 +66,9 @@ class PushEventServiceTest {
             .repo(repo)
             .mergeable(false)
             .isMadeFromForkedRepo(false)
-            .build();;
+            .build();
 
     private List<PullRequest> openPrsOnRepo=List.of(singlePr);
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private PushEventService pushOnDefaultBranchService = new PushEventService(mockRemoteSourceControl, List.of(mockPushEventHandler),false,null);
 
