@@ -1,10 +1,9 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
-import org.junit.jupiter.api.BeforeEach;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Repository;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.mock;
@@ -14,23 +13,21 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class PullRequestEventServiceTest {
 
-    PullRequestEventService pullRequestEventService;
-
     PullRequestEventHandler mockHandler = mock(PullRequestEventHandler.class);
 
-    TestPullRequestEvent.TestPullRequestEventBuilder pullRequestEventBuilder=TestPullRequestEvent.builder();
+    private final Repository repo=Repository.builder().url("someUrl").name("someName").build();
 
-    @BeforeEach
-    public void setUp() throws IOException {
 
-        pullRequestEventService = new PullRequestEventService(Arrays.asList(mockHandler));
+    TestPullRequestEvent.TestPullRequestEventBuilder pullRequestEventBuilder=TestPullRequestEvent.builder()
+            .repository(repo);
 
-    }
+    PullRequestEventService pullRequestEventService= new PullRequestEventService(Arrays.asList(mockHandler));
 
     @Test
     public void shouldProcessPullRequestEventsThatAre_Opened() {
 
-        var pullRequestEvent=pullRequestEventBuilder.build();
+        var pullRequestEvent=pullRequestEventBuilder
+                .build();
 
         pullRequestEventService.onPullRequestEvent(pullRequestEvent);
 
