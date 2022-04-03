@@ -10,11 +10,11 @@ import java.util.Properties;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Repository;
 import com.societegenerale.cidroid.tasks.consumer.services.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +31,20 @@ public class EMailNotifierTest {
     private EMailNotifier emailNotifier;
 
     private GreenMail mailServer = new GreenMail(ServerSetupTest.SMTP);
+
+    private final Repository repo=Repository.builder()
+            .url("someUrl")
+            .name("someName")
+
+            .defaultBranch("main")
+            .build();
+
+    private PullRequest pr=PullRequest.builder()
+            .number(1265)
+            .repo(repo)
+            .mergeable(false)
+            .isMadeFromForkedRepo(false)
+            .build();
 
     @BeforeEach
     public void setUp() {
@@ -71,10 +85,6 @@ public class EMailNotifierTest {
         String messageContent = "PR is not mergeable anymore";
 
         Message msg = new Message(messageContent);
-
-        PullRequest pr = new ObjectMapper().readValue(
-                getClass().getClassLoader().getResourceAsStream("singlePullRequest.json"),
-                PullRequest.class);
 
         Map<String, Object> additionalInfos = new HashMap<>();
         additionalInfos.put(PULL_REQUEST, pr);

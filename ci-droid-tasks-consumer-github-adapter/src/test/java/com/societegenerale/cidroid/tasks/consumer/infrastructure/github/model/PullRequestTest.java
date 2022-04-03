@@ -1,10 +1,9 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
