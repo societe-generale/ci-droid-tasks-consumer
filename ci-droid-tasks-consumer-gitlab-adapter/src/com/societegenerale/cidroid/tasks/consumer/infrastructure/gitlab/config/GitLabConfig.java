@@ -1,10 +1,9 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
-
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
+package com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.config;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.GitLabEventDeserializer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.RemoteForGitLabBulkActions;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.RemoteForGitLabEventsActions;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

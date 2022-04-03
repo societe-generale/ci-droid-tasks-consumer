@@ -31,6 +31,13 @@
             <version>${project.parent.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.societegenerale.ci-droid.tasks-consumer</groupId>
+            <artifactId>ci-droid-tasks-consumer-gitlab-adapter</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- both required to get an HTTP healthcheck -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -51,6 +58,7 @@
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
         </dependency>
+
 
     </dependencies>
 

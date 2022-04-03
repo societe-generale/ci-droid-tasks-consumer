@@ -1,10 +1,10 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteForGitHubBulkActions;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.FeignRemoteForGitHubEvents;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.GitHubEventDeserializer;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.SourceControlApiAccessKeyInterceptor;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import feign.Client;
 import feign.Logger;
 import feign.RequestInterceptor;

@@ -1,5 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
+import java.util.List;
+
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.extensions.actionToReplicate.AddXmlContentAction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAction;
@@ -10,7 +12,6 @@ import com.societegenerale.cidroid.extensions.actionToReplicate.ReplaceMavenProf
 import com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.TemplateBasedContentAction;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.LogNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.ActionToReplicateController;
@@ -20,12 +21,12 @@ import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformServic
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

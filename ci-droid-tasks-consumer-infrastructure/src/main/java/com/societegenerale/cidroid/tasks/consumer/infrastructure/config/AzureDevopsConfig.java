@@ -1,9 +1,8 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.RemoteForAzureDevopsBulkActions;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.GitLabEventDeserializer;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,7 +30,7 @@ public class AzureDevopsConfig {
     public SourceControlEventMapper gitLabEventMapper()
     {
         //TODO set an Azuredevops one
-        return new GitLabEventDeserializer();
+        return null;
     }
 
 

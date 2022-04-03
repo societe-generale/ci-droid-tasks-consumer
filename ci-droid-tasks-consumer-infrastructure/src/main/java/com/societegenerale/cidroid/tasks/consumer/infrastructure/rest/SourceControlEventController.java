@@ -1,8 +1,8 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.rest;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -11,18 +11,22 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/cidroid-sync-webhook")
 @Slf4j
 public class SourceControlEventController {
 
-    private PushEventService pushEventService;
+    private final PushEventService pushEventService;
 
-    private PullRequestEventService pullRequestEventService;
+    private final PullRequestEventService pullRequestEventService;
 
-    private SourceControlEventMapper sourceControlEventMapper;
+    private final SourceControlEventMapper sourceControlEventMapper;
 
     public SourceControlEventController(PullRequestEventService pullRequestEventService, PushEventService pushEventService, SourceControlEventMapper sourceControlEventMapper) {
         this.pullRequestEventService = pullRequestEventService;

@@ -1,12 +1,15 @@
 package com.societegenerale.cidroid.tasks.consumer.autoconfigure;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.GitRebaser;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.GitWrapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.RestTemplateResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidBehavior;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GitHubConfig;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.GitLabConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.config.GitLabConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.GitHubPullRequestCommentNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.HttpNotifier;
@@ -22,8 +25,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEve
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.RebaseHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

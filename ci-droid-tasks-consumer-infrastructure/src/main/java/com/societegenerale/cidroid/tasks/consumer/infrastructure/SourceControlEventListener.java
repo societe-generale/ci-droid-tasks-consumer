@@ -2,6 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -9,11 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SourceControlEventListener {
 
-    private PushEventService pushEventService;
+    private final PushEventService pushEventService;
 
-    private PullRequestEventService pullRequestEventService;
+    private final PullRequestEventService pullRequestEventService;
 
-    private  SourceControlEventMapper eventMapper;
+    private final SourceControlEventMapper eventMapper;
 
     public SourceControlEventListener(PullRequestEventService pullRequestEventService,PushEventService pushEventService, SourceControlEventMapper eventMapper) {
         this.pullRequestEventService = pullRequestEventService;

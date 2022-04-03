@@ -1,8 +1,13 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab;
 
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.annotation.Nonnull;
+
+import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
@@ -17,11 +22,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedR
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.Content;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus;
 import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import java.util.List;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.Nonnull;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.Constants.Encoding;
 import org.gitlab4j.api.Constants.MergeRequestState;
@@ -33,6 +33,9 @@ import org.gitlab4j.api.models.CommitPayload;
 import org.gitlab4j.api.models.MergeRequest;
 import org.gitlab4j.api.models.MergeRequestFilter;
 import org.gitlab4j.api.models.RepositoryFile;
+
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerformer {
@@ -152,7 +155,7 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
       var lastCommit=readOnlyGitlabClient.getCommitsApi().getCommits(repoFullName, branchName,null,null).get(0);
 
       return new Reference(
-          REFS_HEADS + branchName, new Reference.ObjectReference("commit", lastCommit.getId()));
+          RemoteSourceControl.REFS_HEADS + branchName, new Reference.ObjectReference("commit", lastCommit.getId()));
 
     } catch (GitLabApiException e) {
       log.error("problem while fetching head",e);
@@ -180,7 +183,7 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
       var newBranch=getReadWriteGitLabClient(sourceControlAccessToken).getRepositoryApi().createBranch(repoFullName,branchName,fromReferenceSha1);
 
       return new Reference(
-          REFS_HEADS + newBranch.getName(), new Reference.ObjectReference("commit", fromReferenceSha1));
+          RemoteSourceControl.REFS_HEADS + newBranch.getName(), new Reference.ObjectReference("commit", fromReferenceSha1));
 
     } catch (GitLabApiException e) {
       throw new RemoteSourceControlAuthorizationException("problem while creating a branch",e);
