@@ -11,17 +11,15 @@ import com.societegenerale.cidroid.tasks.consumer.services.RemoteSourceControl;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.Content;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Commit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestToCreate;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Reference;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Repository;
+import com.societegenerale.cidroid.tasks.consumer.services.model.ResourceContent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab4j.api.Constants.Encoding;
 import org.gitlab4j.api.Constants.MergeRequestState;
@@ -59,11 +57,10 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
     try {
       RepositoryFile file = readOnlyGitlabClient.getRepositoryFileApi().getFile(repoFullName,path,branch);
 
-      var fileContent= new ResourceContent();
-      fileContent.setBase64EncodedContent(file.getContent());
-      fileContent.setSha(file.getCommitId());
-      return fileContent;
-
+      return ResourceContent.builder()
+                      .base64EncodedContent(file.getContent())
+                      .sha(file.getCommitId())
+                      .build();
 
     } catch (GitLabApiException e) {
       log.error("could not retrieve the content of file "+path+" for project "+repoFullName+" on branch "+branch,e);
@@ -99,15 +96,16 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
 
       var commitPerformed=getReadWriteGitLabClient(sourceControlAccessToken).getCommitsApi().createCommit(repoFullName,commitPayload);
 
-      Commit commitOnUpdatedResource=new Commit();
-      commitOnUpdatedResource.setId(commitPerformed.getId());
-      commitOnUpdatedResource.setAuthor(user);
+      Commit commitOnUpdatedResource=Commit.builder()
+                      .id(commitPerformed.getId())
+                      .author(user)
+                      .build();
 
-      var content= new Content();
+      var content= new UpdatedResource.Content();
       content.setHtmlUrl(commitPerformed.getWebUrl());
 
       return UpdatedResource.builder()
-          .updateStatus(UpdateStatus.UPDATE_OK)
+          .updateStatus(UpdatedResource.UpdateStatus.UPDATE_OK)
           .commit(commitOnUpdatedResource)
           .content(content)
           .build();
@@ -202,10 +200,11 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
 
     var gitLabRepo=optionalGitLabRepo.get();
 
-    var repository=new Repository();
-    repository.setFullName(repoFullName);
-    repository.setId(gitLabRepo.getId());
-    repository.setDefaultBranch(gitLabRepo.getDefaultBranch());
+    var repository=Repository.builder()
+            .fullName(repoFullName)
+            .id(gitLabRepo.getId())
+            .defaultBranch(gitLabRepo.getDefaultBranch())
+            .build();
 
     return Optional.of(repository);
   }

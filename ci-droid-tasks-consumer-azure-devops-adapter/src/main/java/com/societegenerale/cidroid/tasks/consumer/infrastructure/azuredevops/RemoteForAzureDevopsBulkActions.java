@@ -32,18 +32,15 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.mod
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Commit;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.DirectCommit;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestToCreate;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Reference.ObjectReference;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.ResourceContent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.Content;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.UpdatedResource.UpdateStatus;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Commit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestToCreate;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Reference;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Repository;
+import com.societegenerale.cidroid.tasks.consumer.services.model.ResourceContent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
@@ -121,11 +118,11 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
         var fileContentResponse = httpClient.newCall(readOnlyRequestTemplate.url(fileMetadata.getUrl()).build()).execute();
 
-        var fileContent = new ResourceContent();
-
-        fileContent.setBase64EncodedContent(Base64.getEncoder().encodeToString(fileContentResponse.body().string().getBytes(StandardCharsets.UTF_8)));
-        fileContent.setSha(fileMetadata.getCommitId());
-        return fileContent;
+        return ResourceContent
+                .builder()
+                .base64EncodedContent(Base64.getEncoder().encodeToString(fileContentResponse.body().string().getBytes(StandardCharsets.UTF_8)))
+                .sha(fileMetadata.getCommitId())
+                .build();
       }
       else{
         log.info("file not found : "+fileToFetch+" on branch "+branchName);
@@ -185,14 +182,15 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
       var successfulPush= objectMapper.readValue(updateContentResponse.body().string(), SuccessfulPush.class);
       PushedCommit commitInPush=successfulPush.getCommits().get(0);
 
-      Commit postPushCommit=new Commit();
-      postPushCommit.setId(commitInPush.getCommitId());
-      postPushCommit.setUrl(commitInPush.getUrl());
+      Commit postPushCommit= Commit.builder()
+                .id(commitInPush.getCommitId())
+                .url(commitInPush.getUrl())
+                .build();
 
       return UpdatedResource.builder()
           .commit(postPushCommit)
-          .content(new Content())
-          .updateStatus(UpdateStatus.UPDATE_OK)
+          .content(new UpdatedResource.Content())
+          .updateStatus(UpdatedResource.UpdateStatus.UPDATE_OK)
           .build();
 
 
@@ -276,7 +274,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
         Ref ref=refs.getValue().get(0);
 
-        ObjectReference objectReference=new ObjectReference("",ref.getObjectId());
+        Reference.ObjectReference objectReference=new Reference.ObjectReference("",ref.getObjectId());
 
         return new Reference(ref.getName(),objectReference);
       }
@@ -326,7 +324,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
         return null;
       }
 
-      return new Reference(newRef.getName(),new ObjectReference("",fromReferenceSha1));
+      return new Reference(newRef.getName(),new Reference.ObjectReference("",fromReferenceSha1));
 
     } catch (IOException e) {
       log.warn("problem while creating branch "+branchName+" on repo "+repoFullName,e);
@@ -358,7 +356,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
         var repo= objectMapper.readValue(repositoryResponse.body().string(), AzureDevopsRepository.class);
 
-        return Optional.of(com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository.builder()
+        return Optional.of(Repository.builder()
             .url(repo.getUrl())
             .name(repo.getName())
             .fullName(repo.getName())
@@ -413,7 +411,6 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
     //AzureDevops doesn't allow to retrieve a user details from the personal token
     //it needs to go through Oauth2 :
     // https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/manage-personal-access-tokens-via-api?view=azure-devops#authenticate-with-azure-active-directory-azure-ad-tokens
-
 
     return User.builder().email(emailAddress).login(extractUsernameFrom(emailAddress)).build();
   }
