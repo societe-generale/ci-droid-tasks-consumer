@@ -1,21 +1,20 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.mocks;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Objects;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus.NOT_MERGEABLE;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.ResourceContent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.mockserver.model.HttpResponse;
-
-import static com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus.NOT_MERGEABLE;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 @Slf4j
 public class GitHubMockServer extends MockServer {
@@ -54,7 +53,7 @@ public class GitHubMockServer extends MockServer {
                 .when(request()
                         .withMethod("POST")
                         .withPath("/api/v3/repos/baxterthehacker/public-repo/pulls"))
-                .respond(response().withStatusCode(200));
+                .respond(getPullRequestCreationResponse());
 
 
         mockServer
@@ -87,6 +86,14 @@ public class GitHubMockServer extends MockServer {
                         .withMethod("PATCH")
                         .withPath("/api/v3/repos/baxterthehacker/public-repo/pulls/[0-9]+"))
                 .respond(response().withStatusCode(200));
+    }
+
+    private HttpResponse getPullRequestCreationResponse() {
+
+        return response()
+            .withBody(readFromFile("pullRequestCreationResponse.json"))
+            .withStatusCode(201);
+
     }
 
     private HttpResponse returnContent() {
