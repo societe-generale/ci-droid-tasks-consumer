@@ -1,10 +1,12 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.model;
 
-import java.util.List;
+import static java.util.Collections.emptyList;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Commit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.User;
+import java.util.List;
+import javax.annotation.Nonnull;
 import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -22,6 +24,36 @@ public class GitLabCommit {
     private List<String> modified;
 
     private List<String> removed;
+
+    @Nonnull
+    public List<String> getAddedFiles() {
+
+        if(added==null){
+            return emptyList();
+        }
+
+        return added;
+    }
+
+    @Nonnull
+    public List<String> getModifiedFiles() {
+
+        if(modified==null){
+            return emptyList();
+        }
+
+        return modified;
+    }
+
+    @Nonnull
+    public List<String> getRemovedFiles() {
+
+        if(removed==null){
+            return emptyList();
+        }
+
+        return removed;
+    }
 
     public Commit toStandardCommit(){
         return Commit.builder()

@@ -1,9 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.model;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nonnull;
+import static java.util.stream.Collectors.toList;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -12,9 +9,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Commit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Repository;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nonnull;
 import lombok.Data;
-
-import static java.util.stream.Collectors.toList;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -64,6 +62,16 @@ public class GitLabPushEvent implements PushEvent,GitLabEvent {
         }
 
         return gitLabCommits.stream().map(GitLabCommit::toStandardCommit).collect(toList());
+    }
+
+    @Nonnull
+    public List<GitLabCommit> getGitLabCommits() {
+
+        if(gitLabCommits==null){
+            return Collections.emptyList();
+        }
+
+        return gitLabCommits;
     }
 
     @Override
