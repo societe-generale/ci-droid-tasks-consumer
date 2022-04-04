@@ -1,21 +1,20 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.handlers;
 
-import java.util.List;
-
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
-import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.Test;
-import org.mockserver.verify.VerificationTimes;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import static com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus.MERGEABLE;
 import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 import static org.mockserver.model.HttpRequest.request;
+
+import com.societegenerale.cidroid.tasks.consumer.services.GitCommit;
+import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import java.util.List;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.Test;
+import org.mockserver.verify.VerificationTimes;
+import org.springframework.beans.factory.annotation.Autowired;
 
 class PullRequestRebaseIT extends SourceControlEventHandlerIT {
 
@@ -29,7 +28,7 @@ class PullRequestRebaseIT extends SourceControlEventHandlerIT {
     @Test
     void shouldRebaseMergeablePullRequest() {
         PullRequest expectedPullRequest = argThat(pr -> pr.getNumber() == PULL_REQUEST_ID);
-        when(mockRebaser.rebase(expectedPullRequest.toStandardPullRequest()))
+        when(mockRebaser.rebase(expectedPullRequest))
                 .thenReturn(getRebaseResult());
 
         githubMockServer.updatePullRequestMergeabilityStatus(MERGEABLE);
