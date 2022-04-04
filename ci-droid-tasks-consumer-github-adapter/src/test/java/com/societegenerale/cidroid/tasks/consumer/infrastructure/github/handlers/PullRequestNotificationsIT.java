@@ -5,8 +5,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.mocks.NotifierMock;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.User;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
 import org.apache.commons.lang3.tuple.Pair;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
