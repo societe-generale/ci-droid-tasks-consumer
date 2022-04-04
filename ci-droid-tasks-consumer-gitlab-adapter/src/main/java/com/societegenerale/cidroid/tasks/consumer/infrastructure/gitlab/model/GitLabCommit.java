@@ -26,7 +26,7 @@ public class GitLabCommit {
     private List<String> removed;
 
     @Nonnull
-    public List<String> getAddedFiles() {
+    public List<String> getAdded() {
 
         if(added==null){
             return emptyList();
@@ -36,7 +36,7 @@ public class GitLabCommit {
     }
 
     @Nonnull
-    public List<String> getModifiedFiles() {
+    public List<String> getModified() {
 
         if(modified==null){
             return emptyList();
@@ -46,7 +46,7 @@ public class GitLabCommit {
     }
 
     @Nonnull
-    public List<String> getRemovedFiles() {
+    public List<String> getRemoved() {
 
         if(removed==null){
             return emptyList();
