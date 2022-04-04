@@ -6,14 +6,18 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Commit {
 
     private String id;

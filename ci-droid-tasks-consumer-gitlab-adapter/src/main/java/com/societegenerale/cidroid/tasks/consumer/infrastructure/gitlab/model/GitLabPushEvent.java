@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -12,6 +13,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.Commit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Repository;
 import lombok.Data;
+
+import static java.util.stream.Collectors.toList;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -29,11 +32,22 @@ public class GitLabPushEvent implements PushEvent,GitLabEvent {
     @JsonProperty("total_commits_count")
     private int nbCommits;
 
-    private List<Commit> commits;
+    @JsonIgnore
+    private List<GitLabCommit> gitLabCommits;
+
+    public void setCommits(List<GitLabCommit> gitLabCommits){
+        this.gitLabCommits=gitLabCommits;
+    }
 
     private String ref;
 
+    @JsonIgnore
     private Repository repository;
+
+    @Override
+    public void setRepository(Repository repo) {
+        this.repository=repo;
+    }
 
     private String rawEvent;
 
@@ -45,16 +59,17 @@ public class GitLabPushEvent implements PushEvent,GitLabEvent {
     @Nonnull
     public List<Commit> getCommits() {
 
-        if(commits==null){
+        if(gitLabCommits==null){
             return Collections.emptyList();
         }
 
-        return commits;
+        return gitLabCommits.stream().map(GitLabCommit::toStandardCommit).collect(toList());
     }
 
     @Override
     public void setRawEvent(String rawEvent) {
         this.rawEvent=rawEvent;
     }
+
 
 }
