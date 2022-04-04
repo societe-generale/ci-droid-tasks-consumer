@@ -4,6 +4,13 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.Rem
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Comment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestFile;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
+import java.util.List;
+import javax.annotation.Nonnull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -23,8 +30,46 @@ public class AzureDevopsConfig {
     @Bean
     public SourceControlEventsReactionPerformer azureDevopsClientForEventsReaction()
     {
-        //TODO implement one
-        return null;
+        //TODO implement a real one
+        return new SourceControlEventsReactionPerformer() {
+            @Nonnull
+            @Override
+            public List<PullRequest> fetchOpenPullRequests(String repoFullName) {
+                return null;
+            }
+
+            @Override
+            public PullRequest fetchPullRequestDetails(String repoFullName, int prNumber) {
+                return null;
+            }
+
+            @Override
+            public User fetchUser(String login) {
+                return null;
+            }
+
+            @Override
+            public void addCommentOnPR(String repoFullName, int prNumber, Comment comment) {
+
+            }
+
+            @Nonnull
+            @Override
+            public List<PullRequestFile> fetchPullRequestFiles(String repoFullName, int prNumber) {
+                return null;
+            }
+
+            @Nonnull
+            @Override
+            public List<PullRequestComment> fetchPullRequestComments(String repoFullName, int prNumber) {
+                return null;
+            }
+
+            @Override
+            public void closePullRequest(String repoFullName, int prNumber) {
+
+            }
+        };
     }
 
     @Bean
