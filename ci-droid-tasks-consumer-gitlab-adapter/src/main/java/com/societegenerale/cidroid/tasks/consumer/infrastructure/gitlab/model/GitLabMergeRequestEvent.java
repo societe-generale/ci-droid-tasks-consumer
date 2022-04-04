@@ -2,6 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.gitlab.model;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -20,6 +21,7 @@ public class GitLabMergeRequestEvent implements PullRequestEvent,GitLabEvent{
 
     public String action;
 
+    @JsonIgnore
     private Repository repository;
 
     @JsonProperty("object_attributes")
