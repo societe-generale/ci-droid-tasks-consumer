@@ -1,5 +1,9 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.handlers;
 
+import static com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus.NOT_MERGEABLE;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model.User;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
@@ -9,11 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus.NOT_MERGEABLE;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class PullRequestNotificationsIT extends SourceControlEventHandlerIT {
+class PullRequestNotificationsIT extends SourceControlEventHandlerIT {
 
     private static final String OWNER_LOGIN = "octocat";
     private static final String OWNER_EMAIL = "octocat@github.com";
@@ -28,7 +28,7 @@ public class PullRequestNotificationsIT extends SourceControlEventHandlerIT {
     }
 
     @Test
-    public void shouldNotifyPullRequestOwnerIfNotMergeable() {
+    void shouldNotifyPullRequestOwnerIfNotMergeable() {
 
         githubMockServer.updatePullRequestMergeabilityStatus(NOT_MERGEABLE);
 
