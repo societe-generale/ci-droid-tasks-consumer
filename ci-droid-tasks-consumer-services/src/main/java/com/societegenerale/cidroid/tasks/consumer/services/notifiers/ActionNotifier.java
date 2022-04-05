@@ -1,6 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.services.notifiers;
 
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
 
 public interface ActionNotifier {
 

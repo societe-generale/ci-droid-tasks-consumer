@@ -1,5 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.config;
 
+import java.util.List;
+
 import com.societegenerale.cidroid.api.actionToReplicate.ActionToReplicate;
 import com.societegenerale.cidroid.extensions.actionToReplicate.AddXmlContentAction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.DeleteResourceAction;
@@ -9,13 +11,11 @@ import com.societegenerale.cidroid.extensions.actionToReplicate.RemoveXmlElement
 import com.societegenerale.cidroid.extensions.actionToReplicate.ReplaceMavenProfileAction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.TemplateBasedContentAction;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.ActionToPerformListener;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.SourceControlEventMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.EMailActionNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers.LogNotifier;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.ActionToReplicateController;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.rest.SourceControlEventController;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionNotificationService;
+import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformListener;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformService;
 import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
@@ -25,7 +25,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullReq
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
 import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.ActionNotifier;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -37,7 +36,7 @@ import org.springframework.mail.MailSender;
 
 @Configuration
 @ComponentScan
-public class InfraConfig {
+public class  InfraConfig {
 
 
     @Bean
@@ -97,13 +96,6 @@ public class InfraConfig {
         return new ActionToPerformListener(actionToPerformService, actionsToReplicate,actionNotifier);
     }
 
-
-    @Bean
-    @ConditionalOnProperty(name = "synchronous-mode", havingValue = "true")
-    public SourceControlEventController sourceControlEventController(PullRequestEventService pullRequestEventService, PushEventService pushEventService,SourceControlEventMapper sourceControlEventMapper) {
-
-        return new SourceControlEventController(pullRequestEventService, pushEventService,sourceControlEventMapper);
-    }
 
     @Bean
     @ConditionalOnProperty(name = "synchronous-mode", havingValue = "true")

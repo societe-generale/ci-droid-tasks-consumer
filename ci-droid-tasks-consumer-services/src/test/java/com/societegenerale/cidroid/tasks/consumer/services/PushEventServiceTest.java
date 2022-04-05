@@ -1,8 +1,26 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import static com.societegenerale.cidroid.tasks.consumer.services.TestUtils.readFromInputStream;
-import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.NOT_MERGEABLE;
-import static com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus.UNKNOWN;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Repository;
+import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+
+import static com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus.NOT_MERGEABLE;
+import static com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus.UNKNOWN;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -19,26 +37,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventHandler;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.SourceControlEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPushEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PRmergeableStatus;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-
 class PushEventServiceTest {
 
     private static final String FULL_REPO_NAME = "baxterthehacker/public-repo";
@@ -51,38 +49,37 @@ class PushEventServiceTest {
 
     private final PushEventHandler mockPushEventHandler = mock(PushEventHandler.class);
 
-    private PushEventService pushOnDefaultBranchService;
+    private final Repository repo=Repository.builder()
+            .url("someUrl")
+            .name("someName")
+            .fullName(FULL_REPO_NAME)
+            .defaultBranch("main")
+            .build();
 
-    private PushEvent pushEvent;
+    private final PushEvent pushEvent = TestPushEvent.builder()
+            .repository(repo)
+            .ref("refs/head/main")
+            .build();
 
-    private PullRequest singlePr;
+    private PullRequest singlePr=PullRequest.builder()
+            .number(PULL_REQUEST_ID)
+            .repo(repo)
+            .mergeable(false)
+            .isMadeFromForkedRepo(false)
+            .build();
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private List<PullRequest> openPrsOnRepo=List.of(singlePr);
 
+    private PushEventService pushOnDefaultBranchService = new PushEventService(mockRemoteSourceControl, List.of(mockPushEventHandler),false,null);
 
     @BeforeEach
     public void setUp() throws IOException {
 
-        List<PushEventHandler> pushEventHandlers = new ArrayList<>();
-        pushEventHandlers.add(mockPushEventHandler);
-
-        pushOnDefaultBranchService = new PushEventService(mockRemoteSourceControl, pushEventHandlers,false,null);
-
-        String pushEventPayload = readFromInputStream(getClass().getResourceAsStream("/pushEvent.json"));
-        pushEvent = objectMapper.readValue(pushEventPayload, GitHubPushEvent.class);
-
-
-        String openPrsOnRepoAsString = readFromInputStream(getClass().getResourceAsStream("/pullRequests.json"));
-        List<PullRequest> openPrsOnRepo = objectMapper.readValue(openPrsOnRepoAsString, new TypeReference<>() {
-        });
         when(mockRemoteSourceControl.fetchOpenPullRequests(FULL_REPO_NAME)).thenReturn(openPrsOnRepo);
 
-        String prAsString = readFromInputStream(getClass().getResourceAsStream(SINGLE_PULL_REQUEST_JSON));
-        singlePr = objectMapper.readValue(prAsString, PullRequest.class);
         when(mockRemoteSourceControl.fetchPullRequestDetails(FULL_REPO_NAME, PULL_REQUEST_ID)).thenReturn(singlePr);
 
         when(mockRemoteSourceControl.fetchUser("octocat")).thenReturn(new User("octocat", "octocat@github.com"));
-
     }
 
     @Test
@@ -193,10 +190,9 @@ class PushEventServiceTest {
 
     private void updatePRmergeabilityStatus(PRmergeableStatus pRmergeableStatus) throws IOException {
 
-        PullRequest pullRequest = objectMapper.readValue(readFromInputStream(getClass().getResourceAsStream(SINGLE_PULL_REQUEST_JSON)), PullRequest.class);
-        pullRequest.setMergeable(pRmergeableStatus.getValue());
+        singlePr.setMergeable(pRmergeableStatus.getValue());
 
-        when(mockRemoteSourceControl.fetchPullRequestDetails(FULL_REPO_NAME, PULL_REQUEST_ID)).thenReturn(pullRequest);
+        when(mockRemoteSourceControl.fetchPullRequestDetails(FULL_REPO_NAME, PULL_REQUEST_ID)).thenReturn(singlePr);
     }
 
 }

@@ -1,16 +1,18 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.api.ResourceToUpdate;
 import com.societegenerale.cidroid.api.gitHubInteractions.PullRequestGitHubInteraction;
 import com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAction;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
+import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformCommand;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ActionToPerformCommandTest {
 

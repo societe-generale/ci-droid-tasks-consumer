@@ -2,6 +2,8 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
+import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformCommand;
+import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformListener;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

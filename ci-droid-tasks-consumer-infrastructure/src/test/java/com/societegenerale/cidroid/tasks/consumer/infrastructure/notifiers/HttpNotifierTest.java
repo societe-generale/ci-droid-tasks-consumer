@@ -2,7 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.mocks.TargetHttpBackendForNotifier;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

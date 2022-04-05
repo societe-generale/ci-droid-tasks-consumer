@@ -68,24 +68,24 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <spring-cloud.version>2021.0.0</spring-cloud.version>
+        <spring-cloud.version>2021.0.1</spring-cloud.version>
 
         <commons-io.version>2.11.0</commons-io.version>
         <ant-style-path-matcher.version>1.0.0</ant-style-path-matcher.version>
-        <logback-classic.version>1.2.3</logback-classic.version>
-        <logstash-logback-encoder.version>4.11</logstash-logback-encoder.version>
-        <janino.version>3.0.6</janino.version>
-        <jgit.version>5.2.0.201812061821-r</jgit.version>
+        <logback-classic.version>1.2.11</logback-classic.version>
+        <logstash-logback-encoder.version>7.0.1</logstash-logback-encoder.version>
+        <janino.version>3.1.6</janino.version>
+        <jgit.version>6.1.0.202203080745-r</jgit.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
 
         <mockserver.version>5.5.1</mockserver.version>
-        <awaitility.version>4.1.1</awaitility.version>
-        <greenmail.version>1.6.5</greenmail.version>
+        <awaitility.version>4.2.0</awaitility.version>
+        <greenmail.version>1.6.8</greenmail.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
 
         <jacoco.version>0.8.2</jacoco.version>
         <guava.version>31.0.1-jre</guava.version>
-        <springfox.version>3.0.0</springfox.version>
+        <springdoc.version>1.6.6</springdoc.version>
 
 
         <ci-droid-api.version>1.0.6</ci-droid-api.version>
@@ -114,12 +114,15 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.2</version>
+        <version>2.6.6</version>
     </parent>
 
     <modules>
         <module>ci-droid-tasks-consumer-services</module>
         <module>ci-droid-tasks-consumer-infrastructure</module>
+        <module>ci-droid-tasks-consumer-gitlab-adapter</module>
+        <module>ci-droid-tasks-consumer-azure-devops-adapter</module>
+        <module>ci-droid-tasks-consumer-github-adapter</module>
         <module>ci-droid-tasks-consumer-autoconfigure</module>
         <module>ci-droid-tasks-consumer-starter</module>
     </modules>
@@ -185,7 +188,6 @@
             <dependency>
                 <groupId>org.codehaus.janino</groupId>
                 <artifactId>janino</artifactId>
-                <version>${janino.version}</version>
             </dependency>
 
             <dependency>

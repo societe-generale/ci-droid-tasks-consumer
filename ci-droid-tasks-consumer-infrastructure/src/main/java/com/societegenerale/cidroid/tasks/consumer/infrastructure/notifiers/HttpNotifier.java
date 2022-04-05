@@ -1,16 +1,16 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.notifiers;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+
 import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;
-
-import java.time.LocalDateTime;
-import java.util.Map;
 
 @Slf4j
 
@@ -35,7 +35,6 @@ public class HttpNotifier implements Notifier {
         }
 
     }
-
 
     @Data
     private class NotificationBody{

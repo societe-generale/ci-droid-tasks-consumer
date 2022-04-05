@@ -1,20 +1,21 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
-import static java.util.stream.Collectors.toMap;
-
-import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
-import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestFile;
-import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import io.github.azagniotov.matcher.AntPathMatcher;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestFile;
+import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
+import io.github.azagniotov.matcher.AntPathMatcher;
 import lombok.extern.slf4j.Slf4j;
+
+import static java.util.stream.Collectors.toMap;
 
 @Slf4j
 public class BestPracticeNotifierHandler implements PullRequestEventHandler {

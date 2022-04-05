@@ -1,5 +1,29 @@
 package com.societegenerale.cidroid.tasks.consumer.services.eventhandlers;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
+import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
+import com.societegenerale.cidroid.tasks.consumer.services.TestPullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestFile;
+import com.societegenerale.cidroid.tasks.consumer.services.model.Repository;
+import com.societegenerale.cidroid.tasks.consumer.services.model.User;
+import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.slf4j.LoggerFactory;
+
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,29 +34,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
-import com.societegenerale.cidroid.tasks.consumer.services.ResourceFetcher;
-import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
-import com.societegenerale.cidroid.tasks.consumer.services.model.Message;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.GitHubPullRequestEvent;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestComment;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequestFile;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.Repository;
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.User;
-import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.slf4j.LoggerFactory;
 
 class BestPracticeNotifierHandlerTest {
 
@@ -53,9 +54,9 @@ class BestPracticeNotifierHandlerTest {
 
     private final ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
 
-    private final Repository repository = new Repository();
+    private final Repository repository = Repository.builder().fullName(REPO_FULL_NAME).build();
 
-    private final PullRequestFile matchingPullRequestFile = new PullRequestFile();
+    private final PullRequestFile matchingPullRequestFile = PullRequestFile.builder().build();
 
     private PullRequestEvent pullRequestEvent;
 
@@ -68,8 +69,7 @@ class BestPracticeNotifierHandlerTest {
 
         patternToContentMapping.put("**/db/changelog/**/*.yml", "http://someUrl/liquibaseBestPractices.md");
 
-        repository.setFullName(REPO_FULL_NAME);
-        pullRequestEvent = new GitHubPullRequestEvent("created", 123, repository);
+        pullRequestEvent = new TestPullRequestEvent("created", 123, repository,"someRawEvent");
 
     }
 
@@ -98,8 +98,9 @@ class BestPracticeNotifierHandlerTest {
     @Test
     void shouldNotifyOnlyOnceWhenSeveralMatches() {
 
-        PullRequestFile anotherMatchingPullRequestFile = new PullRequestFile();
-        anotherMatchingPullRequestFile.setFilename("myModule/src/main/java/org/myPackage/CoucouDto.java");
+        PullRequestFile anotherMatchingPullRequestFile = PullRequestFile.builder()
+                .filename("myModule/src/main/java/org/myPackage/CoucouDto.java")
+                .build();
 
         when(mockRemoteSourceControl.fetchPullRequestFiles(REPO_FULL_NAME, 123))
                 .thenReturn(asList(matchingPullRequestFile, anotherMatchingPullRequestFile));
@@ -162,8 +163,9 @@ class BestPracticeNotifierHandlerTest {
 
         String secondMatchingFileNameOnWhichTheresNoCommentYet = "commons/src/main/resources/db/changelog/changes/005-someOtherFile.yml";
 
-        PullRequestFile secondMatchingPullRequestFile = new PullRequestFile();
-        secondMatchingPullRequestFile.setFilename(secondMatchingFileNameOnWhichTheresNoCommentYet);
+        PullRequestFile secondMatchingPullRequestFile = PullRequestFile.builder()
+                .filename(secondMatchingFileNameOnWhichTheresNoCommentYet)
+                .build();
 
         when(mockRemoteSourceControl.fetchPullRequestFiles(REPO_FULL_NAME, 123))
                 .thenReturn(asList(matchingPullRequestFile, secondMatchingPullRequestFile));

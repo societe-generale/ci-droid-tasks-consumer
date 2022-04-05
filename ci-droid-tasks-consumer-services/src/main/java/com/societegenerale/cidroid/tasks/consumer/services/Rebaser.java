@@ -1,9 +1,9 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import com.societegenerale.cidroid.tasks.consumer.services.model.github.PullRequest;
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.List;
+
+import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest;
+import org.apache.commons.lang3.tuple.Pair;
 
 public interface Rebaser {
 
