@@ -45,7 +45,7 @@ public class GitLabConfig {
     @Bean
     public SourceControlBulkActionsPerformer gitLabClientForBulkActions(
         @Value("${source-control.url}") String gitLabApiUrl,
-        @Value("${source-control.oauthToken:#{null}}") String apiKeyForReadOnlyAccess)
+        @Value("${source-control.apiToken:#{null}}") String apiKeyForReadOnlyAccess)
     {
         return new RemoteForGitLabBulkActions(gitLabApiUrl,apiKeyForReadOnlyAccess);
     }
