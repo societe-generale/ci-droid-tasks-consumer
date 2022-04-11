@@ -211,7 +211,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
     var pullRequestCreation= PullRequestCreation.builder()
         .sourceRefName(REFS_HEADS + newPr.getHead())
-        .targetRefName(REFS_HEADS + newPr.getBase())
+        .targetRefName(newPr.getBase())
         .title(newPr.getTitle())
         .build();
 
@@ -232,13 +232,16 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
       if(prCreationResponse.code()==HttpStatus.UNAUTHORIZED.value()){
         throw new RemoteSourceControlAuthorizationException("user permission issue to create a PR on "+repoFullName);
       }
+      else if(prCreationResponse.code() >= HttpStatus.BAD_REQUEST.value()){
+        throw new RemoteSourceControlAuthorizationException("bad request sent while creating PR on "+repoFullName);
+      }
+      else {
+        var pullRequestCreated = objectMapper.readValue(prCreationResponse.body().string(), PullRequestCreated.class);
 
-      var pullRequestCreated=objectMapper.readValue(prCreationResponse.body().string(), PullRequestCreated.class);
-
-      var pullRequestToReturn=new PullRequest(pullRequestCreated.getPullRequestId(),pullRequestCreated.getSourceRefName());
-      pullRequestToReturn.setHtmlUrl(pullRequestCreated.getUrl());
-      return pullRequestToReturn;
-
+        var pullRequestToReturn = new PullRequest(pullRequestCreated.getPullRequestId(), pullRequestCreated.getSourceRefName());
+        pullRequestToReturn.setHtmlUrl(pullRequestCreated.getUrl());
+        return pullRequestToReturn;
+      }
     } catch (IOException e) {
       log.error("problem while creating the pullRequeston repo "+repoFullName,e);
     }
@@ -249,7 +252,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
   @Override
   public Reference fetchHeadReferenceFrom(String repoFullName, String branchName) {
 
-    String escapedRefName="heads%2F"+branchName;
+    String escapedRefName="heads%2F"+removePrefixIfPresent(branchName);
 
     String getBranchRefUrl=azureDevopsUrl+azureOrg+"/"+azureProject+"/_apis/git/repositories/"+repoFullName+"/refs?filter="+escapedRefName+"&"+AZURE_DEVOPS_API_VERSION;
 
@@ -283,6 +286,17 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
 
     return null;
+  }
+
+  private String removePrefixIfPresent(String branchName) {
+
+    if(branchName.startsWith(REFS_HEADS)){
+      return branchName.replace(REFS_HEADS,"");
+    }
+    else{
+      return branchName;
+    }
+
   }
 
   @Override
