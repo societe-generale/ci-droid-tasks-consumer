@@ -1,15 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
+import static java.util.Collections.emptyList;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +8,7 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.mod
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.AzureDevopsRepository;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.ContentUpdate;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.FileChange;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.FileMetadata;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.FileContent;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.Item;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.NewContent;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.model.OpenPullRequests;
@@ -41,6 +32,14 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.Repository;
 import com.societegenerale.cidroid.tasks.consumer.services.model.ResourceContent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.UpdatedResource;
 import com.societegenerale.cidroid.tasks.consumer.services.model.User;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
@@ -49,8 +48,6 @@ import okhttp3.Request;
 import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
 import org.springframework.http.HttpStatus;
-
-import static java.util.Collections.emptyList;
 
 
 @Slf4j
@@ -103,6 +100,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
         "path=" + fileToFetch +
         "&versionDescriptor.versionType=branch" +
         "&versionDescriptor.version=" + extractBranchNameFromRef(branchName) +
+        "&includeContent=true" +
         "&" + AZURE_DEVOPS_API_VERSION +
         "&$format=json";
 
@@ -110,18 +108,18 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
     try {
 
-      var fileMetadataResponse = httpClient.newCall(request).execute();
+      var fileResponse = httpClient.newCall(request).execute();
 
-      if (fileMetadataResponse.isSuccessful()) {
+      if (fileResponse.isSuccessful()) {
 
-        var fileMetadata = objectMapper.readValue(fileMetadataResponse.body().string(), FileMetadata.class);
+        var fileResponseBodyAsString=fileResponse.body().string();
 
-        var fileContentResponse = httpClient.newCall(readOnlyRequestTemplate.url(fileMetadata.getUrl()).build()).execute();
+        var fileContent = objectMapper.readValue(fileResponseBodyAsString, FileContent.class);
 
         return ResourceContent
                 .builder()
-                .base64EncodedContent(Base64.getEncoder().encodeToString(fileContentResponse.body().string().getBytes(StandardCharsets.UTF_8)))
-                .sha(fileMetadata.getCommitId())
+                .base64EncodedContent(Base64.getEncoder().encodeToString(fileContent.getContent().getBytes(StandardCharsets.UTF_8)))
+                .sha(fileContent.getCommitId())
                 .build();
       }
       else{
@@ -143,7 +141,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
   public UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlAccessToken)
       throws RemoteSourceControlAuthorizationException {
 
-    String newContent=Arrays.toString(Base64.getDecoder().decode(directCommit.getBase64EncodedContent()));
+    String newContent=new String(Base64.getDecoder().decode(directCommit.getBase64EncodedContent()));
 
     FileChange change= FileChange.builder()
         .item(new Item(path))
@@ -311,7 +309,8 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
 
       var branchCreationResponse = httpClient.newCall(request).execute();
 
-      if(!branchCreationResponse.isSuccessful()){
+      // we get a 203 when there's a user right issue, so really need to check for 200
+      if(branchCreationResponse.code()!=200){
 
         String errorMessage="problem while creating branch "+branchName+" on repo "+repoFullName+". status code : "+branchCreationResponse.code();
 

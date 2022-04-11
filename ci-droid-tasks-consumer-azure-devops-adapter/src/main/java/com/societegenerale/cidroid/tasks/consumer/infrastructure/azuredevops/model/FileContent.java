@@ -4,9 +4,11 @@ import lombok.Data;
 
 @Data
 public
-class FileMetadata {
+class FileContent {
 
   private String commitId;
 
   private String url;
+
+  private String content;
 }
