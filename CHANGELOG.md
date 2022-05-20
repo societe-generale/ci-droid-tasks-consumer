@@ -5,7 +5,6 @@
 ### Added
 
 ### Changed
-- [BREAKING] source control config is now configured under `source-control`, with an explicit `type` attribute
 
 ### Deprecated
 
@@ -13,7 +12,21 @@
 
 ### Fixed
 
-## [1.3.2] - 2020-04-0
+## [2.0.0] - 2020-05-22
+
+### Added
+- Azure Devops capabilities
+
+### Changed
+- [BREAKING] source control config is now configured under `source-control`, with an explicit `type` attribute. Not using profiles anymore to load source control specific config
+- Spring Boot 2.6.6 upgrade
+- Libraries upgrades
+- Upgrade to Java 11
+- Rearranged the code in clear modules, one for each source control type
+- replaced TravisCi by GitHub Actions
+
+
+## [1.3.2] - 2020-04-09
 
 ### Added
 - managing GitLab system events
