@@ -1,7 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -9,11 +8,11 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.DirectCommit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.UpdatedResource;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 
 class RemoteForAzureDevopsBulkActionsTest {
@@ -96,18 +95,10 @@ class RemoteForAzureDevopsBulkActionsTest {
             .withQueryParam("versionDescriptor.version", WireMock.equalTo("main"))
             .withQueryParam("$format", WireMock.equalTo("json"))
             .willReturn(WireMock.aResponse()
-                    .withBodyFile("fileMetadata.json")
+                    .withBodyFile("fileMetadataWithContent.json")
                     .withStatus(200)));
 
-    WireMock.stubFor(WireMock.get(
-                    WireMock.urlPathEqualTo("/platform/111114c0-ff82-4e2c-8b71-fbca48f259eb/_apis/git/repositories/444dcb4d-dbf5-457b-9edc-7fa86bf22561/items"))
-            .withQueryParam("path", WireMock.equalTo("/pom.xml"))
-            .withQueryParam("versionType", WireMock.equalTo("Branch"))
-            .withQueryParam("version", WireMock.equalTo("main"))
-            .withQueryParam("versionOptions", WireMock.equalTo("None"))
-            .willReturn(WireMock.aResponse()
-                    .withBodyFile("samplePom.xml")
-                    .withStatus(200)));
+
 
     var resourceContent=remote.fetchContent("helm-chart","pom.xml","main");
 
