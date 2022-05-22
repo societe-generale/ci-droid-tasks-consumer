@@ -27,5 +27,9 @@ public interface PushEvent extends SourceControlEvent {
 
     void setRawEvent(String rawEvent);
 
+    /**
+     * even if not used directly here, may be useful for people leveraging on CI-droid to implement custom behavior
+     * @return
+     */
     String getRawEvent();
 }

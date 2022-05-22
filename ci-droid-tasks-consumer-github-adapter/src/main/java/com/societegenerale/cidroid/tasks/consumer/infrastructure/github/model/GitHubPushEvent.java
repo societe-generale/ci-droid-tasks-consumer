@@ -1,15 +1,13 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.github.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nonnull;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import lombok.Data;
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -49,11 +47,6 @@ public class GitHubPushEvent implements PushEvent {
         }
 
         return commits.stream().map(Commit::toStandardCommit).collect(Collectors.toList());
-    }
-
-    @Override
-    public void setRawEvent(String rawEvent) {
-        this.rawEvent=rawEvent;
     }
 
     List<Commit> commits;
