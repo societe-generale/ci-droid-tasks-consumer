@@ -1,12 +1,10 @@
 package com.societegenerale.cidroid.tasks.consumer.services;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
 import com.societegenerale.cidroid.tasks.consumer.services.model.Commit;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Repository;
+import java.util.List;
+import javax.annotation.Nonnull;
 import lombok.Builder;
 
 @Builder
@@ -63,5 +61,9 @@ public class TestPushEvent implements PushEvent {
     @Override
     public void setRawEvent(String rawEvent) {
 
+    }
+    @Override
+    public String getRawEvent() {
+        return null;
     }
 }

@@ -1,7 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.services.model;
 
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 
@@ -27,4 +26,6 @@ public interface PushEvent extends SourceControlEvent {
     }
 
     void setRawEvent(String rawEvent);
+
+    String getRawEvent();
 }
