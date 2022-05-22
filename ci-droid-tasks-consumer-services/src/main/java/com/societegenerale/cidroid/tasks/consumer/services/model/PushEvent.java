@@ -29,7 +29,7 @@ public interface PushEvent extends SourceControlEvent {
 
     /**
      * even if not used directly here, may be useful for people leveraging on CI-droid to implement custom behavior
-     * @return
+     * @return the event (usually json) sent by the source control
      */
     String getRawEvent();
 }
