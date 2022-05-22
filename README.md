@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/societe-generale/ci-droid-tasks-consumer.svg?branch=master)](https://travis-ci.org/societe-generale/ci-droid-tasks-consumer)
 [![Coverage Status](https://coveralls.io/repos/github/societe-generale/ci-droid-tasks-consumer/badge.svg?branch=master)](https://coveralls.io/github/societe-generale/ci-droid-tasks-consumer?branch=master)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.societegenerale.ci-droid.tasks-consumer/ci-droid-tasks-consumer-services/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.societegenerale.ci-droid.tasks-consumer/ci-droid-tasks-consumer-services)
 
 CI-droid tasks consumer will execute the boring tasks on behalf of the dev teams.
 
