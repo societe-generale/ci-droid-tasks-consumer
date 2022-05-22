@@ -1,7 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.services.model;
 
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 
@@ -27,4 +26,10 @@ public interface PushEvent extends SourceControlEvent {
     }
 
     void setRawEvent(String rawEvent);
+
+    /**
+     * even if not used directly here, may be useful for people leveraging on CI-droid to implement custom behavior
+     * @return the event (usually json) sent by the source control
+     */
+    String getRawEvent();
 }

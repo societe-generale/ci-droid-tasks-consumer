@@ -74,10 +74,5 @@ public class GitLabPushEvent implements PushEvent,GitLabEvent {
         return gitLabCommits;
     }
 
-    @Override
-    public void setRawEvent(String rawEvent) {
-        this.rawEvent=rawEvent;
-    }
-
 
 }
