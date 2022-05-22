@@ -12,7 +12,22 @@ Main documentation is available [here](https://github.com/societe-generale/ci-dr
 
 ## Getting started
 
-since v2.0, we have revisited the configuration to make it easier to manage for various source control systems : not all features are enabled for all, but you would be able to get it started for :
+The recommended way of running CI-droid-tasks-consumer, is to create a new project and import ci-droid-tasks-consumer-starter in its [latest version](https://mvnrepository.com/artifact/com.societegenerale.ci-droid.tasks-consumer/ci-droid-tasks-consumer-starter), depending on your build tool. 
+
+It is a Spring project, so you'll need to place your `application.yml` file in `src/main/resources`, create an application class in `src/main/java`, and  launching the application should be enough to get something : 
+
+```java
+@SpringBootApplication
+public class CiDroidTasksConsumerApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(CiDroidTasksConsumerApplication.class, args);
+    }
+}
+```
+
+
+since v2.0, we have revisited the configuration to make it easier to configure various source control systems (not at the same time though) : not all features are enabled for all source control, but you would be able to get it started for :
 - GitHub 
 - GitLab
 - Azure Devops
@@ -21,9 +36,9 @@ Each has its own adapter in its own module, that implements some of the features
 - [SourceControlEventsReactionPerformer](./blob/master/ci-droid-tasks-consumer-services/src/main/java/com/societegenerale/cidroid/tasks/consumer/services/SourceControlEventsReactionPerformer.java)
 - [SourceControlBulkActionsPerformer](./blob/master/ci-droid-tasks-consumer-services/src/main/java/com/societegenerale/cidroid/tasks/consumer/services/SourceControlBulkActionsPerformer.java)
 
-Below are elements of the application.yml config file you need to provide.
+Below are elements of the `application.yml` you need to provide.
 
-### configuring the source control
+### Configuring the source control
 
 #### GitHub
 
