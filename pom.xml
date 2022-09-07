@@ -125,6 +125,7 @@
         <module>ci-droid-tasks-consumer-github-adapter</module>
         <module>ci-droid-tasks-consumer-autoconfigure</module>
         <module>ci-droid-tasks-consumer-starter</module>
+        <module>ci-droid-tasks-consumer-bitbucket-adapter</module>
     </modules>
 
     <dependencyManagement>
