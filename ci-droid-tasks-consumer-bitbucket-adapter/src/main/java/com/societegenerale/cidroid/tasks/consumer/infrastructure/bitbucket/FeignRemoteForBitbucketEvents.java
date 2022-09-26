@@ -12,22 +12,21 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
+// Todo most of the get apis are returning page. need to get all page data
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "BITBUCKET")
 @FeignClient(name = "bitbucket-forEvents", url = "${source-control.url}", decode404 = true, configuration = BitbucketConfig.class)
 public interface FeignRemoteForBitbucketEvents {
 
     Map<String, String> bodyToClosePR = Collections.singletonMap("state", "closed");
 
-    @GetMapping(value = "/repos/{repoFullName}/pulls?state=open",
+    @GetMapping(value = "/repos/{repoFullName}/pull-requests",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    @Nonnull
-    List<PullRequest> fetchOpenPullRequests(@PathVariable("repoFullName") String repoFullName);
+    PullRequestWrapper fetchOpenPullRequests(@PathVariable("repoFullName") String repoFullName);
 
-    @GetMapping(value = "/repos/{repoFullName}/pulls/{prNumber}",
+    @GetMapping(value = "/repos/{repoFullName}/pull-requests/{prNumber}",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     PullRequest fetchPullRequestDetails(@PathVariable("repoFullName") String repoFullName,
@@ -38,25 +37,25 @@ public interface FeignRemoteForBitbucketEvents {
                 produces = MediaType.APPLICATION_JSON_VALUE)
     User fetchUser(@PathVariable("login") String login);
 
-    @PostMapping(value = "/repos/{repoFullName}/issues/{prNumber}/comments",
+    @PostMapping(value = "/repos/{repoFullName}/pull-requests/{prNumber}/comments",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     void addCommentOnPR(@PathVariable("repoFullName") String repoFullName,
                                     @PathVariable("prNumber") int prNumber,
                                     @RequestBody Comment comment);
 
-    @GetMapping(value = "/repos/{repoFullName}/pulls/{prNumber}/files",
+    @GetMapping(value = "/repos/{repoFullName}/pull-requests/{prNumber}/changes",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @Nonnull
-    List<PullRequestFile> fetchPullRequestFiles(@PathVariable("repoFullName") String repoFullName,
+    PullRequestChange fetchPullRequestFiles(@PathVariable("repoFullName") String repoFullName,
                                                 @PathVariable("prNumber") int prNumber);
 
-    @GetMapping(value = "/repos/{repoFullName}/issues/{prNumber}/comments",
+    @GetMapping(value = "/repos/{repoFullName}/pull-requests/{prNumber}/activities",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @Nonnull
-    List<PullRequestComment> fetchPullRequestComments(@PathVariable("repoFullName") String repoFullName,
+    PullRequestActivity fetchPullRequestComments(@PathVariable("repoFullName") String repoFullName,
                                                       @PathVariable("prNumber") int prNumber);
 
     default void closePullRequest(String repoFullName, int prNumber) {

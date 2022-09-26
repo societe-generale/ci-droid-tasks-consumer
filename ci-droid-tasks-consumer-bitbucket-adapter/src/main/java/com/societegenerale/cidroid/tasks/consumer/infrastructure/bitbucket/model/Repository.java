@@ -16,20 +16,17 @@ import java.util.Optional;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Repository {
 
-    private String url;
-
     @JsonProperty("default_branch")
     private String defaultBranch;
 
-    @JsonProperty("full_name")
+    @JsonProperty("slug")
     private String fullName;
 
     private String name;
 
-    private boolean fork;
+    private boolean forkable;
 
-    @JsonProperty("clone_url")
-    private String cloneUrl;
+    private LinksWithClone links;
 
     private int id;
 
@@ -38,12 +35,12 @@ public class Repository {
         return Optional.of(
                 com.societegenerale.cidroid.tasks.consumer.services.model.Repository.builder()
                         .fullName(this.fullName)
-                        .cloneUrl(this.cloneUrl)
+                        .cloneUrl(this.links.getHttpCloneURL())
                         .defaultBranch(this.defaultBranch)
-                        .fork(this.fork)
+                        .fork(this.forkable)
                         .id(this.id)
                         .name(this.name)
-                        .url(this.url)
+                        .url(this.links.getSelf().stream().findFirst().get().getHref())
                         .build()
         );
 

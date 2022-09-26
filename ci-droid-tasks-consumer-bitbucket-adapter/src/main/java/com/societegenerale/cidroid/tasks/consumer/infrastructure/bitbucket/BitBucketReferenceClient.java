@@ -1,5 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequestToCreate;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Reference;
@@ -13,6 +14,8 @@ import feign.RequestLine;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.slf4j.Slf4jLogger;
+
+import java.util.List;
 
 interface BitBucketReferenceClient {
 
@@ -31,8 +34,8 @@ interface BitBucketReferenceClient {
   static Feign.Builder buildBitbucketReferenceClient(String sourceControlPersonalToken) {
     return Feign.builder()
         .logger(new Slf4jLogger(BitBucketReferenceClient.class))
-        .encoder(new JacksonEncoder())
-        .decoder(new JacksonDecoder())
+        .encoder(new JacksonEncoder(List.of(new JavaTimeModule())))
+        .decoder(new JacksonDecoder(List.of(new JavaTimeModule())))
         .errorDecoder(new BranchCreationErrorDecoder())
         .requestInterceptor(new SourceControlApiAccessKeyInterceptor(sourceControlPersonalToken))
         .logLevel(Logger.Level.FULL);

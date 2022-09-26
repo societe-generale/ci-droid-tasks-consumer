@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Comment {
-
-    private String text;
+public class Properties {
+    private MergeResult mergeResult;
 }

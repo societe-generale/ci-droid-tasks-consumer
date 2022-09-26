@@ -12,15 +12,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PullRequestComment {
 
-    @JsonProperty("body")
-    private String comment;
+    private String id;
 
+    private String action;
+
+    private String commentAction;
+
+    private Comment comment;
+
+    // rename to user
     @JsonProperty("user")
     private User author;
 
-    public com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment toStandardPullRequestComment(){
-
-        return new com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment(comment,author.toStandardUser());
+    public com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment toStandardPullRequestComment() {
+        String commentAsText = "COMMENTED".equals(action) ? comment.getText() : null;
+        return new com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment(commentAsText, author.toStandardUser());
 
     }
 

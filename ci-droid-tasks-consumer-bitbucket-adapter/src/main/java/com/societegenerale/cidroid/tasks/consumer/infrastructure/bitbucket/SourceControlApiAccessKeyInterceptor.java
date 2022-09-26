@@ -15,6 +15,6 @@ public class SourceControlApiAccessKeyInterceptor implements RequestInterceptor 
   @Override
   public void apply(RequestTemplate requestTemplate) {
 
-    requestTemplate.header(AUTHORIZATION_HEADER, "token " + sourceControlAccessToken);
+    requestTemplate.header(AUTHORIZATION_HEADER, "Bearer " + sourceControlAccessToken);
   }
 }

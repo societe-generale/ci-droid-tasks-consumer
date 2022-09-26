@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Comment {
-
-    private String text;
+public class Clone {
+    private String href;
+    private String name;
 }

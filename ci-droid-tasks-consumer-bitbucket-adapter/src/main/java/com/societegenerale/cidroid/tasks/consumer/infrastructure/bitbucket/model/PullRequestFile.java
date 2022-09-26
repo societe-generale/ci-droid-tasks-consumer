@@ -1,34 +1,28 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PullRequestFile {
 
-    private String sha;
+    private String contentId;
 
-    private String filename;
+    private Path path;
 
-    private String status;
-
-    private int additions;
-
-    private int deletions;
-
-    private int changes;
+    private String type;
 
     public com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestFile toStandardPullRequestFile(){
 
         return com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestFile
                 .builder()
-                .sha(this.sha)
-                .filename(this.filename)
-                .status(this.status)
-                .additions(this.additions)
-                .deletions(this.deletions)
-                .changes(this.changes)
+                .sha(this.contentId)
+                .filename(this.path.getName())
                 .build();
     }
 

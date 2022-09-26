@@ -11,14 +11,14 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Reference {
 
-    private String ref;
+    private String id;
 
-    private ObjectReference object;
+    private ObjectReference displayId;
 
-    public com.societegenerale.cidroid.tasks.consumer.services.model.Reference toStandardReference() {
+    public com.societegenerale.cidroid.tasks.consumer.services.model.Reference toStandardReference(String ref) {
 
         com.societegenerale.cidroid.tasks.consumer.services.model.Reference.ObjectReference
-                objRef= new com.societegenerale.cidroid.tasks.consumer.services.model.Reference.ObjectReference(object.type, object.sha);
+                objRef= new com.societegenerale.cidroid.tasks.consumer.services.model.Reference.ObjectReference("", id);
 
         return com.societegenerale.cidroid.tasks.consumer.services.model.Reference
                 .builder()

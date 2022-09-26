@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.RestTemplateResourceFetcher;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.azuredevops.config.AzureDevopsConfig;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.config.BitbucketConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.CiDroidBehavior;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.config.InfraConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.github.config.GitHubConfig;
@@ -37,7 +38,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.mail.MailSender;
 
 @Configuration
-@Import({InfraConfig.class, GitHubConfig.class, GitLabConfig.class, AzureDevopsConfig.class})
+@Import({InfraConfig.class, GitHubConfig.class, GitLabConfig.class, AzureDevopsConfig.class, BitbucketConfig.class})
 public class CiDroidTasksConsumerAutoConfiguration {
 
     private static final PushEventMonitor DONT_MONITOR_ANYTHING = pushEvent -> {

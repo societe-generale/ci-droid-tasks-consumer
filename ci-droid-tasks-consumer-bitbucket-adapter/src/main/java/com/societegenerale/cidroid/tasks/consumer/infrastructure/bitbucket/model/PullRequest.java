@@ -17,91 +17,52 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 @Data
 @Slf4j
 @JsonIgnoreProperties(ignoreUnknown = true)
+//Can be deleted as this might be same as PullRequestToCreate
 public class PullRequest {
 
-    private final int number;
+    private final int id;
 
-    private Boolean mergeable;
+    private Properties properties;
 
-    private User user;
+    private Author author;
 
-    private String url;
+    private ZonedDateTime createdDate;
 
-    private Repository repo;
+    private Links links;
 
-    private String branchName;
+    private FromOrToRef fromRef;
 
-    private String baseBranchName;
+    private FromOrToRef toRef;
 
-    private String branchStartedFromCommit;
-
-    @JsonProperty("created_at")
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime creationDate;
-
-    @JsonProperty("html_url")
-    private String htmlUrl;
-
-    @JsonIgnore
-    private boolean isMadeFromForkedRepo;
-
-    @JsonIgnore
-    private String warningMessageDuringRebasing;
-
-    @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule());
-
-    @ConstructorProperties({ "number" })
+    @ConstructorProperties({ "id" })
     @JsonCreator
-    public PullRequest(int number) {
-        this.number = number;
+    public PullRequest(int id) {
+        this.id = id;
     }
 
 
     public com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest toStandardPullRequest(){
 
         return com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest.builder()
-                .number(this.number)
-                .baseBranchName(this.baseBranchName)
-                .branchName(this.branchName)
-                .creationDate(this.creationDate)
-                .htmlUrl(this.htmlUrl)
-                .mergeable(this.mergeable)
-                .url(this.url)
-                .branchStartedFromCommit(this.branchStartedFromCommit)
-                .repo(this.repo.toStandardRepo().get())
-                .user(this.user.toStandardUser())
+                .number(this.id)
+                .baseBranchName(this.toRef.getDisplayId())
+                .branchName(this.fromRef.getDisplayId())
+                // need to check the impact of converting Zoned to Local
+                .creationDate(this.createdDate.toLocalDateTime())
+                .htmlUrl(this.links.getSelf().stream().findFirst().orElse(new Self()).getHref())
+                // Duplicate code
+                .url(this.links.getSelf().stream().findFirst().orElse(new Self()).getHref())
+                .branchStartedFromCommit(this.toRef.getLatestCommit())
+                .repo(this.toRef.getRepository().toStandardRepo(this.toRef.getId()).get())
+                .user(this.author.getUser().toStandardUser())
                 .build();
 
 
     }
-
-
-
-    @JsonProperty("base")
-    private void unpackNestedBaseProperty(Map<String,Object> base) {
-        this.branchStartedFromCommit=(String)base.get("sha");
-
-        this.baseBranchName=(String)base.get("ref");
-
-        this.repo=objectMapper.convertValue(base.get("repo"), Repository.class);
-    }
-
-    @JsonProperty("head")
-    private void unpackNestedHeadProperty(Map<String,Object> base) {
-        this.branchName=(String)base.get("ref");
-
-        Repository repoFromWhichPrOriginates=objectMapper.convertValue(base.get("repo"), Repository.class);
-        isMadeFromForkedRepo=repoFromWhichPrOriginates.isFork();
-    }
-
 }

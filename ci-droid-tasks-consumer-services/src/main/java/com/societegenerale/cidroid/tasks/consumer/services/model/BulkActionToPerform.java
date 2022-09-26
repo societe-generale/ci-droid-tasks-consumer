@@ -25,6 +25,8 @@ public class BulkActionToPerform {
     @NotEmpty
     private String sourceControlPersonalToken;
 
+    private String gitLogin;
+
     @Email
     private String email;
 

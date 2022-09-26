@@ -19,7 +19,7 @@ public class RemoteForBitbucketEventsWrapper implements SourceControlEventsReact
     @Nonnull
     @Override
     public List<PullRequest> fetchOpenPullRequests(String repoFullName) {
-        return feignRemoteForBitbucketEvents.fetchOpenPullRequests(repoFullName)
+        return feignRemoteForBitbucketEvents.fetchOpenPullRequests(repoFullName).getValues()
                 .stream()
                 .map(com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequest::toStandardPullRequest)
                 .collect(toList());
@@ -43,7 +43,7 @@ public class RemoteForBitbucketEventsWrapper implements SourceControlEventsReact
     @Nonnull
     @Override
     public List<PullRequestFile> fetchPullRequestFiles(String repoFullName, int prNumber) {
-        return feignRemoteForBitbucketEvents.fetchPullRequestFiles(repoFullName, prNumber)
+        return feignRemoteForBitbucketEvents.fetchPullRequestFiles(repoFullName, prNumber).getValues()
                 .stream()
                 .map(com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequestFile::toStandardPullRequestFile)
                 .collect(toList());
@@ -52,8 +52,9 @@ public class RemoteForBitbucketEventsWrapper implements SourceControlEventsReact
     @Nonnull
     @Override
     public List<PullRequestComment> fetchPullRequestComments(String repoFullName, int prNumber) {
-        return feignRemoteForBitbucketEvents.fetchPullRequestComments(repoFullName, prNumber)
+        return feignRemoteForBitbucketEvents.fetchPullRequestComments(repoFullName, prNumber).getValues()
                 .stream()
+                .filter(it -> "COMMENTED".equals(it.getCommentAction()))
                 .map(com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequestComment::toStandardPullRequestComment)
                 .collect(toList());
     }

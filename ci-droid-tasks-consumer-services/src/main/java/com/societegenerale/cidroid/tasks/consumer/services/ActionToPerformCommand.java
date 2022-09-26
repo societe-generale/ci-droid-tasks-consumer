@@ -31,6 +31,8 @@ public class ActionToPerformCommand {
     @NotEmpty
     private String sourceControlPersonalToken;
 
+    private String gitLogin;
+
 
     /**
      * in previous version, the field 'sourceControlPersonalToken' was called 'gitHubOauthToken', so some clients may relay on this
@@ -74,6 +76,7 @@ public class ActionToPerformCommand {
         ActionToPerformCommand action=new ActionToPerformCommand();
         action.setSourceControlPersonalToken(sourceControlPersonalToken);
         action.setEmail(email);
+        action.setGitLogin(gitLogin);
         action.setCommitMessage(commitMessage);
         action.setGitHubInteractionType(gitHubInteractionType);
         action.setUpdateAction(updateAction);

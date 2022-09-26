@@ -1,11 +1,13 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.config.BitbucketConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.*;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import feign.Feign;
 import feign.Logger;
+import feign.form.FormEncoder;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.slf4j.Slf4jLogger;
@@ -25,11 +27,11 @@ import java.util.Optional;
 @FeignClient(name = "bitbucket-forBulkActions", url = "${source-control.url}", decode404 = true, configuration = BitbucketConfig.class)
 public interface FeignRemoteForBitbucketBulkActions {
 
-    @GetMapping(value = "/repos/{repoFullName}/pulls?state=open",
+    @GetMapping(value = "/repos/{repoFullName}/pull-requests",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    @Nonnull
-    List<PullRequest> fetchOpenPullRequests(@PathVariable("repoFullName") String repoFullName);
+    // why duplicate method?
+    PullRequestWrapper fetchOpenPullRequests(@PathVariable("repoFullName") String repoFullName);
 
     default UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlPersonalToken)
             throws RemoteSourceControlAuthorizationException {
@@ -38,10 +40,10 @@ public interface FeignRemoteForBitbucketBulkActions {
     }
 
 
-    @GetMapping(value = "/repos/{repoFullName}/contents/{path}?ref={branch}",
+    @GetMapping(value = "/repos/{repositorySlug}/raw/{path}?at={branch}",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    ResourceContent fetchContent(@PathVariable("repoFullName") String repoFullName,
+    String fetchContent(@PathVariable("repositorySlug") String repoFullName,
                                  @PathVariable("path") String path,
                                  @PathVariable("branch") String branch);
 
@@ -55,12 +57,12 @@ public interface FeignRemoteForBitbucketBulkActions {
     static ContentClient buildContentClient(String repoFullName, String path, String sourceControlPersonalToken) {
         return Feign.builder()
                 .logger(new Slf4jLogger(ContentClient.class))
-                .encoder(new JacksonEncoder())
+                .encoder(new FormEncoder(new JacksonEncoder()))
                 .decoder(new JacksonDecoder())
                 .errorDecoder(new UpdateContentErrorDecoder())
                 .requestInterceptor(new SourceControlApiAccessKeyInterceptor(sourceControlPersonalToken))
                 .logLevel(Logger.Level.FULL)
-                .target(ContentClient.class, BitbucketConfig.getBitbucket() + "/repos/" + repoFullName + "/contents/" + path);
+                .target(ContentClient.class, BitbucketConfig.getBitbucket() + "/repos/" + repoFullName + "/browse/" + path);
     }
 
     @GetMapping(value = "/repos/{repoFullName}",
@@ -68,7 +70,7 @@ public interface FeignRemoteForBitbucketBulkActions {
                 produces = MediaType.APPLICATION_JSON_VALUE)
     Optional<Repository> fetchRepository(@PathVariable("repoFullName") String repoFullName);
 
-    @GetMapping(value = "/repos/{repoFullName}/git/refs/heads/{branchName}",
+    @GetMapping(value = "/repos/{repoFullName}/commits/{branchName}",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     Reference fetchHeadReferenceFrom(@PathVariable("repoFullName") String repoFullNameString, @PathVariable("branchName") String branchName);
@@ -77,14 +79,18 @@ public interface FeignRemoteForBitbucketBulkActions {
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         BitBucketReferenceClient bitbucketReferenceClient = BitBucketReferenceClient.buildBitbucketReferenceClient(sourceControlPersonalToken)
-                .target(BitBucketReferenceClient.class, BitbucketConfig.getBitbucket() + "/repos/" + repoFullName + "/git/refs");
+                .target(BitBucketReferenceClient.class, BitbucketConfig.getBitbucket() + "/repos/" + repoFullName + "branches");
 
-        return bitbucketReferenceClient.createBranch(new InputRef("refs/heads/" + branchName, fromReferenceSha1));
+        return bitbucketReferenceClient.createBranch(new InputRef(branchName, fromReferenceSha1));
     }
 
-    default User fetchCurrentUser(String sourceControlPersonalToken, String emailAddress) {
+    default User fetchCurrentUser(String sourceControlPersonalToken, String emailAddress, String login) {
+        String bitbucketUrl = BitbucketConfig.getBitbucket();
+        String bitBucketUrlWithoutProjectCode = bitbucketUrl.substring(0, bitbucketUrl.lastIndexOf("/"));
+        String bitBucketUrlWithoutProject = bitBucketUrlWithoutProjectCode.substring(0, bitBucketUrlWithoutProjectCode.lastIndexOf("/"));
+
         BitBucketReferenceClient bitbucketReferenceClient = BitBucketReferenceClient.buildBitbucketReferenceClient(sourceControlPersonalToken)
-                .target(BitBucketReferenceClient.class, BitbucketConfig.getBitbucket() + "/user");
+                .target(BitBucketReferenceClient.class, bitBucketUrlWithoutProject + "/users/" + login);
 
         return bitbucketReferenceClient.getCurrentUser();
     }
@@ -93,17 +99,26 @@ public interface FeignRemoteForBitbucketBulkActions {
             throws RemoteSourceControlAuthorizationException {
 
         BitBucketReferenceClient BitbucketReferenceClient = BitBucketReferenceClient.buildBitbucketReferenceClient(sourceControlPersonalToken)
-                .target(BitBucketReferenceClient.class, BitbucketConfig.getBitbucket() + "/repos/" + repoFullName + "/pulls");
+                .target(BitBucketReferenceClient.class, BitbucketConfig.getBitbucket() + "/repos/" + repoFullName + "/pull-requests");
 
         return BitbucketReferenceClient.createPullRequest(newPr);
     }
+
+    @GetMapping(value = "/repos/{repositorySlug}/browse/{path}?at={branch}&blame=true&noContent=true",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Nonnull
+    List<Blame> fetchCommits(@PathVariable("repositorySlug") String repositorySlug, @PathVariable("path") String path,
+                             @PathVariable("branch") String branch);
 
     @Data
     @AllArgsConstructor
     class InputRef {
 
+        @JsonProperty("name")
         private String ref;
 
+        @JsonProperty("startPoint")
         private String sha;
 
     }

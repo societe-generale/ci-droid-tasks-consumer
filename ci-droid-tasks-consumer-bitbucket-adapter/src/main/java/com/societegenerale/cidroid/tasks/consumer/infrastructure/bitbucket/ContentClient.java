@@ -9,7 +9,7 @@ import feign.RequestLine;
 interface ContentClient {
 
   @RequestLine("PUT")
-  @Headers("Content-Type: application/json")
+  @Headers("Content-Type: multipart/form-data")
   UpdatedResource updateContent(DirectCommit directCommit) throws RemoteSourceControlAuthorizationException;
 
   @RequestLine("DELETE")
