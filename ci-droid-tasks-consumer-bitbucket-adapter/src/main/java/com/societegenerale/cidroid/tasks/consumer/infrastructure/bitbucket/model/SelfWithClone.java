@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LinksWithClone {
+public class SelfWithClone {
     @Nonnull
     private List<Clone> clone;
     @Nonnull

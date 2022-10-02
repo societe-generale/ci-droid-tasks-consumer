@@ -16,13 +16,4 @@ public class ResourceContent {
     @JsonProperty("html_url")
     private String htmlLink;
 
-    public com.societegenerale.cidroid.tasks.consumer.services.model.ResourceContent toStandardResourceContent() {
-
-        return com.societegenerale.cidroid.tasks.consumer.services.model.ResourceContent.builder()
-                .sha(this.sha)
-                .base64EncodedContent(this.base64EncodedContent)
-                .htmlLink(this.htmlLink)
-                .build();
-
-    }
 }

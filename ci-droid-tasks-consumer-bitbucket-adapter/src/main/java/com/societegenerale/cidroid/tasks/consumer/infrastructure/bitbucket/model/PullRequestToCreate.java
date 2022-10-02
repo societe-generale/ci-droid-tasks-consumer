@@ -23,6 +23,7 @@ public class PullRequestToCreate {
 
     private FromOrToRef toRef;
 
+    // Todo remove repoFullName
     public static PullRequestToCreate from(com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestToCreate newPr,
                                            String repoFullName, String projectKey) {
 

@@ -118,7 +118,7 @@ class ActionToPerformServiceTest {
                 .userRequestingAction(SOME_USER)
                 .sourceControlPersonalToken(SOME_API_ACCESS_TOKEN)
                 .email(SOME_EMAIL)
-                .gitLogin("cpanigra")
+                .gitLogin("sekhar")
                 .commitMessage(SOME_COMMIT_MESSAGE)
                 .resourcesToUpdate(List.of(resourceToUpdate))
                 .actionToReplicate(testActionToPerform);

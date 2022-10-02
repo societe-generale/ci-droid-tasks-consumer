@@ -19,7 +19,7 @@ public class RepositoryToCreatePullRequest {
     private Integer id;
     private String slug;
     private Project project;
-    private LinksWithClone links;
+    private SelfWithClone links;
     private boolean forkable;
 
     public Optional<Repository> toStandardRepo(String branch) {

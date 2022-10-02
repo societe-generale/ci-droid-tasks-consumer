@@ -26,7 +26,7 @@ public class Repository {
 
     private boolean forkable;
 
-    private LinksWithClone links;
+    private SelfWithClone links;
 
     private int id;
 
