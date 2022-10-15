@@ -68,7 +68,7 @@ public class RemoteForBitbucketBulkActionsWrapper implements SourceControlBulkAc
     public PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String sourceControlAccessToken)
             throws RemoteSourceControlAuthorizationException {
 
-        var bitbucketPrToCreate=com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequestToCreate.from(newPr, repoFullName, projectKey);
+        var bitbucketPrToCreate= com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequestToCreate.from(newPr, repoFullName, projectKey);
 
         var bitbucketPr=feignRemoteForBitbucketBulkActions.createPullRequest(repoFullName, bitbucketPrToCreate, sourceControlAccessToken);
 

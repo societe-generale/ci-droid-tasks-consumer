@@ -1,24 +1,13 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.beans.ConstructorProperties;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.Map;
 
 @Data
 @Slf4j
@@ -40,14 +29,14 @@ public class PullRequest {
 
     private FromOrToRef toRef;
 
-    @ConstructorProperties({ "id" })
+    @ConstructorProperties({"id"})
     @JsonCreator
     public PullRequest(int id) {
         this.id = id;
     }
 
 
-    public com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest toStandardPullRequest(){
+    public com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest toStandardPullRequest() {
 
         return com.societegenerale.cidroid.tasks.consumer.services.model.PullRequest.builder()
                 .number(this.id)

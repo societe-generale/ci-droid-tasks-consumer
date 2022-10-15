@@ -12,7 +12,8 @@ public class TestUtils {
 
     public static Repository repository() {
         var selfWithClone = getSelfWithClone();
-        var repository = Repository.builder().defaultBranch("master").name("ci-droid-task-consumer").fullName("ci-droid-task-consumer").forkable(true).links(selfWithClone).build();
+        var repository = Repository.builder().defaultBranch("master").name("ci-droid-task-consumer").fullName("ci-droid-task-consumer").forkable(true)
+                .links(selfWithClone).build();
         return repository;
     }
 

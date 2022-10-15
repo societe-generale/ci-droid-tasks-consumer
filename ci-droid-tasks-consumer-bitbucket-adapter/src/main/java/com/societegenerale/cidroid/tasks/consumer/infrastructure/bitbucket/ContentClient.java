@@ -12,6 +12,7 @@ interface ContentClient {
   @Headers("Content-Type: multipart/form-data")
   UpdatedResource updateContent(DirectCommit directCommit) throws RemoteSourceControlAuthorizationException;
 
+  // Todo test delete
   @RequestLine("DELETE")
   @Headers("Content-Type: application/json")
   UpdatedResource deleteResource(DirectCommit directCommit) throws RemoteSourceControlAuthorizationException;
