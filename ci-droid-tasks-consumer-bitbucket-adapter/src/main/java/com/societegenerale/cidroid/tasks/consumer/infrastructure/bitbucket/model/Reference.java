@@ -13,7 +13,7 @@ public class Reference {
 
     private String id;
 
-    private ObjectReference displayId;
+    private String displayId;
 
     public com.societegenerale.cidroid.tasks.consumer.services.model.Reference toStandardReference(String ref) {
 

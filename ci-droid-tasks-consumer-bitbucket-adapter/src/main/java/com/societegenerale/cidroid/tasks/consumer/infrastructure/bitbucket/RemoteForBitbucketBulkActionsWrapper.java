@@ -33,7 +33,7 @@ public class RemoteForBitbucketBulkActionsWrapper implements SourceControlBulkAc
 
         var bitbucketResourceContent=feignRemoteForBitbucketBulkActions.fetchContent(repoFullName,path,branch);
         var blames = feignRemoteForBitbucketBulkActions.fetchCommits(repoFullName, path, branch);
-        var findLatestCommitHash = blames.stream().max(Comparator.comparing(Blame::getCommitterTimestamp)).orElse(null);
+        var findLatestCommitHash = blames.stream().findFirst().orElse(null);
         return ResourceContent.builder().base64EncodedContent(Base64.getEncoder().encodeToString(bitbucketResourceContent.getBytes(StandardCharsets.UTF_8)))
                 .sha(findLatestCommitHash.getCommitHash())
                 .build();

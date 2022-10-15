@@ -27,8 +27,8 @@ public class PullRequestToCreate {
     public static PullRequestToCreate from(com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestToCreate newPr,
                                            String repoFullName, String projectKey) {
 
-        RepositoryToCreatePullRequest fromAndToRepo = RepositoryToCreatePullRequest.builder().
-        project(new Project(projectKey)).build();
+        RepositoryToCreatePullRequest fromAndToRepo = RepositoryToCreatePullRequest.builder().project(new Project(projectKey))
+                .slug(repoFullName).build();
 
         return PullRequestToCreate.builder()
                 .title(newPr.getTitle())

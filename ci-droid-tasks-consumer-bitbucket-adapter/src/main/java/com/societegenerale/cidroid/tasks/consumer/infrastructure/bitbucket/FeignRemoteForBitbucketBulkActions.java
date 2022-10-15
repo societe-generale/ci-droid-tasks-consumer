@@ -79,7 +79,7 @@ public interface FeignRemoteForBitbucketBulkActions {
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         BitBucketReferenceClient bitbucketReferenceClient = BitBucketReferenceClient.buildBitbucketReferenceClient(sourceControlPersonalToken)
-                .target(BitBucketReferenceClient.class, BitbucketConfig.getBitbucket() + "/repos/" + repoFullName + "branches");
+                .target(BitBucketReferenceClient.class, BitbucketConfig.getBitbucket() + "/repos/" + repoFullName + "/branches");
 
         return bitbucketReferenceClient.createBranch(new InputRef(branchName, fromReferenceSha1));
     }
@@ -106,7 +106,7 @@ public interface FeignRemoteForBitbucketBulkActions {
     }
 
     //
-    @GetMapping(value = "/repos/{repositorySlug}/browse/{path}?at={branch}&blame=true&noContent=true",
+    @GetMapping(value = "/repos/{repositorySlug}/browse/{path}?at={branch}&limit=1&blame=true&noContent=true",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Nonnull

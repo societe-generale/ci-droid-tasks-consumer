@@ -17,6 +17,8 @@ class PullRequestToCreateTest {
         assertThat(bitbucketPullRequestToCreate.isOpen()).isTrue();
         assertThat(bitbucketPullRequestToCreate.isClosed()).isFalse();
         assertThat(bitbucketPullRequestToCreate.getFromRef().getRepository().getProject().getKey()).isEqualTo("ci-droid");
+        assertThat(bitbucketPullRequestToCreate.getFromRef().getRepository().getSlug()).isEqualTo("ci-droid-consumer");
+        assertThat(bitbucketPullRequestToCreate.getToRef().getRepository().getSlug()).isEqualTo("ci-droid-consumer");
         assertThat(bitbucketPullRequestToCreate.getToRef().getRepository().getProject().getKey()).isEqualTo("ci-droid");
         assertThat(bitbucketPullRequestToCreate.getFromRef().getId()).isEqualTo("feature");
         assertThat(bitbucketPullRequestToCreate.getToRef().getId()).isEqualTo("master");
