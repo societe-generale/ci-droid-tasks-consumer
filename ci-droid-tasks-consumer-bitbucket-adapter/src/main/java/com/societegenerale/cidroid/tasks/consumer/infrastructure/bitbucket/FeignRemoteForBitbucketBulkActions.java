@@ -85,13 +85,13 @@ public interface FeignRemoteForBitbucketBulkActions {
     }
 
     // Todo cover this logic in IT test case
-    default User fetchCurrentUser(String sourceControlPersonalToken, String emailAddress, String login) {
+    default User fetchCurrentUser(String sourceControlPersonalToken, String userSlug) {
         String bitbucketUrl = BitbucketConfig.getBitbucket();
         String bitBucketUrlWithoutProjectCode = bitbucketUrl.substring(0, bitbucketUrl.lastIndexOf("/"));
         String bitBucketUrlWithoutProject = bitBucketUrlWithoutProjectCode.substring(0, bitBucketUrlWithoutProjectCode.lastIndexOf("/"));
 
         BitBucketReferenceClient bitbucketReferenceClient = BitBucketReferenceClient.buildBitbucketReferenceClient(sourceControlPersonalToken)
-                .target(BitBucketReferenceClient.class, bitBucketUrlWithoutProject + "/users/" + login);
+                .target(BitBucketReferenceClient.class, bitBucketUrlWithoutProject + "/users/" + userSlug);
 
         return bitbucketReferenceClient.getCurrentUser();
     }

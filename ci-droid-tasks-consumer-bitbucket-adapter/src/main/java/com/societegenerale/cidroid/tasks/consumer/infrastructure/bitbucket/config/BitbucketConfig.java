@@ -43,9 +43,9 @@ public class BitbucketConfig {
     @Bean
     public SourceControlBulkActionsPerformer remoteForBitbucketBulkActionsWrapper(
             FeignRemoteForBitbucketBulkActions feignRemoteForBitbucketBulkActions,
-            @Value("${source-control.project-key}") String projectKey) {
+            @Value("${source-control.project-key}") String projectKey, @Value("${source-control.user-slug}") String userSlug) {
 
-        return new RemoteForBitbucketBulkActionsWrapper(feignRemoteForBitbucketBulkActions, projectKey);
+        return new RemoteForBitbucketBulkActionsWrapper(feignRemoteForBitbucketBulkActions, projectKey, userSlug);
     }
 
     @Bean

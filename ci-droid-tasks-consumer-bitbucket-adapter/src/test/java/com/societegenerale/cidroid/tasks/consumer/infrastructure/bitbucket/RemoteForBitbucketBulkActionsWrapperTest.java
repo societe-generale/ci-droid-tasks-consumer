@@ -14,14 +14,12 @@ import java.util.Optional;
 
 import static com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.util.TestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.never;
 
 class RemoteForBitbucketBulkActionsWrapperTest {
 
     private FeignRemoteForBitbucketBulkActions feignRemoteForBitbucketBulkActions = mock(FeignRemoteForBitbucketBulkActions.class);
-    RemoteForBitbucketBulkActionsWrapper remoteForBitbucketBulkActionsWrapper = new RemoteForBitbucketBulkActionsWrapper(feignRemoteForBitbucketBulkActions, "CI-Project");
+    RemoteForBitbucketBulkActionsWrapper remoteForBitbucketBulkActionsWrapper = new RemoteForBitbucketBulkActionsWrapper(feignRemoteForBitbucketBulkActions, "CI-Project", "some.user");
 
     @Test
     void should_fetch_encoded_content_and_latest_commit_id() {

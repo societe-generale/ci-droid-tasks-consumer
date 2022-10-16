@@ -53,7 +53,7 @@ class ActionToPerformListenerTest {
                         StandardCharsets.UTF_8);
         incomingCommand = new ObjectMapper().readValue(incomingCommandAsString, ActionToPerformCommand.class);
 
-        when(mockRemoteSourceControl.fetchCurrentUser("someToken",null, null)).thenReturn(new User("someUserName","someEmail"));
+        when(mockRemoteSourceControl.fetchCurrentUser("someToken",null)).thenReturn(new User("someUserName","someEmail"));
 
     }
 

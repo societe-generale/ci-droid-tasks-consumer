@@ -74,7 +74,7 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
   public UpdatedResource updateContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlAccessToken)
       throws RemoteSourceControlAuthorizationException {
 
-    var user=fetchCurrentUser(sourceControlAccessToken,null, null);
+    var user=fetchCurrentUser(sourceControlAccessToken,null);
 
     CommitAction commit=new CommitAction();
     commit.setContent(directCommit.getBase64EncodedContent());
@@ -232,7 +232,7 @@ public class RemoteForGitLabBulkActions implements SourceControlBulkActionsPerfo
   }
 
   @Override
-  public User fetchCurrentUser(String sourceControlAccessToken, String emailAddress, String login) {
+  public User fetchCurrentUser(String sourceControlAccessToken, String emailAddress) {
 
     try {
       var gitLabUser=getReadWriteGitLabClient(sourceControlAccessToken).getUserApi().getCurrentUser();

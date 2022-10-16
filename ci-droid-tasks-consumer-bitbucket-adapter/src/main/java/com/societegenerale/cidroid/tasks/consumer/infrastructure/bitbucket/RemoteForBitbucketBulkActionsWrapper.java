@@ -1,6 +1,5 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Blame;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
@@ -9,7 +8,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.*;
 import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,11 +19,12 @@ public class RemoteForBitbucketBulkActionsWrapper implements SourceControlBulkAc
 
     private final String projectKey;
 
-    public RemoteForBitbucketBulkActionsWrapper(
-            FeignRemoteForBitbucketBulkActions feignRemoteForBitbucketBulkActions, String projectKey) {
+    private final String userSlug;
 
+    public RemoteForBitbucketBulkActionsWrapper(FeignRemoteForBitbucketBulkActions feignRemoteForBitbucketBulkActions, String projectKey, String userSlug) {
         this.feignRemoteForBitbucketBulkActions = feignRemoteForBitbucketBulkActions;
         this.projectKey = projectKey;
+        this.userSlug = userSlug;
     }
 
     @Override
@@ -115,9 +114,8 @@ public class RemoteForBitbucketBulkActionsWrapper implements SourceControlBulkAc
                 .collect(toList());
     }
 
-    @Override
-    public User fetchCurrentUser(String sourceControlAccessToken, String emailAddress, String login) {
+    public User fetchCurrentUser(String sourceControlAccessToken, String emailAddress) {
         // can we get it from properties instead of passing from domain
-        return feignRemoteForBitbucketBulkActions.fetchCurrentUser(sourceControlAccessToken,emailAddress, login).toStandardUser();
+        return feignRemoteForBitbucketBulkActions.fetchCurrentUser(sourceControlAccessToken, userSlug).toStandardUser();
     }
 }
