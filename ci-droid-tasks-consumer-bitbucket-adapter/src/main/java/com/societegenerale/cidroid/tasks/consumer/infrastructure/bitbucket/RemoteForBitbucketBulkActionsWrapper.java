@@ -115,7 +115,6 @@ public class RemoteForBitbucketBulkActionsWrapper implements SourceControlBulkAc
     }
 
     public User fetchCurrentUser(String sourceControlAccessToken, String emailAddress) {
-        // can we get it from properties instead of passing from domain
         return feignRemoteForBitbucketBulkActions.fetchCurrentUser(sourceControlAccessToken, userSlug).toStandardUser();
     }
 }

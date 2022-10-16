@@ -30,7 +30,7 @@ public class TestUtils {
     public static PullRequestComment pullRequestComment() {
         var pullRequestComment=new PullRequestComment();
         pullRequestComment.setAction("COMMENTED");
-        pullRequestComment.setAuthor(new User("sekhar", "some.mail@gmail.com"));
+        pullRequestComment.setUser(new User("sekhar", "some.mail@gmail.com"));
         pullRequestComment.setComment(new Comment("committed by ci droid"));
         pullRequestComment.setId("id");
         return pullRequestComment;

@@ -20,13 +20,11 @@ public class PullRequestComment {
 
     private Comment comment;
 
-    // rename to user
-    @JsonProperty("user")
-    private User author;
+    private User user;
 
     public com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment toStandardPullRequestComment() {
         String commentAsText = "COMMENTED".equals(action) ? comment.getText() : null;
-        return new com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment(commentAsText, author.toStandardUser());
+        return new com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestComment(commentAsText, user.toStandardUser());
 
     }
 

@@ -30,7 +30,6 @@ public interface FeignRemoteForBitbucketBulkActions {
     @GetMapping(value = "/repos/{repoFullName}/pull-requests",
                 consumes = MediaType.APPLICATION_JSON_VALUE,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    // Todo why duplicate method?
     PullRequestWrapper fetchOpenPullRequests(@PathVariable("repoFullName") String repoFullName);
 
     default UpdatedResource deleteContent(String repoFullName, String path, DirectCommit directCommit, String sourceControlPersonalToken)
@@ -87,8 +86,7 @@ public interface FeignRemoteForBitbucketBulkActions {
     // Todo cover this logic in IT test case
     default User fetchCurrentUser(String sourceControlPersonalToken, String userSlug) {
         String bitbucketUrl = BitbucketConfig.getBitbucket();
-        String bitBucketUrlWithoutProjectCode = bitbucketUrl.substring(0, bitbucketUrl.lastIndexOf("/"));
-        String bitBucketUrlWithoutProject = bitBucketUrlWithoutProjectCode.substring(0, bitBucketUrlWithoutProjectCode.lastIndexOf("/"));
+        String bitBucketUrlWithoutProject = bitbucketUrl.substring(0, bitbucketUrl.lastIndexOf("/projects"));
 
         BitBucketReferenceClient bitbucketReferenceClient = BitBucketReferenceClient.buildBitbucketReferenceClient(sourceControlPersonalToken)
                 .target(BitBucketReferenceClient.class, bitBucketUrlWithoutProject + "/users/" + userSlug);
@@ -105,12 +103,10 @@ public interface FeignRemoteForBitbucketBulkActions {
         return BitbucketReferenceClient.createPullRequest(newPr);
     }
 
-    //
     @GetMapping(value = "/repos/{repositorySlug}/browse/{path}?at={branch}&limit=1&blame=true&noContent=true",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Nonnull
-    // Todo use limit to get one record
     List<Blame> fetchCommits(@PathVariable("repositorySlug") String repositorySlug, @PathVariable("path") String path,
                              @PathVariable("branch") String branch);
 

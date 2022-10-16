@@ -14,7 +14,6 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Map;
 
-// Todo most of the get apis are returning page. need to get all page data
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "BITBUCKET")
 @FeignClient(name = "bitbucket-forEvents", url = "${source-control.url}", decode404 = true, configuration = BitbucketConfig.class)
 public interface FeignRemoteForBitbucketEvents {
@@ -62,7 +61,7 @@ public interface FeignRemoteForBitbucketEvents {
         updatePullRequest(repoFullName, prNumber, bodyToClosePR);
     }
 
-    @PatchMapping(value = "/repos/{repoFullName}/pulls/{prNumber}",
+    @PatchMapping(value = "/repos/{repoFullName}/pull-requests/{prNumber}",
                   consumes = MediaType.APPLICATION_JSON_VALUE,
                   produces = MediaType.APPLICATION_JSON_VALUE)
     void updatePullRequest(@PathVariable("repoFullName") String repoFullName,
