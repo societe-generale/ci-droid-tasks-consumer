@@ -4,7 +4,12 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model
 import com.societegenerale.cidroid.tasks.consumer.services.model.DirectCommit;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Base64;
+import java.util.List;
 
 import static java.util.List.of;
 
@@ -12,7 +17,7 @@ public class TestUtils {
 
     public static Repository repository() {
         var selfWithClone = getSelfWithClone();
-        var repository = Repository.builder().defaultBranch("master").name("ci-droid-task-consumer").fullName("ci-droid-task-consumer").forkable(true)
+        var repository = Repository.builder().defaultBranch("master").name("public-repo").fullName("public-repo").forkable(true)
                 .links(selfWithClone).build();
         return repository;
     }
@@ -71,6 +76,16 @@ public class TestUtils {
 
     public static User getUser() {
         return new User("sekhar", "some.mail@gmail.com");
+    }
+
+    public static PullRequest pullRequest() {
+        PullRequest pullRequest = new PullRequest(1);
+        pullRequest.setCreatedDate(ZonedDateTime.of(LocalDate.of(2022, 10, 15), LocalTime.of(10, 41, 39), ZoneId.of("UTC")));
+        pullRequest.setAuthor(new Author(getUser()));
+        pullRequest.setFromRef(FromOrToRef.builder().displayId("dis_id_fromRef").latestCommit("latest_commit").build());
+        pullRequest.setToRef(FromOrToRef.builder().displayId("dis_id_toRef").latestCommit("latest_commit").repository(repositoryToCreatePullRequest()).build());
+        pullRequest.setLinks(new Links(List.of(new Self("href"))));
+        return pullRequest;
     }
 
 

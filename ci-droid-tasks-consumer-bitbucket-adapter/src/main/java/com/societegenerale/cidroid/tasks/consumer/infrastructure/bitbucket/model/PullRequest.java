@@ -2,7 +2,6 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.mode
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 

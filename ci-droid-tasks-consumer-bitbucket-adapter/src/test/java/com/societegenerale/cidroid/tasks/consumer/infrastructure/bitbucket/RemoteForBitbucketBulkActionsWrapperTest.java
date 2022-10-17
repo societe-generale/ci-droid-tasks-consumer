@@ -48,15 +48,10 @@ class RemoteForBitbucketBulkActionsWrapperTest {
     @Test
     void should_create_pull_request_and_return_post_push_commit() throws RemoteSourceControlAuthorizationException {
         com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestToCreate newPr = pullRequestToCreate();
-        PullRequest pullRequest = new PullRequest(1);
-        pullRequest.setCreatedDate(ZonedDateTime.of(LocalDate.of(2022, 10, 15), LocalTime.of(10, 41, 39), ZoneId.of("UTC")));
-        pullRequest.setAuthor(new Author(getUser()));
-        pullRequest.setFromRef(FromOrToRef.builder().displayId("dis_id_fromRef").latestCommit("latest_commit").build());
-        pullRequest.setToRef(FromOrToRef.builder().displayId("dis_id_toRef").latestCommit("latest_commit").repository(repositoryToCreatePullRequest()).build());
-        pullRequest.setLinks(new Links(List.of(new Self("href"))));
+
 
         when(feignRemoteForBitbucketBulkActions.createPullRequest("CI-Repo", com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequestToCreate.from(newPr, "CI-Repo", "CI-Project"), "Token"))
-                .thenReturn(pullRequest);
+                .thenReturn(pullRequest());
         var resourceContent = remoteForBitbucketBulkActionsWrapper.createPullRequest("CI-Repo", newPr, "Token");
         assertThat(resourceContent.getNumber()).isEqualTo(1);
         assertThat(resourceContent.getBaseBranchName()).isEqualTo("dis_id_toRef");

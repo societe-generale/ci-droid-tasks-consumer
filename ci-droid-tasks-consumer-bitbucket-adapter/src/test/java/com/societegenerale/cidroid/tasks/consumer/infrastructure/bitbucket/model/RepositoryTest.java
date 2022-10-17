@@ -13,8 +13,8 @@ class RepositoryTest {
         var repository = repository().toStandardRepo().get();
         assertThat(repository.getCloneUrl()).isEqualTo("clone url");
         assertThat(repository.getDefaultBranch()).isEqualTo("master");
-        assertThat(repository.getName()).isEqualTo("ci-droid-task-consumer");
-        assertThat(repository.getFullName()).isEqualTo("ci-droid-task-consumer");
+        assertThat(repository.getName()).isEqualTo("public-repo");
+        assertThat(repository.getFullName()).isEqualTo("public-repo");
         assertThat(repository.getId()).isEqualTo( 0);
         assertThat(repository.isFork()).isTrue();
     }
