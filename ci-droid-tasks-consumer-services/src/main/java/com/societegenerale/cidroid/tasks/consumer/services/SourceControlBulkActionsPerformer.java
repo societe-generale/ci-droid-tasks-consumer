@@ -62,7 +62,6 @@ public interface SourceControlBulkActionsPerformer extends RemoteSourceControl{
      * @param emailAddress
      * @return
      */
-    // Added git login required to get user information
     User fetchCurrentUser(String sourceControlAccessToken, String emailAddress);
 
 }

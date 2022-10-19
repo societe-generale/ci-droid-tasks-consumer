@@ -66,7 +66,6 @@ public class ActionToPerformListener {
         BulkActionToPerform actionToPerform = BulkActionToPerform.builder()
             .sourceControlPersonalToken(actionToPerformCommand.getSourceControlPersonalToken())
             .email(actionToPerformCommand.getEmail())
-                .gitLogin(actionToPerformCommand.getGitLogin())
             .commitMessage(actionToPerformCommand.getCommitMessage())
             .gitHubInteraction(actionToPerformCommand.getGitHubInteractionType())
             .resourcesToUpdate(actionToPerformCommand.getResourcesToUpdate())
