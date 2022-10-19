@@ -1,6 +1,8 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.*;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Blame;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.UpdatedResource;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Commit;
@@ -8,7 +10,8 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.ResourceContent
 import com.societegenerale.cidroid.tasks.consumer.services.model.User;
 import org.junit.jupiter.api.Test;
 
-import java.time.*;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 

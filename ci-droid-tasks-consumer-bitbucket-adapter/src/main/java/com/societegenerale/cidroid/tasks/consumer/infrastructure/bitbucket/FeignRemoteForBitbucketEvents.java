@@ -1,7 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.config.BitbucketConfig;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequest;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

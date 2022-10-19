@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import static com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.util.TestUtils.repositoryToCreatePullRequest;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RepositoryToCreatePullRequestTest {
 

@@ -2,23 +2,18 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.mock
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.*;
-import com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Blame;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequestWrapper;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.User;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.mockserver.model.HttpResponse;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Objects;
 
 import static com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.util.TestUtils.*;
-import static com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.util.TestUtils.getUser;
-import static com.societegenerale.cidroid.tasks.consumer.services.model.PRmergeableStatus.NOT_MERGEABLE;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -60,7 +55,7 @@ public class BitBucketMockServer extends MockServer {
                 .when(request()
                         .withMethod("GET")
                         .withPath("/api/users/sekhar"))
-                .respond(getCurrentUser());
+                .respond(getUser());
 
         mockServer
                 .when(request()
@@ -168,10 +163,5 @@ public class BitBucketMockServer extends MockServer {
         return response()
                 .withBody(objectMapper.writeValueAsString(new User("sekhar", "some.mail@gmail.com")))
                 .withHeader("Content-Type", "application/json");
-    }
-
-    private HttpResponse getCurrentUser() {
-        //reusing the same method - but we may need something specific for current user later
-        return getUser();
     }
 }

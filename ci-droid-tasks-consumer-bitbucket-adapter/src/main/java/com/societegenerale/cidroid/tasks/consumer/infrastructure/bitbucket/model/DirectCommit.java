@@ -1,8 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import feign.form.FormProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Base64;

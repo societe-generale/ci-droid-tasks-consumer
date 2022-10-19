@@ -7,8 +7,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class UserTest {
 
-    // TODO why junit asserEquals are not allowed ?
-
     @Test
     void build_StandardUser() {
         var user = getUser().toStandardUser();

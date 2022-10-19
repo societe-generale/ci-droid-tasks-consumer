@@ -83,7 +83,6 @@ public interface FeignRemoteForBitbucketBulkActions {
         return bitbucketReferenceClient.createBranch(new InputRef(branchName, fromReferenceSha1));
     }
 
-    // Todo cover this logic in IT test case
     default User fetchCurrentUser(String sourceControlPersonalToken, String userSlug) {
         String bitbucketUrl = BitbucketConfig.getBitbucket();
         String bitBucketUrlWithoutProject = bitbucketUrl.substring(0, bitbucketUrl.lastIndexOf("/projects"));

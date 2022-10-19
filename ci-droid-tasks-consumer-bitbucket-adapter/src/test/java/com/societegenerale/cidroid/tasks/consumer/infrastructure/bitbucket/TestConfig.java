@@ -4,7 +4,9 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.mocks
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.mocks.NotifierMock;
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventsReactionPerformer;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.*;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestEventHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PullRequestSizeCheckHandler;
+import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -56,7 +58,6 @@ public class TestConfig {
 
     @Bean
     public PushEventMonitor dummyPushEventMonitor() {
-        // do nothing..
         return (pushEvent) -> {};
     }
 
