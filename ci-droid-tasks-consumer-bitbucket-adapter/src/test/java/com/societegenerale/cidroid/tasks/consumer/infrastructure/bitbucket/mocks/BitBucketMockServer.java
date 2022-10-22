@@ -3,17 +3,18 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.mock
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Blame;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequestWrapper;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.UpdatedResource;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.User;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.mockserver.model.HttpResponse;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 
-import static com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.util.TestUtils.*;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -35,19 +36,19 @@ public class BitBucketMockServer extends MockServer {
         mockServer
                 .when(request()
                         .withMethod("GET")
-                        .withPath("/api/projects/public-project/repos/public-repo/pull-requests"))
+                        .withPath("/api/projects/public-project/repos/my-repo/pull-requests"))
                 .respond(getOpenPullRequests());
 
         mockServer
                 .when(request()
                         .withMethod("GET")
-                        .withPath("/api/projects/public-project/repos/public-repo/pull-requests/[0-9]+"))
+                        .withPath("/api/projects/public-project/repos/my-repo/pull-requests/[0-9]+"))
                 .respond(request -> getPullRequest());
 
         mockServer
                 .when(request()
                         .withMethod("POST")
-                        .withPath("/api/projects/public-project/repos/public-repo/pull-requests"))
+                        .withPath("/api/projects/public-project/repos/my-repo/pull-requests"))
                 .respond(getPullRequest());
 
 
@@ -60,35 +61,35 @@ public class BitBucketMockServer extends MockServer {
         mockServer
                 .when(request()
                         .withMethod("POST")
-                        .withPath("/api/projects/public-project/repos/public-repo/pull-requests/[0-9]+/comment"))
+                        .withPath("/api/projects/public-project/repos/my-repo/pull-requests/[0-9]+/comment"))
                 .respond(response().withStatusCode(200));
 
         mockServer
                 .when(request()
                         .withMethod("GET")
-                        .withPath("/api/projects/public-project/repos/public-repo/raw/Jenkinsfile")
+                        .withPath("/api/projects/public-project/repos/my-repo/raw/Jenkinsfile")
                         .withQueryStringParameter("at", "newJavaImageForJenkinsBuild"))
                 .respond(returnContent());
 
         mockServer
                 .when(request()
                         .withMethod("PATCH")
-                        .withPath("/api/projects/public-project/repos/public-repo/pull-requests/[0-9]+"))
+                        .withPath("/api/projects/public-project/repos/my-repo/pull-requests/[0-9]+"))
                 .respond(response().withStatusCode(200));
         mockServer
                 .when(request()
                         .withMethod("GET")
-                        .withPath("/api/projects/public-project/repos/public-repo"))
+                        .withPath("/api/projects/public-project/repos/my-repo"))
                 .respond(returnRepository());
         mockServer
                 .when(request()
                         .withMethod("GET")
-                        .withPath("/api/projects/public-project/repos/public-repo/commits/master"))
+                        .withPath("/api/projects/public-project/repos/my-repo/commits/master"))
                 .respond(returnReference());
         mockServer
                 .when(request()
                         .withMethod("GET")
-                        .withPath("/api/projects/public-project/repos/public-repo/browse/Jenkinsfile")
+                        .withPath("/api/projects/public-project/repos/my-repo/browse/Jenkinsfile")
                         .withQueryStringParameter("at", "newJavaImageForJenkinsBuild")
                         .withQueryStringParameter("limit", "1")
                         .withQueryStringParameter("blame", "true")
@@ -98,12 +99,12 @@ public class BitBucketMockServer extends MockServer {
         mockServer
                 .when(request()
                         .withMethod("PUT")
-                        .withPath("/api/projects/public-project/repos/public-repo/browse/Jenkinsfile"))
+                        .withPath("/api/projects/public-project/repos/my-repo/browse/Jenkinsfile"))
                 .respond(returnUpdatedResource());
         mockServer
                 .when(request()
                         .withMethod("POST")
-                        .withPath("/api/projects/public-project/repos/public-repo/branches"))
+                        .withPath("/api/projects/public-project/repos/my-repo/branches"))
                 .respond(returnReference());
     }
 
@@ -114,54 +115,62 @@ public class BitBucketMockServer extends MockServer {
                 .withStatusCode(200);
     }
 
-    @SneakyThrows
     private HttpResponse returnRepository() {
         return response()
-                .withBody(objectMapper.writeValueAsString(repository()))
+                .withBody(readFromFile("repository.json"))
+                .withHeader("Content-Type", "application/json")
+                .withStatusCode(200);
+    }
+
+    private HttpResponse returnReference() {
+        return response()
+                .withBody(readFromFile("reference.json"))
                 .withHeader("Content-Type", "application/json")
                 .withStatusCode(200);
     }
 
     @SneakyThrows
-    private HttpResponse returnReference() {
-        return response()
-                .withBody(objectMapper.writeValueAsString(reference()))
-                .withHeader("Content-Type", "application/json")
-                .withStatusCode(200);
-    }
-    @SneakyThrows
     private HttpResponse returnBlames() {
         return response()
+                // No mock response found https://developer.atlassian.com/server/bitbucket/rest/v804/api-group-repository/#api-api-latest-projects-projectkey-repos-repositoryslug-browse-path-get
                 .withBody(objectMapper.writeValueAsString(List.of(new Blame(ZonedDateTime.now(), "commitHash"))))
                 .withHeader("Content-Type", "application/json")
                 .withStatusCode(200);
     }
-    @SneakyThrows
+
     private HttpResponse returnUpdatedResource() {
         return response()
-                .withBody(objectMapper.writeValueAsString(UpdatedResource.builder().id("1234").author(new User("sekhar", "some.mail@gmail.com")).build()))
+                .withBody(readFromFile("updateResource.json"))
                 .withHeader("Content-Type", "application/json")
                 .withStatusCode(200);
     }
 
-    @SneakyThrows
     private HttpResponse getOpenPullRequests() {
         return response()
-                .withBody(objectMapper.writeValueAsString(new PullRequestWrapper(List.of(pullRequest()))))
+                .withBody(readFromFile("pullRequests.json"))
                 .withHeader("Content-Type", "application/json");
     }
 
     @SneakyThrows
     private HttpResponse getPullRequest() {
         return response()
-                .withBody(objectMapper.writeValueAsString(pullRequest()))
+                .withBody(readFromFile("singlePullRequest.json"))
                 .withHeader("Content-Type", "application/json");
     }
 
     @SneakyThrows
     private HttpResponse getUser() {
         return response()
-                .withBody(objectMapper.writeValueAsString(new User("sekhar", "some.mail@gmail.com")))
+                .withBody(readFromFile("user.json"))
                 .withHeader("Content-Type", "application/json");
+    }
+
+    private String readFromFile(String fileName) {
+        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(fileName);
+        try {
+            return IOUtils.toString(Objects.requireNonNull(resourceAsStream), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(String.format("The file %s does not exist", fileName));
+        }
     }
 }

@@ -21,7 +21,7 @@ public class BulkActionToPerformIT extends ActionToPerformEventHandlerIT {
         bitBucketMockClient.verify(
                 request()
                         .withMethod("POST")
-                        .withPath("/api/projects/public-project/repos/public-repo/pull-requests"),
+                        .withPath("/api/projects/public-project/repos/my-repo/pull-requests"),
                 VerificationTimes.exactly(1)
         );
     }
