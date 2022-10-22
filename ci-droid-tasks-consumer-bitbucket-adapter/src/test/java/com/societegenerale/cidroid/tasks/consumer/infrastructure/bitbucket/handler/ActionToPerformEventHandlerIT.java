@@ -6,10 +6,12 @@ import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.TestC
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.config.BitbucketConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.mocks.BitBucketMockServer;
 import com.societegenerale.cidroid.tasks.consumer.services.ActionToPerformListener;
+import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockserver.client.MockServerClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;

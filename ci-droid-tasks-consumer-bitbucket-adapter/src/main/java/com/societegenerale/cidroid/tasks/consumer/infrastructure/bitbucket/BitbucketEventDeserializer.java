@@ -2,6 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.BitbucketPullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.BitbucketPushEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlEventMapper;
@@ -23,6 +24,7 @@ public class BitbucketEventDeserializer implements SourceControlEventMapper {
     @Override
     public PullRequestEvent deserializePullRequestEvent(String rawPullRequestEvent) throws JsonProcessingException {
 
+        objectMapper.registerModule(new JavaTimeModule());
         BitbucketPullRequestEvent pullRequestEvent=objectMapper.readValue(rawPullRequestEvent, BitbucketPullRequestEvent.class);
         pullRequestEvent.setRawEvent(rawPullRequestEvent);
 

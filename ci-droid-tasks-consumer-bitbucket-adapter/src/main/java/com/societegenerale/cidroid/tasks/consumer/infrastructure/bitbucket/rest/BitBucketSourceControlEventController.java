@@ -61,7 +61,7 @@ public class BitBucketSourceControlEventController {
         }
     }
 
-    @PostMapping(path="/bitbucket",headers = "X-Bitbucket-Event=pull_request")
+    @PostMapping(path="/bitbucket",headers = "X-Bitbucket-Event=pr:opened")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> onBitbucketPullRequestEvent(HttpEntity<String> rawPullRequestEvent) {

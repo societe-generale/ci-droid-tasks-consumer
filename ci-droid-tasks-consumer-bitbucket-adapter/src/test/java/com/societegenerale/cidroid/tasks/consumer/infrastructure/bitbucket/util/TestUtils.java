@@ -2,7 +2,15 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.util
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.*;
 import com.societegenerale.cidroid.tasks.consumer.services.model.DirectCommit;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.FileCopyUtils;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,9 +19,23 @@ import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.List.of;
 
 public class TestUtils {
+
+    public static String readFileToString(String path) {
+        ResourceLoader resourceLoader = new DefaultResourceLoader();
+        Resource resource = resourceLoader.getResource(path);
+        return asString(resource);
+    }
+    private static String asString(Resource resource) {
+        try (Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8)) {
+            return FileCopyUtils.copyToString(reader);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
 
     public static Repository repository() {
         var selfWithClone = getSelfWithClone();
