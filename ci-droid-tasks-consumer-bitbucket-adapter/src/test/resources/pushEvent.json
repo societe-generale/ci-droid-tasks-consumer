@@ -18,12 +18,26 @@
     "state":"AVAILABLE",
     "statusMessage":"Available",
     "forkable":true,
+    "defaultBranch": "master",
     "project":{
       "key":"PROJ",
       "id":84,
       "name":"project",
       "public":false,
       "type":"NORMAL"
+    },
+    "links": {
+      "self": [
+        {
+          "href": "aHref"
+        }
+      ],
+      "clone": [
+        {
+          "href": "href",
+          "name": "http"
+        }
+      ]
     },
     "public":false
   },

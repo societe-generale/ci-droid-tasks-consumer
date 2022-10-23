@@ -1,61 +1,60 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BitbucketPushEvent implements PushEvent {
 
+    String rawEvent;
     private Repository repository;
-
     private String ref;
-
-    @JsonProperty("head_commit")
-    private com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Commit headCommit;
+    private User actor;
+    @Nonnull
+    private List<Change> changes;
 
     @Override
-    public com.societegenerale.cidroid.tasks.consumer.services.model.Repository getRepository(){
+    public com.societegenerale.cidroid.tasks.consumer.services.model.Repository getRepository() {
         return repository.toStandardRepo().get();
     }
 
-    @Override
-    public com.societegenerale.cidroid.tasks.consumer.services.model.Commit getHeadCommit(){
-        return headCommit.toStandardCommit();
+    public String getRef() {
+        return changes.stream().findFirst().get().getRefId();
     }
 
-    String userEmail;
+    @Override
+    public com.societegenerale.cidroid.tasks.consumer.services.model.Commit getHeadCommit() {
+        Change change = changes.stream().findFirst().get();
+        return com.societegenerale.cidroid.tasks.consumer.services.model.Commit.builder().id(change.getToHash())
+                .author(actor.toStandardUser()).build();
+    }
 
-    String userName;
+    public String getUserEmail() {
+        return actor.getEmail();
+    }
 
-    String rawEvent;
+    public String getUserName() {
+        return actor.getLogin();
+    }
 
     @Nonnull
     @Override
     public List<com.societegenerale.cidroid.tasks.consumer.services.model.Commit> getCommits() {
 
-        if(commits==null){
-            return Collections.emptyList();
-        }
-
-        return commits.stream().map(Commit::toStandardCommit).collect(Collectors.toList());
-    }
-
-    List<Commit> commits;
-
-    @JsonProperty("pusher")
-    private void unpackNestedPusher(Map<String, Object> pusher) {
-        this.userName = (String) pusher.get("name");
-        this.userEmail = (String) pusher.get("email");
+        var user = actor.toStandardUser();
+        return changes.stream().map(it -> com.societegenerale.cidroid.tasks.consumer.services.model.Commit.builder().id(it.getToHash())
+                .author(user).build()).collect(Collectors.toList());
     }
 
     @Override

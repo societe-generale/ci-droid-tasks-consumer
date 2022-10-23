@@ -4,7 +4,6 @@ import com.societegenerale.cidroid.tasks.consumer.services.PullRequestEventServi
 import com.societegenerale.cidroid.tasks.consumer.services.PushEventService;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestEvent;
 import com.societegenerale.cidroid.tasks.consumer.services.model.PushEvent;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -35,14 +34,22 @@ class BitBucketSourceControlEventControllerTest {
 
     private final String pullRequestEventAsString = readFileToString("/pullRequestEvent.json");
 
-    @Test
-    @Disabled
-        // Todo remove disable in next commit
-    void process_push_event() throws Exception {
+    private final String pushEventAsString = readFileToString("/pushEvent.json");
 
-        var pushEventAsString = readFileToString("/pushEvent.json");
+    @Test
+    void process_push_event_on_default_branch() throws Exception {
 
         performPOSTandExpectSuccess(pushEventAsString, "push");
+
+        verify(mockPushEventService, times(1)).onPushOnDefaultBranchEvent(any(PushEvent.class));
+    }
+
+    @Test
+    void process_push_event_on_non_default_branch() throws Exception {
+
+        String pushEventOnNonDefaultBranchAsString = pushEventAsString.replaceAll("refs/heads/master", "refs/heads/someOtherBranch");
+
+        performPOSTandExpectSuccess(pushEventOnNonDefaultBranchAsString, "push");
 
         verify(mockPushEventService, times(1)).onPushOnNonDefaultBranchEvent(any(PushEvent.class));
     }

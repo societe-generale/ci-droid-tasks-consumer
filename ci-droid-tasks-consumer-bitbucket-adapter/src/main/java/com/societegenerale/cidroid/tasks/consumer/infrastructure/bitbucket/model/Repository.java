@@ -16,7 +16,6 @@ import java.util.Optional;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Repository {
 
-    @JsonProperty("default_branch")
     private String defaultBranch;
 
     @JsonProperty("slug")
