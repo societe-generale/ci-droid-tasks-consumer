@@ -166,8 +166,8 @@ public class BitBucketMockServer extends MockServer {
     }
 
     private String readFromFile(String fileName) {
-        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(fileName);
-        try {
+
+        try (InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(fileName)) {
             return IOUtils.toString(Objects.requireNonNull(resourceAsStream), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(String.format("The file %s does not exist", fileName));
