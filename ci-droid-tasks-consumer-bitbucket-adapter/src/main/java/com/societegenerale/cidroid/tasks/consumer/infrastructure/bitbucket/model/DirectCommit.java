@@ -24,7 +24,7 @@ public class DirectCommit {
 
         bitbucketCommit.setBranch(stdCommit.getBranch());
         bitbucketCommit.setCommitMessage(stdCommit.getCommitMessage());
-        bitbucketCommit.setContent(new String(Base64.getDecoder().decode(stdCommit.getBase64EncodedContent())));
+        bitbucketCommit.setContent(new String(Base64.getDecoder().decode(stdCommit.getBase64EncodedContent()), Charset.defaultCharset()));
         bitbucketCommit.setPreviousVersionSha1(stdCommit.getPreviousVersionSha1());
 
         return bitbucketCommit;
