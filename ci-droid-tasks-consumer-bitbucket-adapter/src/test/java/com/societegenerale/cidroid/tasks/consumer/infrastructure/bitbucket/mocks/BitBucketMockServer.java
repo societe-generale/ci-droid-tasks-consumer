@@ -140,7 +140,7 @@ public class BitBucketMockServer extends MockServer {
 
     private HttpResponse returnUpdatedResource() {
         return response()
-                .withBody(readFromFile("updateResource.json"))
+                .withBody(readFromFile("updatedResource.json"))
                 .withHeader("Content-Type", "application/json")
                 .withStatusCode(200);
     }
