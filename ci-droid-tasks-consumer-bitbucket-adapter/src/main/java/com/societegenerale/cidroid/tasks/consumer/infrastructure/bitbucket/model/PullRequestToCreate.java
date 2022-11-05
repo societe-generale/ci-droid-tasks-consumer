@@ -24,10 +24,12 @@ public class PullRequestToCreate {
     private FromOrToRef toRef;
 
     public static PullRequestToCreate from(com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestToCreate newPr,
-                                           String repoFullName, String projectKey) {
+                                           String repoFullName, Project project) {
 
-        RepositoryToCreatePullRequest fromAndToRepo = RepositoryToCreatePullRequest.builder().project(new Project(projectKey))
-                .slug(repoFullName).build();
+        RepositoryToCreatePullRequest fromAndToRepo = RepositoryToCreatePullRequest.builder()
+                .project(project)
+                .slug(repoFullName)
+                .build();
 
         return PullRequestToCreate.builder()
                 .title(newPr.getTitle())

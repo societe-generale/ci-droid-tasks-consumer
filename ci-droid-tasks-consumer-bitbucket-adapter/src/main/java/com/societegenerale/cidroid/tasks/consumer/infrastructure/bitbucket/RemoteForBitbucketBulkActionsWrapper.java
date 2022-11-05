@@ -1,5 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
 
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Project;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
@@ -17,13 +18,16 @@ public class RemoteForBitbucketBulkActionsWrapper implements SourceControlBulkAc
 
     private final FeignRemoteForBitbucketBulkActions feignRemoteForBitbucketBulkActions;
 
-    private final String projectKey;
+    /**
+     * "umbrella" project, under which the repositories are
+     */
+    private final Project project;
 
     private final String userSlug;
 
     public RemoteForBitbucketBulkActionsWrapper(FeignRemoteForBitbucketBulkActions feignRemoteForBitbucketBulkActions, String projectKey, String userSlug) {
         this.feignRemoteForBitbucketBulkActions = feignRemoteForBitbucketBulkActions;
-        this.projectKey = projectKey;
+        this.project = new Project(projectKey);
         this.userSlug = userSlug;
     }
 
@@ -67,7 +71,7 @@ public class RemoteForBitbucketBulkActionsWrapper implements SourceControlBulkAc
     public PullRequest createPullRequest(String repoFullName, PullRequestToCreate newPr, String sourceControlAccessToken)
             throws RemoteSourceControlAuthorizationException {
 
-        var bitbucketPrToCreate= com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequestToCreate.from(newPr, repoFullName, projectKey);
+        var bitbucketPrToCreate= com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequestToCreate.from(newPr, repoFullName, project);
 
         var bitbucketPr=feignRemoteForBitbucketBulkActions.createPullRequest(repoFullName, bitbucketPrToCreate, sourceControlAccessToken);
 

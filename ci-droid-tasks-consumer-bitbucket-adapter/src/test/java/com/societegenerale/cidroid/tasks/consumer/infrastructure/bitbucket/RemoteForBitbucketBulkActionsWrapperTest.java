@@ -2,6 +2,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
 
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Blame;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.DirectCommit;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Project;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.UpdatedResource;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
@@ -53,7 +54,7 @@ class RemoteForBitbucketBulkActionsWrapperTest {
         com.societegenerale.cidroid.tasks.consumer.services.model.PullRequestToCreate newPr = pullRequestToCreate();
 
 
-        when(feignRemoteForBitbucketBulkActions.createPullRequest("CI-Repo", com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequestToCreate.from(newPr, "CI-Repo", "CI-Project"), "Token"))
+        when(feignRemoteForBitbucketBulkActions.createPullRequest("CI-Repo", com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.PullRequestToCreate.from(newPr, "CI-Repo", new Project("CI-Project")), "Token"))
                 .thenReturn(pullRequest());
         var resourceContent = remoteForBitbucketBulkActionsWrapper.createPullRequest("CI-Repo", newPr, "Token");
         assertThat(resourceContent.getNumber()).isEqualTo(1);

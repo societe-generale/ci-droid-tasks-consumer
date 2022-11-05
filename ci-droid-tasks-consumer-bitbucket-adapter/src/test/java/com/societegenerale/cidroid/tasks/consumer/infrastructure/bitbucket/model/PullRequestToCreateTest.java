@@ -10,7 +10,7 @@ class PullRequestToCreateTest {
 
     @Test
     void build_bitbucket_pull_request_from_standard_pull_request() {
-        var bitbucketPullRequestToCreate = from(pullRequestToCreate(), "ci-droid-consumer", "ci-droid");
+        var bitbucketPullRequestToCreate = from(pullRequestToCreate(), "ci-droid-consumer", new Project("ci-droid"));
 
         assertThat(bitbucketPullRequestToCreate.getTitle()).isEqualTo("pull request for feature 1");
         assertThat(bitbucketPullRequestToCreate.getDescription()).isEqualTo("pull request for feature 1");
