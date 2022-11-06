@@ -3,6 +3,7 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.mode
 import feign.form.FormProperty;
 import lombok.Data;
 
+import java.nio.charset.Charset;
 import java.util.Base64;
 
 @Data
