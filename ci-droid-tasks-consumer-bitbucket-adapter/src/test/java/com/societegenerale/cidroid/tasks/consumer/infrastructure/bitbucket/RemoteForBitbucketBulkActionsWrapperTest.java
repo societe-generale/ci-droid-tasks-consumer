@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 class RemoteForBitbucketBulkActionsWrapperTest {
 
     private FeignRemoteForBitbucketBulkActions feignRemoteForBitbucketBulkActions = mock(FeignRemoteForBitbucketBulkActions.class);
-    RemoteForBitbucketBulkActionsWrapper remoteForBitbucketBulkActionsWrapper = new RemoteForBitbucketBulkActionsWrapper(feignRemoteForBitbucketBulkActions, "CI-Project", "some.user");
+    RemoteForBitbucketBulkActionsWrapper remoteForBitbucketBulkActionsWrapper = new RemoteForBitbucketBulkActionsWrapper(feignRemoteForBitbucketBulkActions, "CI-Project");
 
     @Test
     void should_fetch_encoded_content_and_latest_commit_id() {

@@ -117,6 +117,7 @@ class ActionToPerformServiceTest {
         bulkActionToPerformBuilder = BulkActionToPerform.builder()
                 .userRequestingAction(SOME_USER)
                 .sourceControlPersonalToken(SOME_API_ACCESS_TOKEN)
+                .gitLogin("some.user.login")
                 .email(SOME_EMAIL)
                 .commitMessage(SOME_COMMIT_MESSAGE)
                 .resourcesToUpdate(List.of(resourceToUpdate))
@@ -132,7 +133,7 @@ class ActionToPerformServiceTest {
         when(mockRemoteSourceControl.updateContent(anyString(), anyString(), any(DirectCommit.class), anyString()))
                 .thenReturn(updatedResource); // lenient mocking - we're asserting in verify.
 
-        when(mockRemoteSourceControl.fetchCurrentUser(eq(SOME_API_ACCESS_TOKEN),anyString()))
+        when(mockRemoteSourceControl.fetchCurrentUser(eq(SOME_API_ACCESS_TOKEN),anyString(), anyString()))
             .thenReturn(SOME_USER);
 
 

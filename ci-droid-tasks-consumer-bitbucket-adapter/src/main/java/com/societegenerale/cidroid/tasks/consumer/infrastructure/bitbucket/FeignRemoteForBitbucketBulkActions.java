@@ -83,12 +83,12 @@ public interface FeignRemoteForBitbucketBulkActions {
         return bitbucketReferenceClient.createBranch(new InputRef(branchName, fromReferenceSha1));
     }
 
-    default User fetchCurrentUser(String sourceControlPersonalToken, String userSlug) {
+    default User fetchCurrentUser(String sourceControlPersonalToken, String login) {
         String bitbucketUrl = BitbucketConfig.getBitbucket();
         String bitBucketUrlWithoutProject = bitbucketUrl.substring(0, bitbucketUrl.lastIndexOf("/projects"));
 
         BitBucketReferenceClient bitbucketReferenceClient = BitBucketReferenceClient.buildBitbucketReferenceClient(sourceControlPersonalToken)
-                .target(BitBucketReferenceClient.class, bitBucketUrlWithoutProject + "/users/" + userSlug);
+                .target(BitBucketReferenceClient.class, bitBucketUrlWithoutProject + "/users/" + login);
 
         return bitbucketReferenceClient.getCurrentUser();
     }

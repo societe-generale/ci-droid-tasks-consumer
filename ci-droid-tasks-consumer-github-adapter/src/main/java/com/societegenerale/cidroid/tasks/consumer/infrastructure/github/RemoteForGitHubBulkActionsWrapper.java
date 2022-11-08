@@ -111,7 +111,7 @@ public class RemoteForGitHubBulkActionsWrapper implements SourceControlBulkActio
     }
 
     @Override
-    public User fetchCurrentUser(String sourceControlAccessToken, String emailAddress) {
+    public User fetchCurrentUser(String sourceControlAccessToken, String emailAddress, String login) {
         return feignRemoteForGitHubBulkActions.fetchCurrentUser(sourceControlAccessToken,emailAddress).toStandardUser();
     }
 }

@@ -23,12 +23,9 @@ public class RemoteForBitbucketBulkActionsWrapper implements SourceControlBulkAc
      */
     private final Project project;
 
-    private final String userSlug;
-
-    public RemoteForBitbucketBulkActionsWrapper(FeignRemoteForBitbucketBulkActions feignRemoteForBitbucketBulkActions, String projectKey, String userSlug) {
+    public RemoteForBitbucketBulkActionsWrapper(FeignRemoteForBitbucketBulkActions feignRemoteForBitbucketBulkActions, String projectKey) {
         this.feignRemoteForBitbucketBulkActions = feignRemoteForBitbucketBulkActions;
         this.project = new Project(projectKey);
-        this.userSlug = userSlug;
     }
 
     @Override
@@ -118,7 +115,7 @@ public class RemoteForBitbucketBulkActionsWrapper implements SourceControlBulkAc
                 .collect(toList());
     }
 
-    public User fetchCurrentUser(String sourceControlAccessToken, String emailAddress) {
-        return feignRemoteForBitbucketBulkActions.fetchCurrentUser(sourceControlAccessToken, userSlug).toStandardUser();
+    public User fetchCurrentUser(String sourceControlAccessToken, String emailAddress, String login) {
+        return feignRemoteForBitbucketBulkActions.fetchCurrentUser(sourceControlAccessToken, login).toStandardUser();
     }
 }

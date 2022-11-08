@@ -419,7 +419,7 @@ public class RemoteForAzureDevopsBulkActions implements SourceControlBulkActions
   }
 
     @Override
-  public User fetchCurrentUser(String sourceControlAccessToken, String emailAddress) {
+  public User fetchCurrentUser(String sourceControlAccessToken, String emailAddress, String login) {
 
     //AzureDevops doesn't allow to retrieve a user details from the personal token
     //it needs to go through Oauth2 :
