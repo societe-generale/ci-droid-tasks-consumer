@@ -1,0 +1,23 @@
+{
+  "gitLogin": "sekhar",
+  "sourceControlPersonalToken": "abcdef1234569687kugfwkugfewha",
+  "email": "chandrasekharpanigrahy@gmail.com",
+
+  "commitMessage": "updating Jenkinsfile with latest java image for build",
+
+  "updateAction": {
+    "@class": "com.societegenerale.cidroid.extensions.actionToReplicate.SimpleReplaceAction",
+    "initialValue": "JDK1.8-20170718-121455-e2e6123",
+    "newValue": "JDK1.8-20180917-093720-5fdabcb014"
+  },
+
+  "gitHubInteractionType": {
+    "@c": ".PullRequestGitHubInteraction",
+    "branchNameToCreate": "newJavaImageForJenkinsBuild",
+    "pullRequestTitle": "Using new image for Jenkins build"
+  },
+
+  "resourcesToUpdate": [
+    {"repoFullName": "my-repo","filePathOnRepo": "Jenkinsfile","branchName": "master"}
+  ]
+}

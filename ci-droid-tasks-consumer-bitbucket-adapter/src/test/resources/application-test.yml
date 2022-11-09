@@ -1,0 +1,40 @@
+
+source-control:
+  type: "BITBUCKET"
+  url: "http://localhost:9800/api/projects/public-project"
+  login: "sekhar"
+  password: "somePassword"
+  project-key: "public-project"
+
+spring:
+  mail:
+    protocol: smtp
+    host:
+
+logging.pattern.console: "%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger.%M - %msg%n"
+logging.level:
+  org:
+    springframework: INFO
+
+
+
+notifiers:
+  http.targetUrl: "http://localhost:9901/notify"
+  github.prComment.enable: true
+
+cidroid-behavior:
+  # whenPushOnDefaultBranch:
+  tryToRebaseOpenPrs.enabled: true
+  notifyOwnerForNonMergeablePr.enabled: true
+  closeOldPullRequests:
+    enabled: true
+    limitInDays: 180
+  # whenPullRequestEvent:
+  bestPracticeNotifier.enabled: true
+  patternToResourceMapping:
+    "**/*Dto.java": "https://someLinkToSomeResource/ci-droid-best-practices/noDtoClass.md"
+
+  maxFilesInPRNotifier:
+    enabled: true
+    maxFiles: 5
+    warningMessage: "Oops! The your PR has more than {0} files. It's going to be tough for the reviewer :( . Limit the number of files in your PR."

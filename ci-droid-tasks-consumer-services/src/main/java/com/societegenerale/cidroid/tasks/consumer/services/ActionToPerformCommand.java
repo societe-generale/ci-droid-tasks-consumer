@@ -31,6 +31,7 @@ public class ActionToPerformCommand {
     @NotEmpty
     private String sourceControlPersonalToken;
 
+    private String gitLogin;
 
     /**
      * in previous version, the field 'sourceControlPersonalToken' was called 'gitHubOauthToken', so some clients may relay on this
