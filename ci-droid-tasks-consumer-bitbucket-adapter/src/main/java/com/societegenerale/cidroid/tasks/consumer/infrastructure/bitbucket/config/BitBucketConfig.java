@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "BITBUCKET")
 @EnableFeignClients(clients = { FeignRemoteForBitbucketEvents.class, FeignRemoteForBitbucketBulkActions.class})
 @Slf4j
-public class BitbucketConfig {
+public class BitBucketConfig {
 
     @Value("${source-control.url}")
     private String internalBitbucketUrl;

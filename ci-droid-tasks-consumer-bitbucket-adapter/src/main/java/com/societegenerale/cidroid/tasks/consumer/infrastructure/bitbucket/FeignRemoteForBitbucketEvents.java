@@ -1,6 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.config.BitbucketConfig;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.config.BitBucketConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "BITBUCKET")
-@FeignClient(name = "bitbucket-forEvents", url = "${source-control.url}", decode404 = true, configuration = BitbucketConfig.class)
+@FeignClient(name = "bitbucket-forEvents", url = "${source-control.url}", decode404 = true, configuration = BitBucketConfig.class)
 public interface FeignRemoteForBitbucketEvents {
 
     Map<String, String> bodyToClosePR = Collections.singletonMap("state", "closed");

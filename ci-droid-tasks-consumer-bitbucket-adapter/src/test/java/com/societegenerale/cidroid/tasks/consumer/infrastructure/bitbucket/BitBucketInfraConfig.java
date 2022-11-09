@@ -19,7 +19,7 @@ import java.util.List;
 @Configuration
 @ComponentScan
 @Slf4j
-public class InfraConfig {
+public class BitBucketInfraConfig {
 
 
     @Bean

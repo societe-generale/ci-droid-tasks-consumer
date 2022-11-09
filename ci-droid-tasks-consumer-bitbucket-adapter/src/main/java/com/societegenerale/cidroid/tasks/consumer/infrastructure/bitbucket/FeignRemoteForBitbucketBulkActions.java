@@ -1,7 +1,7 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.config.BitbucketConfig;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.config.BitBucketConfig;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.*;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "BITBUCKET")
-@FeignClient(name = "bitbucket-forBulkActions", url = "${source-control.url}", decode404 = true, configuration = BitbucketConfig.class)
+@FeignClient(name = "bitbucket-forBulkActions", url = "${source-control.url}", decode404 = true, configuration = BitBucketConfig.class)
 public interface FeignRemoteForBitbucketBulkActions {
 
     @GetMapping(value = "/repos/{repoFullName}/pull-requests",
@@ -61,7 +61,7 @@ public interface FeignRemoteForBitbucketBulkActions {
                 .errorDecoder(new UpdateContentErrorDecoder())
                 .requestInterceptor(new SourceControlApiAccessKeyInterceptor(sourceControlPersonalToken))
                 .logLevel(Logger.Level.FULL)
-                .target(ContentClient.class, BitbucketConfig.getBitbucket() + "/repos/" + repoFullName + "/browse/" + path);
+                .target(ContentClient.class, BitBucketConfig.getBitbucket() + "/repos/" + repoFullName + "/browse/" + path);
     }
 
     @GetMapping(value = "/repos/{repoFullName}",
@@ -78,13 +78,13 @@ public interface FeignRemoteForBitbucketBulkActions {
             throws BranchAlreadyExistsException, RemoteSourceControlAuthorizationException {
 
         BitBucketReferenceClient bitbucketReferenceClient = BitBucketReferenceClient.buildBitbucketReferenceClient(sourceControlPersonalToken)
-                .target(BitBucketReferenceClient.class, BitbucketConfig.getBitbucket() + "/repos/" + repoFullName + "/branches");
+                .target(BitBucketReferenceClient.class, BitBucketConfig.getBitbucket() + "/repos/" + repoFullName + "/branches");
 
         return bitbucketReferenceClient.createBranch(new InputRef(branchName, fromReferenceSha1));
     }
 
     default User fetchCurrentUser(String sourceControlPersonalToken, String login) {
-        String bitbucketUrl = BitbucketConfig.getBitbucket();
+        String bitbucketUrl = BitBucketConfig.getBitbucket();
         String bitBucketUrlWithoutProject = bitbucketUrl.substring(0, bitbucketUrl.lastIndexOf("/projects"));
 
         BitBucketReferenceClient bitbucketReferenceClient = BitBucketReferenceClient.buildBitbucketReferenceClient(sourceControlPersonalToken)
@@ -97,7 +97,7 @@ public interface FeignRemoteForBitbucketBulkActions {
             throws RemoteSourceControlAuthorizationException {
 
         BitBucketReferenceClient BitbucketReferenceClient = BitBucketReferenceClient.buildBitbucketReferenceClient(sourceControlPersonalToken)
-                .target(BitBucketReferenceClient.class, BitbucketConfig.getBitbucket() + "/repos/" + repoFullName + "/pull-requests");
+                .target(BitBucketReferenceClient.class, BitBucketConfig.getBitbucket() + "/repos/" + repoFullName + "/pull-requests");
 
         return BitbucketReferenceClient.createPullRequest(newPr);
     }
