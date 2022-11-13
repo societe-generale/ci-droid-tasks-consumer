@@ -1,6 +1,5 @@
-package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
+package com.societegenerale.cidroid.tasks.consumer;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.config.BitBucketConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,8 +10,8 @@ import org.springframework.test.context.ContextConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ContextConfiguration(classes={ BitBucketInfraConfig.class,TestConfig.class, BitBucketConfig.class})
-@ActiveProfiles("synchronous-test")
+@ContextConfiguration(classes={ TestConfig.class})
+@ActiveProfiles("bitbucket-synchronous-test")
 public class BitBucketCiDroidIT {
 
     @Autowired
