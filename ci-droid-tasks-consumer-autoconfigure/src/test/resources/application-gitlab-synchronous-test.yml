@@ -1,9 +1,8 @@
 source-control:
-  type: "BITBUCKET"
+  type: "GITLAB"
   url: "http://localhost:9800/api/projects/public-project"
   login: "sekhar"
   password: "somePassword"
-  project-key: "public-project"
 
 synchronous-mode: true
 
