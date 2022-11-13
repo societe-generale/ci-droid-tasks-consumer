@@ -1,7 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer;
 
 import com.societegenerale.cidroid.tasks.consumer.services.Rebaser;
-import com.societegenerale.cidroid.tasks.consumer.services.eventhandlers.PushEventMonitor;
 import com.societegenerale.cidroid.tasks.consumer.services.notifiers.Notifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,9 +27,5 @@ public class TestConfig {
         return mock(MailSender.class);
     }
 
-    @Bean
-    public PushEventMonitor dummyPushEventMonitor() {
-        return (pushEvent) -> {};
-    }
 
 }
