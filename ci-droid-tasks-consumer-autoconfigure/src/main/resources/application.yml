@@ -16,35 +16,6 @@ spring:
     smtp:
       auth: false
       starttls.enable: false
-   # ----------------------------------------
-  # MESSAGING PROPERTIES
-  # ----------------------------------------
-  cloud:
-   stream:
-     default-binder: rabbit
-     bindings:
-       push-on-default-branch:
-         destination: ${user.name}.ci-droid.github-push-events.default-branch.v1
-         content-type: application/json
-         group: live-ci-droid.github-events
-       push-on-non-default-branch:
-         destination: ${user.name}.ci-droid.github-push-events.non-default-branch.v1
-         content-type: application/json
-         group: live-ci-droid.github-events
-       pull-request-event:
-         destination: ${user.name}.ci-droid.github-pull-request-events.v1
-         content-type: application/json
-         group: live-ci-droid.github-events
-       actions-to-perform:
-         destination: ${user.name}.ci-droid.actions-to-perform.v1
-         content-type: application/json
-         group: live-ci-droid.github-events
-  rabbitmq:
-    username: ${RABBITMQ_USER}
-    password: ${RABBITMQ_PASSWORD}
-    addresses: ${RABBITMQ_URL}
-    virtual-host: ${ENVNAME}
-    ssl.enabled: ${RABBITMQ_SSL}
 
 # enable below config to be in synchronous mode without messaging bus
 #synchronous-mode: true
