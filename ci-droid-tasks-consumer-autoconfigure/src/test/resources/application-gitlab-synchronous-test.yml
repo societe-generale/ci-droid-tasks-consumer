@@ -1,0 +1,23 @@
+source-control:
+  type: "GITLAB"
+  url: "http://localhost:9800/api/projects/public-project"
+  login: "sekhar"
+  password: "somePassword"
+
+synchronous-mode: true
+
+spring:
+  autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+  mail:
+    protocol: smtp
+    host: localhost
+    port: 3025
+    sender: ci-droid.test@myDomain.com
+
+logging.pattern.console: "%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger.%M - %msg%n"
+logging.level:
+  org:
+    springframework: INFO
+
+
+

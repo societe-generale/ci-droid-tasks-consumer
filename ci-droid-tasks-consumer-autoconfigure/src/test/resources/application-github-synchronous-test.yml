@@ -1,0 +1,8 @@
+
+synchronous-mode: true
+
+spring:
+  autoconfigure.exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+
+
