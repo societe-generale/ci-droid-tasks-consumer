@@ -83,7 +83,7 @@
         <greenmail.version>1.6.8</greenmail.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
 
-        <jacoco.version>0.8.2</jacoco.version>
+        <jacoco.version>0.8.8</jacoco.version>
         <guava.version>31.0.1-jre</guava.version>
         <springdoc.version>1.6.6</springdoc.version>
 
