@@ -31,6 +31,7 @@ since v2.0, we have revisited the configuration to make it easier to configure v
 - GitHub 
 - GitLab
 - Azure Devops
+- Bitbucket (since 2.1)
 
 Each has its own adapter in its own module, that implements some of the features defined in the generic interfaces :
 - [SourceControlEventsReactionPerformer](./blob/master/ci-droid-tasks-consumer-services/src/main/java/com/societegenerale/cidroid/tasks/consumer/services/SourceControlEventsReactionPerformer.java)
@@ -76,6 +77,21 @@ source-control:
     organization-name: "YOUR_ORG#YOUR_PROJECT"
 ```
 
+#### Bitbucket
+
+```yaml
+source-control:
+    type: "BITBUCKET"
+    # the URL, of the form http://HOSTNAME/api/projects/public-project"
+    url: "YOUR_BITBUCKET_URL"
+    # the credentials for the automated rebasing
+    login: "sekhar"
+    password: "somePassword"
+    # The Bitbucket project under which your repositories are  
+    # In most cases, it should be the same as the end of the URL configured above 
+    project-key: "public-project"
+```
+    
 ### Sync mode 
 
 In regular mode, CI-droid-tasks-controller receives events from an event bus (RabbitMq or Kafka, which are supported by Spring Cloud) : since processing a source control event may take some time, we usually prefer to respond immediately to source the control and acknowledge the request, then process it asynchronously. 
