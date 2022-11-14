@@ -84,9 +84,9 @@ source-control:
     type: "BITBUCKET"
     # the URL, of the form http://HOSTNAME/api/projects/public-project"
     url: "YOUR_BITBUCKET_URL"
-    # the credentials for the automated rebasing
-    login: "sekhar"
-    password: "somePassword"
+  # optional - if you enable the rebasing behavior, you can provide some Git credentials that will be used to perform the rebase on open PRs : 
+    login: "SOME_LOGIN"
+    password: "SOME_PASSWORD"
     # The Bitbucket project under which your repositories are  
     # In most cases, it should be the same as the end of the URL configured above 
     project-key: "public-project"
