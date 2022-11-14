@@ -12,7 +12,17 @@
 
 ### Fixed
 
-## [2.0.1] - 2020-05-22
+## [2.1.0] - 2022-11-14
+
+### Added
+- PR 97 - adding support for Bitbucket - thanks [@chandrasekharpanigrahy](https://github.com/chandrasekharpanigrahy) for your contribution !
+ [BREAKING] potentially minor breaking change in `RemoteForGitHubBulkActionsWrapper` interface (signature change on `fetchCurrentUser`)
+
+### Changed
+- PR 99 - moved the asynchronous config in a separate config file
+  [BREAKING] potentially minor breaking change : may need to launch the application explicitly with `asynchronous` profile when needed now. 
+
+## [2.0.1] - 2022-05-22
 
 ### Fixed
 - PR 96 - adding getRawEvent in PushEvent, which had been removed by mistake in 2.0.0
@@ -20,7 +30,7 @@
 ### Changed
 - documentation
 
-## [2.0.0] - 2020-05-20
+## [2.0.0] - 2022-05-20
 
 ### Added
 - Azure Devops capabilities
