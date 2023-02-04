@@ -1,5 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
 
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Blame;
 import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Project;
 import com.societegenerale.cidroid.tasks.consumer.services.SourceControlBulkActionsPerformer;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
@@ -9,6 +10,7 @@ import com.societegenerale.cidroid.tasks.consumer.services.model.*;
 import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +35,7 @@ public class RemoteForBitbucketBulkActionsWrapper implements SourceControlBulkAc
 
         var bitbucketResourceContent=feignRemoteForBitbucketBulkActions.fetchContent(repoFullName,path,branch);
         var blames = feignRemoteForBitbucketBulkActions.fetchCommits(repoFullName, path, branch);
-        var findLatestCommitHash = blames.stream().findFirst().orElse(null);
+        var findLatestCommitHash = blames.stream().max(Comparator.comparing(Blame::getCommitterTimestamp)).orElse(null);
         return ResourceContent.builder().base64EncodedContent(Base64.getEncoder().encodeToString(bitbucketResourceContent.getBytes(StandardCharsets.UTF_8)))
                 .sha(findLatestCommitHash.getCommitHash())
                 .build();
