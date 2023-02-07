@@ -28,9 +28,10 @@ class RemoteForBitbucketBulkActionsWrapperTest {
     @Test
     void should_fetch_encoded_content_and_latest_commit_id() {
         when(feignRemoteForBitbucketBulkActions.fetchContent("CI-Repo", "jenkin", "master")).thenReturn("Raw content");
+        ZonedDateTime now = ZonedDateTime.now();
         when(feignRemoteForBitbucketBulkActions.fetchCommits("CI-Repo", "jenkin", "master"))
-                .thenReturn(List.of(new Blame(ZonedDateTime.now().minusDays(2), "commitHashTowdaysBefore"),
-                        new Blame(ZonedDateTime.now(), "commitHashToday"),new Blame(ZonedDateTime.now().minusDays(1), "commitHashYesterday")));
+                .thenReturn(List.of(new Blame(now.minusDays(2), "commitHashTowdaysBefore"),
+                        new Blame(now, "commitHashToday"),new Blame(now.minusDays(1), "commitHashYesterday")));
         ResourceContent resourceContent = remoteForBitbucketBulkActionsWrapper.fetchContent("CI-Repo", "jenkin", "master");
         assertThat(resourceContent.getBase64EncodedContent()).isEqualTo("UmF3IGNvbnRlbnQ=");
         assertThat(resourceContent.getSha()).isEqualTo("commitHashToday");
