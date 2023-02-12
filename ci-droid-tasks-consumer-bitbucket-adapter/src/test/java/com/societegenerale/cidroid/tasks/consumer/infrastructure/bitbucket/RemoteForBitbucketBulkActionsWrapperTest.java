@@ -30,8 +30,9 @@ class RemoteForBitbucketBulkActionsWrapperTest {
         when(feignRemoteForBitbucketBulkActions.fetchContent("CI-Repo", "jenkin", "master")).thenReturn("Raw content");
         ZonedDateTime now = ZonedDateTime.now();
         when(feignRemoteForBitbucketBulkActions.fetchCommits("CI-Repo", "jenkin", "master"))
-                .thenReturn(List.of(new Blame(now.minusDays(2), "commitHashTowdaysBefore"),
-                        new Blame(now, "commitHashToday"),new Blame(now.minusDays(1), "commitHashYesterday")));
+                .thenReturn(List.of(new Blame(now, "commitHashToday"),new Blame(now.minusDays(1), "commitHashYesterday"),
+                        new Blame(now.minusDays(2), "commitHash2daysBefore")
+                        ));
         ResourceContent resourceContent = remoteForBitbucketBulkActionsWrapper.fetchContent("CI-Repo", "jenkin", "master");
         assertThat(resourceContent.getBase64EncodedContent()).isEqualTo("UmF3IGNvbnRlbnQ=");
         assertThat(resourceContent.getSha()).isEqualTo("commitHashToday");

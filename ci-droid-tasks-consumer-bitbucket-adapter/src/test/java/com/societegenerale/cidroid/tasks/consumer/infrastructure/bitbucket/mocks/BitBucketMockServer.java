@@ -133,7 +133,7 @@ public class BitBucketMockServer extends MockServer {
         ZonedDateTime now = ZonedDateTime.now();
         return response()
                 // No mock response found https://developer.atlassian.com/server/bitbucket/rest/v804/api-group-repository/#api-api-latest-projects-projectkey-repos-repositoryslug-browse-path-get
-                .withBody(objectMapper.writeValueAsString(List.of(new Blame(now.minusDays(2), "commitHashTowdaysBefore"),
+                .withBody(objectMapper.writeValueAsString(List.of(new Blame(now.minusDays(2), "commitHash2daysBefore"),
                         new Blame(now, "commitHashToday"),new Blame(now.minusDays(1), "commitHashYesterday"))))
                 .withHeader("Content-Type", "application/json")
                 .withStatusCode(200);
