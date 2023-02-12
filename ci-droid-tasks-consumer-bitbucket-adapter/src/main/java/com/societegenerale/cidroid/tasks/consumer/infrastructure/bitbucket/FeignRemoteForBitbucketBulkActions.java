@@ -102,7 +102,7 @@ public interface FeignRemoteForBitbucketBulkActions {
         return BitbucketReferenceClient.createPullRequest(newPr);
     }
 
-    @GetMapping(value = "/repos/{repositorySlug}/browse/{path}?at={branch}&limit=1&blame=true&noContent=true",
+    @GetMapping(value = "/repos/{repositorySlug}/browse/{path}?at={branch}&blame=true&noContent=true",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Nonnull
