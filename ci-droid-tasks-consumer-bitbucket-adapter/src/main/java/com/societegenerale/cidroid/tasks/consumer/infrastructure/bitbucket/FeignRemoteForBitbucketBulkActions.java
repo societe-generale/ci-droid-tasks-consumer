@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Optional;
 
 @ConditionalOnProperty(prefix = "source-control", name = "type", havingValue = "BITBUCKET")
@@ -102,12 +101,11 @@ public interface FeignRemoteForBitbucketBulkActions {
         return BitbucketReferenceClient.createPullRequest(newPr);
     }
 
-    @GetMapping(value = "/repos/{repositorySlug}/browse/{path}?at={branch}&blame=true&noContent=true",
+    @GetMapping(value = "/repos/{repositorySlug}/commits?until={branch}&limit=1",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Nonnull
-    List<Blame> fetchCommits(@PathVariable("repositorySlug") String repositorySlug, @PathVariable("path") String path,
-                             @PathVariable("branch") String branch);
+    Commits fetchCommits(@PathVariable("repositorySlug") String repositorySlug, @PathVariable("branch") String branch);
 
     @Data
     @AllArgsConstructor

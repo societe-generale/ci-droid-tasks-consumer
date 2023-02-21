@@ -1,9 +1,6 @@
 package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket;
 
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Blame;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.DirectCommit;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Project;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.UpdatedResource;
+import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.*;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.BranchAlreadyExistsException;
 import com.societegenerale.cidroid.tasks.consumer.services.exceptions.RemoteSourceControlAuthorizationException;
 import com.societegenerale.cidroid.tasks.consumer.services.model.Commit;
@@ -28,11 +25,8 @@ class RemoteForBitbucketBulkActionsWrapperTest {
     @Test
     void should_fetch_encoded_content_and_latest_commit_id() {
         when(feignRemoteForBitbucketBulkActions.fetchContent("CI-Repo", "jenkin", "master")).thenReturn("Raw content");
-        ZonedDateTime now = ZonedDateTime.now();
-        when(feignRemoteForBitbucketBulkActions.fetchCommits("CI-Repo", "jenkin", "master"))
-                .thenReturn(List.of(new Blame(now, "commitHashToday"),new Blame(now.minusDays(1), "commitHashYesterday"),
-                        new Blame(now.minusDays(2), "commitHash2daysBefore")
-                        ));
+        when(feignRemoteForBitbucketBulkActions.fetchCommits("CI-Repo", "master"))
+                .thenReturn(new Commits(List.of(new com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Commit( "commitHashToday"))));
         ResourceContent resourceContent = remoteForBitbucketBulkActionsWrapper.fetchContent("CI-Repo", "jenkin", "master");
         assertThat(resourceContent.getBase64EncodedContent()).isEqualTo("UmF3IGNvbnRlbnQ=");
         assertThat(resourceContent.getSha()).isEqualTo("commitHashToday");

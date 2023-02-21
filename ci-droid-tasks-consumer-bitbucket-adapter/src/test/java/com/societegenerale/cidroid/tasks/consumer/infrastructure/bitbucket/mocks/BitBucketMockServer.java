@@ -2,7 +2,6 @@ package com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.mock
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.societegenerale.cidroid.tasks.consumer.infrastructure.bitbucket.model.Blame;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -11,8 +10,6 @@ import org.mockserver.model.HttpResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Objects;
 
 import static org.mockserver.model.HttpRequest.request;
@@ -89,12 +86,11 @@ public class BitBucketMockServer extends MockServer {
         mockServer
                 .when(request()
                         .withMethod("GET")
-                        .withPath("/api/projects/public-project/repos/my-repo/browse/Jenkinsfile")
-                        .withQueryStringParameter("at", "newJavaImageForJenkinsBuild")
-                        .withQueryStringParameter("blame", "true")
-                        .withQueryStringParameter("noContent", "true"))
+                        .withPath("/api/projects/public-project/repos/my-repo/commits")
+                        .withQueryStringParameter("until", "newJavaImageForJenkinsBuild")
+                        .withQueryStringParameter("limit", "1"))
 
-                .respond(returnBlames());
+                .respond(returnCommits());
         mockServer
                 .when(request()
                         .withMethod("PUT")
@@ -129,12 +125,9 @@ public class BitBucketMockServer extends MockServer {
     }
 
     @SneakyThrows
-    private HttpResponse returnBlames() {
-        ZonedDateTime now = ZonedDateTime.now();
+    private HttpResponse returnCommits() {
         return response()
-                // No mock response found https://developer.atlassian.com/server/bitbucket/rest/v804/api-group-repository/#api-api-latest-projects-projectkey-repos-repositoryslug-browse-path-get
-                .withBody(objectMapper.writeValueAsString(List.of(new Blame(now.minusDays(2), "commitHash2daysBefore"),
-                        new Blame(now, "commitHashToday"),new Blame(now.minusDays(1), "commitHashYesterday"))))
+                .withBody(readFromFile("commits.json"))
                 .withHeader("Content-Type", "application/json")
                 .withStatusCode(200);
     }
